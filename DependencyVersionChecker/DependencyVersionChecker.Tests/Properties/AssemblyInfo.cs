@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assemblyNameRef.
 [assembly: AssemblyTitle( "DependencyVersionChecker.Tests" )]
-[assembly: AssemblyDescription( "" )]
+[assembly: AssemblyDescription( "Tests for DependencyVersionChecker" )]
 [assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "" )]
+[assembly: AssemblyCompany( "B. Crosnier" )]
 [assembly: AssemblyProduct( "DependencyVersionChecker.Tests" )]
-[assembly: AssemblyCopyright( "Copyright ©  2013" )]
+[assembly: AssemblyCopyright( "Copyright © 2013" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assemblyNameRef: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion( "1.0.0.0" )]
-[assembly: AssemblyFileVersion( "1.0.0.0" )]
+[assembly: AssemblyVersion( "0.1.0.*" )]
+[assembly: AssemblyFileVersion( "0.1.0.0" )]
