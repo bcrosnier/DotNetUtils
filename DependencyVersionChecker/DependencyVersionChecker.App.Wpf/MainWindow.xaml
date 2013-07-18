@@ -8,9 +8,9 @@
         WindowState="Maximized">
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="File">
-                <MenuItem Header="Load assembly folder" Click="LoadAssemblyDirectory_Click" />
-                <MenuItem Header="Load assembly file" Click="LoadAssemblyFile_Click" />
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open file" Click="LoadAssemblyFile_Click" />
+                <MenuItem Header="Open _directory" Click="LoadAssemblyDirectory_Click" />
             </MenuItem>
         </Menu>
 
@@ -82,7 +82,9 @@
         <DataTemplate x:Key="assemblyVertexTemplate" DataType="{x:Type local:AssemblyVertex}">
             <StackPanel Orientation="Vertical" Margin="5">
                 <TextBlock Text="{Binding Path=Assembly.SimpleName, Mode=OneWay}" Foreground="White" FontSize="12pt" FontWeight="Bold" />
-                <TextBlock Text="{Binding Path=AssemblyDetails, Mode=OneWay}" Foreground="White" FontSize="8pt" />
+                <TextBlock Text="{Binding Path=AssemblyDetails, Mode=OneWay}" Foreground="White" FontSize="8pt"
+                           HorizontalAlignment="Left" MaxWidth="250"
+                           TextWrapping="Wrap" />
             </StackPanel>
         </DataTemplate>
 
@@ -118,7 +120,13 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <DataTrigger Binding="{Binding Path=IsMarked, Mode=OneWay}" Value="true">
-                                <Setter TargetName="VertexBorder" Property="Background" Value="Red" />
+                                <Setter TargetName="VertexBorder" Property="Background" Value="#FFBF2B00" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=HasDependencies, Mode=OneWay}" Value="true">
+                                <Setter TargetName="VertexBorder" Property="BorderBrush" Value="Red" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=HasDependencies, Mode=OneWay}" Value="false">
+                                <Setter TargetName="VertexBorder" Property="BorderBrush" Value="Blue" />
                             </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -126,12 +134,13 @@
             </Setter>
         </Style>
 
+        <!-- Edge style/tooltip -->
         <Style TargetType="{x:Type graphsharp:EdgeControl}">
             <Style.Resources>
                 <ToolTip x:Key="ToolTipContent">
                     <StackPanel>
-                        <TextBlock FontWeight="Bold" Text="Edge ID:" />
-                        <TextBlock Text="{Binding ID}" />
+                        <TextBlock FontWeight="Bold" Text="Dependency:" />
+                        <TextBlock Text="{Binding Description}" />
                     </StackPanel>
                 </ToolTip>
             </Style.Resources>

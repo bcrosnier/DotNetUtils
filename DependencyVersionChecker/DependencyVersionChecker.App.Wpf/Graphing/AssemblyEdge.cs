@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using DependencyVersionChecker;
 using QuickGraph;
 
 namespace DependencyVersionCheckerApp.Wpf.Graphing
@@ -6,16 +7,23 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
     [DebuggerDisplay( "{Source.Assembly} -> {Target.Assembly}" )]
     public class AssemblyEdge : Edge<AssemblyVertex>
     {
-        public int ID
+        public IAssemblyInfo Parent { get; private set; }
+
+        public IAssemblyInfo Child { get; private set; }
+
+        public string Description
         {
-            get;
-            private set;
+            get
+            {
+                return string.Format( "{0} depends on {1}", Parent.SimpleName, Child.SimpleName );
+            }
         }
 
-        public AssemblyEdge( int id, AssemblyVertex source, AssemblyVertex target )
+        public AssemblyEdge( AssemblyVertex source, AssemblyVertex target )
             : base( source, target )
         {
-            ID = id;
+            Parent = target.Assembly;
+            Child = source.Assembly;
         }
     }
 }

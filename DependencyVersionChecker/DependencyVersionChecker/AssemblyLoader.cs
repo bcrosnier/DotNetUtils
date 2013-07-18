@@ -82,6 +82,7 @@ namespace DependencyVersionChecker
             // Most custom attributes are optional.
             outputInfo.FileVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyFileVersionAttribute" );
             outputInfo.InformationalVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyInformationalVersionAttribute" );
+            outputInfo.Description = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyDescriptionAttribute" );
 
             AssemblyInfo referenceAssemblyInfo;
             AssemblyDefinition resolvedAssembly;

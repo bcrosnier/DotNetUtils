@@ -31,7 +31,7 @@ namespace DependencyVersionCheckerApp.Wpf
         private List<IAssemblyInfo> _drawnAssemblies;
         private List<AssemblyVertex> _drawnVertices;
         private List<AssemblyEdge> _drawnEdges;
-        private int _lastEdgeId = 0;
+
         private string _layoutAlgorithmType;
         private List<String> _layoutAlgorithmTypes = new List<string>();
 
@@ -220,7 +220,7 @@ namespace DependencyVersionCheckerApp.Wpf
             foreach( IAssemblyInfo dep in assembly.Dependencies )
             {
                 AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
-                AssemblyEdge depEdge = new AssemblyEdge( _lastEdgeId++, vDep, v );
+                AssemblyEdge depEdge = new AssemblyEdge( vDep, v );
                 _drawnEdges.Add( depEdge );
                 Graph.AddEdge( depEdge );
             }

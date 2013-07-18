@@ -60,7 +60,16 @@ namespace DependencyVersionChecker
 
         public static IEnumerable<FileInfo> ListAssembliesFromDirectory( DirectoryInfo dir, bool recurse )
         {
-            List<FileInfo> fileList = dir.GetFiles( "*.dll" ).ToList();
+            List<FileInfo> fileList;
+            try
+            {
+                fileList = dir.GetFiles( "*.dll" ).ToList();
+            }
+            catch( UnauthorizedAccessException ex )
+            {
+                Console.WriteLine( ex );
+                return new List<FileInfo>();
+            }
             fileList.AddRange( dir.GetFiles( "*.exe" ) );
 
             if( recurse )

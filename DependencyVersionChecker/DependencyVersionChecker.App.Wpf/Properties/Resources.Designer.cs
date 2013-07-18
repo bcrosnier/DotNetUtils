@@ -59,5 +59,34 @@ namespace DependencyVersionCheckerApp.Wpf.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # .NET Assembly reference viewer
+        ///
+        ///Utility describing references of a .NET assembly, or a set of assemblies.
+        ///
+        ///## Usage
+        ///
+        ///Execute program. This will open the main window.
+        ///
+        ///The software defaults to examine assemblies from the working directory.
+        ///
+        ///### Examine a single assembly
+        ///
+        ///Open the `File` menu, and select `Open file`.
+        ///
+        ///From the file dialog, open the assembly you wish to examine.
+        ///
+        ///### Examine an assembly directory
+        ///
+        ///Open the `File` menu, and select `Open directory`.
+        ///
+        ///From the folder dialog, [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string README {
+            get {
+                return ResourceManager.GetString("README", resourceCulture);
+            }
+        }
     }
 }

@@ -30,6 +30,14 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
             }
         }
 
+        public bool HasDependencies
+        {
+            get
+            {
+                return Assembly.Dependencies.Count() > 0;
+            }
+        }
+
         public string TooltipText
         {
             get
@@ -54,13 +62,16 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
             {
                 StringBuilder sb = new StringBuilder();
                 //sb.Append( String.Format( "{0}\n", Assembly.AssemblyFullName ) );
-                sb.Append( String.Format( "Version: {0}\n", Assembly.Version ) );
+                sb.Append( String.Format( "Assembly version: {0}\n", Assembly.Version ) );
 
                 if( !String.IsNullOrEmpty( Assembly.InformationalVersion ) )
                     sb.Append( String.Format( "Product version: {0}\n", Assembly.InformationalVersion ) );
 
                 if( !String.IsNullOrEmpty( Assembly.FileVersion ) )
                     sb.Append( String.Format( "File version: {0}\n", Assembly.FileVersion ) );
+
+                if( !String.IsNullOrEmpty( Assembly.Description ) )
+                    sb.Append( String.Format( "{0}\n", Assembly.Description ) );
 
                 return sb.ToString().TrimEnd( '\n' );
             }

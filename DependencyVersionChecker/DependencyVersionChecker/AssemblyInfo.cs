@@ -67,6 +67,12 @@ namespace DependencyVersionChecker
         public string InformationalVersion { get; internal set; }
 
         /// <summary>
+        /// Description of the assembly.
+        /// See: <see cref="System.Reflection.AssemblyDescriptionAttribute"/>
+        /// </summary>
+        public string Description { get; internal set; }
+
+        /// <summary>
         /// Assemblies this one has references to.
         /// </summary>
         public IEnumerable<IAssemblyInfo> Dependencies
