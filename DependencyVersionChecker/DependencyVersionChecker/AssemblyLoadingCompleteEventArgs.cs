@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace DependencyVersionChecker
 {
+    [DebuggerDisplay( "AssemblyInfo = {AssemblyFile}" )]
     public class AssemblyLoadingCompleteEventArgs : EventArgs
     {
         public Exception Exception
@@ -23,13 +25,13 @@ namespace DependencyVersionChecker
             private set;
         }
 
-        internal AssemblyLoadingCompleteEventArgs(FileInfo f, IAssemblyInfo a )
-            : this(f, a, null )
+        internal AssemblyLoadingCompleteEventArgs( FileInfo f, IAssemblyInfo a )
+            : this( f, a, null )
         {
         }
 
         internal AssemblyLoadingCompleteEventArgs( FileInfo f, Exception e )
-            : this(f, null, e )
+            : this( f, null, e )
         {
         }
 

@@ -20,7 +20,6 @@ namespace DependencyVersionChecker
         /// Already-loaded assemblies. Used as cache.
         /// </summary>
         private ConcurrentDictionary<string, AssemblyInfo> _assemblyIndex;
-        private readonly object _indexLock = new object();
 
         /// <summary>
         /// Assemblies that failed to resolve.
@@ -65,44 +64,48 @@ namespace DependencyVersionChecker
                 // Pass invalid DLLs
                 throw ex;
             }
-            
+
+            AssemblyInfo outputInfo;
+
+            // Cache lock
             if( _assemblyIndex.Keys.Contains( moduleInfo.Assembly.Name.FullName ) )
             {
                 return _assemblyIndex[moduleInfo.Assembly.Name.FullName];
             }
-
-
-            AssemblyInfo outputInfo = AssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
-
-            // File version is somewhat tricky to get (It's the constructor parameter of a custom attribute).
-            // Might want to do some error-checking later.
-            var fileVersionCustomAttribute =
-                moduleInfo.Assembly.CustomAttributes
-                    .Where( attribute => attribute.AttributeType.FullName == @"System.Reflection.AssemblyFileVersionAttribute" )
-                    .Select( attribute => attribute.ConstructorArguments )
-                    .FirstOrDefault();
-
-            if( fileVersionCustomAttribute != null )
+            else
             {
-                string fileVersionString = fileVersionCustomAttribute
-                    .FirstOrDefault()
-                    .Value
-                    .ToString();
-
-                outputInfo.FileVersion = Version.Parse( fileVersionString );
+                outputInfo = AssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
+                Console.WriteLine( "Adding {0}.", moduleInfo.Assembly.Name );
+                _assemblyIndex.TryAdd( moduleInfo.Assembly.Name.FullName, outputInfo );
             }
+
+            // Most custom attributes are optional.
+            outputInfo.FileVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyFileVersionAttribute" );
+            outputInfo.InformationalVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyInformationalVersionAttribute" );
 
             AssemblyInfo referenceAssemblyInfo;
             AssemblyDefinition resolvedAssembly;
+            bool cached = false;
 
             // Recursively load references.
             foreach( var referenceAssemblyName in moduleInfo.AssemblyReferences )
             {
                 referenceAssemblyInfo = null;
                 resolvedAssembly = null;
+                cached = false;
+
+                if( _assemblyIndex.ContainsKey( referenceAssemblyName.FullName ) )
+                {
+                    referenceAssemblyInfo = _assemblyIndex[referenceAssemblyName.FullName];
+                    cached = true;
+                }
+                else
+                {
+                    cached = false;
+                }
 
                 // Only resolve assemblies if they're not already resolved.
-                if( !_assemblyIndex.ContainsKey( referenceAssemblyName.FullName ) )
+                if( !cached )
                 {
                     // Resolve assembly.
                     try
@@ -115,6 +118,11 @@ namespace DependencyVersionChecker
                         referenceAssemblyInfo = AssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
                         UnresolvedAssemblies.Add( referenceAssemblyInfo, ex );
                         Console.WriteLine( "Failed to resolve: {0} ({1})", referenceAssemblyName.FullName, ex.Message );
+                        // Not going through LoadFromAssemblyFile, so adding to index here.
+                        if( !_assemblyIndex.Keys.Contains( referenceAssemblyName.FullName ) )
+                        {
+                            _assemblyIndex.TryAdd( referenceAssemblyName.FullName, referenceAssemblyInfo );
+                        }
                     }
 
                     if( resolvedAssembly != null )
@@ -123,12 +131,14 @@ namespace DependencyVersionChecker
                         if( Path.GetDirectoryName( resolvedAssembly.MainModule.FullyQualifiedName ) ==
                             assemblyFile.DirectoryName )
                         {
+                            Console.WriteLine( "{0} wasn't cached.", referenceAssemblyName.Name );
                             referenceAssemblyInfo = LoadFromAssemblyFile( new FileInfo( resolvedAssembly.MainModule.FullyQualifiedName ) );
                         }
                     }
                 }
                 else
                 {
+                    Console.WriteLine( "{0} was cached.", referenceAssemblyName.Name );
                     referenceAssemblyInfo = _assemblyIndex[referenceAssemblyName.FullName];
                 }
 
@@ -136,11 +146,6 @@ namespace DependencyVersionChecker
                 {
                     outputInfo.InternalDependencies.Add( referenceAssemblyInfo );
                 }
-            }
-
-            if( !_assemblyIndex.Keys.Contains( moduleInfo.Assembly.Name.FullName ) )
-            {
-                _assemblyIndex.TryAdd( moduleInfo.Assembly.Name.FullName, outputInfo );
             }
 
             return outputInfo;
@@ -165,21 +170,51 @@ namespace DependencyVersionChecker
         {
             AssemblyInfo outputInfo = new AssemblyInfo();
 
-            outputInfo.AssemblyName = assemblyNameRef.Name;
-
             outputInfo.AssemblyFullName = assemblyNameRef.FullName;
 
-            outputInfo.AssemblyVersion = assemblyNameRef.Version;
+            outputInfo.SimpleName = assemblyNameRef.Name;
+
+            outputInfo.Version = assemblyNameRef.Version;
+
+            outputInfo.Culture = assemblyNameRef.Culture;
 
             return outputInfo;
         }
 
-        public void LoadFromFileAsync( FileInfo f )
+        /// <summary>
+        /// Gets the value of a custom attribute type (using Mono.Cecil).
+        /// </summary>
+        /// <param name="assembly">Assembly to examine</param>
+        /// <param name="attributeTypeName">Attribute type to get value from</param>
+        /// <returns>Value of attribute, or String.Empty if not found.</returns>
+        private static string GetCustomAttributeString( AssemblyDefinition assembly, string attributeTypeName )
         {
-            Task.Factory.StartNew(() => DoLoadFromFileAsyncTask(f));
+            var customAttributeConstructorArguments =
+                assembly.CustomAttributes
+                .Where( attribute => attribute.AttributeType.FullName == attributeTypeName )
+                .Select( attribute => attribute.ConstructorArguments )
+                .FirstOrDefault();
+
+            if( customAttributeConstructorArguments != null )
+            {
+                string attributeValue = customAttributeConstructorArguments
+                    .FirstOrDefault()
+                    .Value as string;
+
+                return attributeValue;
+            }
+            else
+            {
+                return String.Empty;
+            }
         }
 
-        private void DoLoadFromFileAsyncTask(FileInfo f)
+        public void LoadFromFileAsync( FileInfo f )
+        {
+            Task.Factory.StartNew( () => DoLoadFromFileAsyncTask( f ) );
+        }
+
+        private void DoLoadFromFileAsyncTask( FileInfo f )
         {
             IAssemblyInfo resultAssembly = null;
             Exception exception = null;

@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace DependencyVersionChecker
 {
+    [DebuggerDisplay( "AssemblyInfo = {AssemblyName} ({DependencyLinks.Count})" )]
     public class DependencyAssembly
     {
         public string AssemblyName { get; private set; }
@@ -49,7 +50,7 @@ namespace DependencyVersionChecker
         internal void Add( IAssemblyInfo sourceAssembly, IAssemblyInfo requestedAssembly )
         {
             Debug.Assert( sourceAssembly.Dependencies.Contains( requestedAssembly ), "requestedAssembly is a dependency of sourceAssembly" );
-            Debug.Assert( requestedAssembly.AssemblyName == AssemblyName, "requestedAssembly has correct name" );
+            Debug.Assert( requestedAssembly.SimpleName == AssemblyName, "requestedAssembly has correct name" );
 
             if( DependencyLinks.Keys.Contains( sourceAssembly ) || DependencyLinks.Values.Contains( requestedAssembly ) )
             {

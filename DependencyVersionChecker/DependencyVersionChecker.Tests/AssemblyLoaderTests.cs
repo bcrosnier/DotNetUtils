@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace DependencyVersionChecker.Tests
@@ -20,11 +19,9 @@ namespace DependencyVersionChecker.Tests
 
             IEnumerable<FileInfo> fileList = AssemblyVersionChecker.ListAssembliesFromDirectory( testDir, false );
 
-
             IAssemblyLoader loader = new AssemblyLoader();
 
             List<IAssemblyInfo> Files = new List<IAssemblyInfo>();
-
 
             CountdownEvent countdown = new CountdownEvent( fileList.Count() );
 
@@ -55,13 +52,13 @@ namespace DependencyVersionChecker.Tests
 
             executingAssembly =
                 Files
-                .Where( x => x.AssemblyName == Assembly.GetExecutingAssembly().GetName().Name )
+                .Where( x => x.SimpleName == Assembly.GetExecutingAssembly().GetName().Name )
                 .Select( x => x )
                 .FirstOrDefault();
 
             dependencyAssembly =
                 Files
-                .Where( x => x.AssemblyName == loader.GetType().Assembly.GetName().Name )
+                .Where( x => x.SimpleName == loader.GetType().Assembly.GetName().Name )
                 .Select( x => x )
                 .FirstOrDefault();
 
@@ -97,11 +94,6 @@ namespace DependencyVersionChecker.Tests
                     return true;
             }
             return false;
-        }
-
-        [Test]
-        public void AsyncAssemblyLoading()
-        {
         }
     }
 }

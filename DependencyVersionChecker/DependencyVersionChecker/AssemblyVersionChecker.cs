@@ -79,6 +79,7 @@ namespace DependencyVersionChecker
             List<AssemblyLoadingCompleteEventArgs> assembliesComplete = new List<AssemblyLoadingCompleteEventArgs>();
             List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
 
+            // Async
             CountdownEvent countdown = new CountdownEvent( _filesToCheck.Count );
 
             EventHandler<AssemblyLoadingCompleteEventArgs> OnAssemblyComplete =
@@ -98,10 +99,33 @@ namespace DependencyVersionChecker
             countdown.Wait();
             _assemblyLoader.AsyncAssemblyLoaded -= OnAssemblyComplete;
 
+            // Sync
+            /*
+            ManualResetEventSlim waiter = new ManualResetEventSlim();
+
+            EventHandler<AssemblyLoadingCompleteEventArgs> OnAssemblyComplete =
+                delegate( object s, AssemblyLoadingCompleteEventArgs e )
+                {
+                    assembliesComplete.Add( e );
+                    waiter.Set();
+                };
+
+            _assemblyLoader.AsyncAssemblyLoaded += OnAssemblyComplete;
+
+            foreach( var f in _filesToCheck )
+            {
+                _assemblyLoader.LoadFromFileAsync( f );
+                waiter.Wait();
+                waiter.Reset();
+            }
+
+            _assemblyLoader.AsyncAssemblyLoaded -= OnAssemblyComplete;
+             * */
+
             foreach( var assemblyArgs in assembliesComplete )
             {
                 if( assemblyArgs.ResultingAssembly != null )
-                    dependencies.AddRange( GetAssemblyDependencies( assemblyArgs.ResultingAssembly ) );
+                    dependencies = GetAssemblyDependencies( assemblyArgs.ResultingAssembly, dependencies );
             }
 
             // Only get dependencies with multiple links
@@ -117,7 +141,7 @@ namespace DependencyVersionChecker
             RaiseAssemblyCheckComplete( args );
         }
 
-        private void RaiseAssemblyCheckComplete(AssemblyCheckCompleteEventArgs args)
+        private void RaiseAssemblyCheckComplete( AssemblyCheckCompleteEventArgs args )
         {
             if( AssemblyCheckComplete != null )
             {
@@ -135,12 +159,12 @@ namespace DependencyVersionChecker
             foreach( IAssemblyInfo dep in info.Dependencies )
             {
                 DependencyAssembly dependencyItem = existingDependencies
-                    .Where( x => x.AssemblyName == dep.AssemblyName )
+                    .Where( x => x.AssemblyName == dep.SimpleName )
                     .FirstOrDefault();
 
                 if( dependencyItem == null )
                 {
-                    dependencyItem = new DependencyAssembly( dep.AssemblyName );
+                    dependencyItem = new DependencyAssembly( dep.SimpleName );
                     existingDependencies.Add( dependencyItem );
                 }
                 if( !dependencyItem.DependencyLinks.Keys.Contains( info ) )

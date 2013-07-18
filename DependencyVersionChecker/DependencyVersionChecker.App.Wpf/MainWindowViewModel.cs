@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CK.Core;
 using DependencyVersionChecker;
-using System.Linq;
-using System.Windows;
+using DependencyVersionCheckerApp.Wpf.Graphing;
 
 namespace DependencyVersionCheckerApp.Wpf
 {
@@ -25,6 +26,14 @@ namespace DependencyVersionCheckerApp.Wpf
         private ObservableCollection<ListBoxItem> _logItems;
 
         public ICommand ChangeAssemblyFolderCommand;
+
+        private AssemblyGraph _graph;
+        private List<IAssemblyInfo> _drawnAssemblies;
+        private List<AssemblyVertex> _drawnVertices;
+        private List<AssemblyEdge> _drawnEdges;
+        private int _lastEdgeId = 0;
+        private string _layoutAlgorithmType;
+        private List<String> _layoutAlgorithmTypes = new List<string>();
 
         #endregion Members
 
@@ -63,6 +72,38 @@ namespace DependencyVersionCheckerApp.Wpf
             }
         }
 
+        public AssemblyGraph Graph
+        {
+            get
+            {
+                return this._graph;
+            }
+
+            private set
+            {
+                if( this._graph != value )
+                {
+                    this._graph = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public List<String> LayoutAlgorithmTypes
+        {
+            get { return _layoutAlgorithmTypes; }
+        }
+
+        public string LayoutAlgorithmType
+        {
+            get { return _layoutAlgorithmType; }
+            set
+            {
+                _layoutAlgorithmType = value;
+                RaisePropertyChanged();
+            }
+        }
+
         #endregion Observed properties
 
         #region Constructor/initialization
@@ -78,6 +119,22 @@ namespace DependencyVersionCheckerApp.Wpf
             _logger.Filter = LogLevelFilter.None;
             _logItems = new ObservableCollection<ListBoxItem>();
 
+            _graph = new AssemblyGraph( true );
+
+            //Add Layout Algorithm Types
+            _layoutAlgorithmTypes.Add( "BoundedFR" );
+            _layoutAlgorithmTypes.Add( "Circular" );
+            _layoutAlgorithmTypes.Add( "CompoundFDP" );
+            _layoutAlgorithmTypes.Add( "EfficientSugiyama" );
+            _layoutAlgorithmTypes.Add( "FR" );
+            _layoutAlgorithmTypes.Add( "ISOM" );
+            _layoutAlgorithmTypes.Add( "KK" );
+            _layoutAlgorithmTypes.Add( "LinLog" );
+            _layoutAlgorithmTypes.Add( "Tree" );
+
+            //Pick a default Layout Algorithm Type
+            LayoutAlgorithmType = "ISOM";
+
             var logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
             _logger.Output.RegisterClient( logClient );
 
@@ -87,7 +144,7 @@ namespace DependencyVersionCheckerApp.Wpf
             _assemblyViewModels = new ObservableCollection<AssemblyInfoViewModel>();
             PrepareCommands();
 
-            OnNewAssemblyDirectory( new DirectoryInfo( Environment.CurrentDirectory ) );
+            ChangeAssemblyDirectory( new DirectoryInfo( Environment.CurrentDirectory ) );
         }
 
         public void PrepareCommands()
@@ -99,7 +156,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
         #region Methods
 
-        public void OnNewAssemblyDirectory( DirectoryInfo dir )
+        public void ChangeAssemblyDirectory( DirectoryInfo dir )
         {
             _logger.Info( "Loading directory: {0}", dir.FullName );
             if( dir.Exists )
@@ -109,7 +166,6 @@ namespace DependencyVersionCheckerApp.Wpf
                 _checker.Reset();
                 _checker.AddDirectory( dir, true );
                 _checker.Check();
-
             }
             else
             {
@@ -117,9 +173,68 @@ namespace DependencyVersionCheckerApp.Wpf
             }
         }
 
+        public void ChangeAssemblyFile( FileInfo file )
+        {
+            _logger.Info( "Loading file: {0}", file.FullName );
+            if( file.Exists )
+            {
+                _assemblyDirectory = null;
+
+                _checker.Reset();
+                _checker.AddFile( file );
+                _checker.Check();
+            }
+            else
+            {
+                _logger.Error( "File does not exist: {0}", file.FullName );
+            }
+        }
+
+        public void PrepareGraph( IEnumerable<IAssemblyInfo> assemblies )
+        {
+            Graph = new AssemblyGraph( true );
+            _drawnAssemblies = new List<IAssemblyInfo>();
+            _drawnEdges = new List<AssemblyEdge>();
+            _drawnVertices = new List<AssemblyVertex>();
+
+            foreach( IAssemblyInfo assembly in assemblies )
+            {
+                PrepareVertexFromAssembly( assembly );
+            }
+
+            RaisePropertyChanged( "Graph" );
+        }
+
+        private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
+        {
+            if( _drawnAssemblies.Contains( assembly ) )
+                return _drawnVertices.Where( x => x.Assembly == assembly ).First();
+
+            AssemblyVertex v = new AssemblyVertex( assembly );
+
+            _drawnAssemblies.Add( assembly );
+            _drawnVertices.Add( v );
+
+            Graph.AddVertex( v );
+
+            foreach( IAssemblyInfo dep in assembly.Dependencies )
+            {
+                AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
+                AssemblyEdge depEdge = new AssemblyEdge( _lastEdgeId++, vDep, v );
+                _drawnEdges.Add( depEdge );
+                Graph.AddEdge( depEdge );
+            }
+
+            return v;
+        }
+
+        #endregion Methods
+
+        #region Event handler methods
+
         public void OnNewAssemblyCheck( object sender, AssemblyCheckCompleteEventArgs e )
         {
-            var checkedAssemblies = 
+            var checkedAssemblies =
                 e.AssemblyCompleteEventArgs
                 .Where( x => x.ResultingAssembly != null )
                 .Select( x => x.ResultingAssembly );
@@ -129,10 +244,11 @@ namespace DependencyVersionCheckerApp.Wpf
                 AssemblyViewModels.Clear();
                 foreach( var assembly in checkedAssemblies )
                 {
-                    _logger.Trace( "Adding assembly {0} to tree root", assembly.AssemblyName );
+                    _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
                     AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
                 }
 
+                PrepareGraph( checkedAssemblies );
             } ) );
             _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
 
@@ -147,7 +263,8 @@ namespace DependencyVersionCheckerApp.Wpf
                 {
                     foreach( var pair in dep.DependencyLinks )
                     {
-                        _logger.Warn( "{0} has a reference to: {1}", pair.Key.AssemblyName, pair.Value.AssemblyFullName );
+                        _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.AssemblyFullName );
+                        Graph.MarkAssembly( pair.Value );
                     }
                 }
             }
@@ -162,7 +279,7 @@ namespace DependencyVersionCheckerApp.Wpf
             }
         }
 
-        #endregion Methods
+        #endregion Event handler methods
 
         #region Command methods
 
@@ -174,7 +291,7 @@ namespace DependencyVersionCheckerApp.Wpf
             }
 
             DirectoryInfo dir = parameter as DirectoryInfo;
-            OnNewAssemblyDirectory( dir );
+            ChangeAssemblyDirectory( dir );
         }
 
         #endregion Command methods
