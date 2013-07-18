@@ -59,10 +59,10 @@ namespace DependencyVersionChecker
             {
                 moduleInfo = ModuleDefinition.ReadModule( assemblyFile.OpenRead() );
             }
-            catch( BadImageFormatException ex )
+            catch( BadImageFormatException )
             {
                 // Pass invalid DLLs
-                throw ex;
+                throw;
             }
 
             AssemblyInfo outputInfo;
