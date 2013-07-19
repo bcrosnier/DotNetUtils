@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace DependencyVersionChecker
 {
@@ -9,6 +10,7 @@ namespace DependencyVersionChecker
     /// Information about a particular .NET assembly.
     /// </summary>
     [DebuggerDisplay( "AssemblyInfo = {AssemblyFullName}" )]
+    [XmlRoot("AssemblyInfo" )]
     public class AssemblyInfo
         : IAssemblyInfo
     {
@@ -17,6 +19,7 @@ namespace DependencyVersionChecker
         /// <summary>
         /// This assembly's dependencies (as Assemblies from the assembly's references).
         /// </summary>
+        [XmlElement( ElementName = "References" )]
         private List<AssemblyInfo> _internalDependencies;
 
         #endregion Fields
@@ -28,24 +31,28 @@ namespace DependencyVersionChecker
         /// The display name typically consists of the simple name, version number, supported culture, and public key.
         /// See: <see cref="System.Reflection.AssemblyName.FullName"/>
         /// </summary>
+        [XmlElement( ElementName = "AssemblyFullName" )]
         public string AssemblyFullName { get; set; }
 
         /// <summary>
         /// Assembly simple name, from its unique identity.
         /// Equivalent of: <see cref="System.Reflection.AssemblyName.Name"/>
         /// </summary>
+        [XmlElement( ElementName = "SimpleName" )]
         public string SimpleName { get; set; }
 
         /// <summary>
         /// Assembly version, as compiled in System.Reflection.AssemblyName, from VersionString.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
+        [XmlElement( ElementName = "Version" )]
         public Version Version { get; set; }
 
         /// <summary>
         /// Supported culture, as compiled in System.Reflection.AssemblyName.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
+        [XmlElement( ElementName = "Culture" )]
         public string Culture { get; set; }
 
         /**
@@ -58,6 +65,7 @@ namespace DependencyVersionChecker
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyFileVersionAttribute"/>
         /// </summary>
+        [XmlElement( ElementName = "FileVersion" )]
         public string FileVersion { get; set; }
 
         /// <summary>
@@ -65,12 +73,14 @@ namespace DependencyVersionChecker
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
+        [XmlElement( ElementName = "InformationalVersion" )]
         public string InformationalVersion { get; set; }
 
         /// <summary>
         /// Description of the assembly.
         /// See: <see cref="System.Reflection.AssemblyDescriptionAttribute"/>
         /// </summary>
+        [XmlElement( ElementName = "Description" )]
         public string Description { get; set; }
 
         /// <summary>
