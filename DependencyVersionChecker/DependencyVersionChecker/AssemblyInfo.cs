@@ -9,7 +9,6 @@ namespace DependencyVersionChecker
     /// Information about a particular .NET assembly.
     /// </summary>
     [DebuggerDisplay( "AssemblyInfo = {AssemblyFullName}" )]
-    [XmlRoot( "AssemblyInfo" )]
     public class AssemblyInfo : IAssemblyInfo
     {
         #region Fields
@@ -34,48 +33,25 @@ namespace DependencyVersionChecker
         /// The display name typically consists of the simple name, version number, supported culture, and public key.
         /// See: <see cref="System.Reflection.AssemblyName.FullName"/>
         /// </summary>
-        [XmlElement( ElementName = "AssemblyFullName" )]
         public string AssemblyFullName { get; set; }
 
         /// <summary>
         /// Assembly simple name, from its unique identity.
         /// Equivalent of: <see cref="System.Reflection.AssemblyName.Name"/>
         /// </summary>
-        [XmlElement( ElementName = "SimpleName" )]
         public string SimpleName { get; set; }
 
         /// <summary>
         /// Assembly version, as compiled in System.Reflection.AssemblyName, from VersionString.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        [XmlIgnore()] // XML adapter below
         public Version Version { get; set; }
 
         /// <summary>
         /// Supported culture, as compiled in System.Reflection.AssemblyName.
         /// See: <see cref="System.Reflection.AssemblyCultureAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "Culture" )]
         public string Culture { get; set; }
-
-        /// <summary>
-        /// Version string adapter. Used for XML serialization.
-        /// </summary>
-        [XmlElement( ElementName = "Version" )]
-        public string VersionString
-        {
-            get
-            {
-                return Version.ToString();
-            }
-            set
-            {
-                Version v = null;
-                Version.TryParse( value, out v );
-                if( v != null )
-                    Version = v;
-            }
-        }
 
         /// <summary>
         /// Exception, which happened during the resolution or opening of the assembly.
@@ -109,7 +85,6 @@ namespace DependencyVersionChecker
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyFileVersionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "FileVersion" )]
         public string FileVersion { get; set; }
 
         /// <summary>
@@ -117,14 +92,12 @@ namespace DependencyVersionChecker
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "InformationalVersion" )]
         public string InformationalVersion { get; set; }
 
         /// <summary>
         /// Description of the assembly.
         /// See: <see cref="System.Reflection.AssemblyDescriptionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "Description" )]
         public string Description { get; set; }
 
         /// <summary>
@@ -155,7 +128,8 @@ namespace DependencyVersionChecker
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyInfo" /> class, with an exception set.
         /// </summary>
-        internal AssemblyInfo(Exception ex) : this()
+        internal AssemblyInfo( Exception ex )
+            : this()
         {
             Error = ex;
         }

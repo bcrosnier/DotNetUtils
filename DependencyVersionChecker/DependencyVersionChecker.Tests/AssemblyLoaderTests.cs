@@ -23,10 +23,21 @@ namespace DependencyVersionChecker.Tests
 
             List<IAssemblyInfo> Files = new List<IAssemblyInfo>();
 
-            foreach( var f in fileList )
+            foreach ( FileInfo f in fileList )
             {
-                Files.Add( l.LoadFromFile( f ) );
+                IAssemblyInfo a = l.LoadFromFile( f );
+                IAssemblyInfo b = l.LoadFromFile( f );
+                IAssemblyInfo c = l.LoadFromFile( f );
+
+                Assert.That( a == b );
+                Assert.That( b == c );
+
+                Assert.That( a.Error, Is.Null );
+
+                Files.Add( a );
             }
+
+            AssemblyCheckTests.TestAssembliesInfo( Files );
 
             CollectionAssert.AllItemsAreUnique( Files );
             CollectionAssert.AllItemsAreNotNull( Files );
@@ -68,13 +79,17 @@ namespace DependencyVersionChecker.Tests
             IAssemblyInfo info = l.LoadFromFile( new FileInfo( pathToExternalAssembly ) );
 
             Assert.That( IsAssemblyLoaded( info.AssemblyFullName ), Is.False, "External assembly wasn't loaded when reflecting" );
+
+            Assert.That( info.Error, Is.Null, "No error during assembly loading" );
+
+            AssemblyCheckTests.TestAssemblyInfo( info );
         }
 
         private bool IsAssemblyLoaded( string assemblyFullName )
         {
-            foreach( Assembly a in AppDomain.CurrentDomain.GetAssemblies() )
+            foreach ( Assembly a in AppDomain.CurrentDomain.GetAssemblies() )
             {
-                if( a.GetName().FullName == assemblyFullName )
+                if ( a.GetName().FullName == assemblyFullName )
                     return true;
             }
             return false;

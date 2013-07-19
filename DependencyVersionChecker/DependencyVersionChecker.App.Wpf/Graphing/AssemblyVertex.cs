@@ -23,7 +23,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
             }
             internal set
             {
-                if( value != _isMarked )
+                if ( value != _isMarked )
                 {
                     _isMarked = value;
                     RaisePropertyChanged();
@@ -33,8 +33,9 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
 
         public IEnumerable<IAssemblyInfo> LocalReferences
         {
-            get {
-               return Assembly.Dependencies.Where( x => x.BorderName == null);
+            get
+            {
+                return Assembly.Dependencies.Where( x => x.BorderName == null );
             }
         }
 
@@ -50,12 +51,12 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
         {
             get
             {
-                if( LocalReferences.Count() == 0 )
+                if ( LocalReferences.Count() == 0 )
                     return "No references";
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append( "References:\n" );
-                foreach( var dep in LocalReferences )
+                foreach ( var dep in LocalReferences )
                 {
                     sb.Append( String.Format( "- {0} ({1})\n", dep.SimpleName, dep.Version ) );
                 }
@@ -72,14 +73,22 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
                 //sb.Append( String.Format( "{0}\n", Assembly.AssemblyFullName ) );
                 sb.Append( String.Format( "Assembly version: {0}\n", Assembly.Version ) );
 
-                if( !String.IsNullOrEmpty( Assembly.InformationalVersion ) )
+                if ( !String.IsNullOrEmpty( Assembly.InformationalVersion ) )
                     sb.Append( String.Format( "Informational version: {0}\n", Assembly.InformationalVersion ) );
 
-                if( !String.IsNullOrEmpty( Assembly.FileVersion ) )
+                if ( !String.IsNullOrEmpty( Assembly.FileVersion ) )
                     sb.Append( String.Format( "File version: {0}\n", Assembly.FileVersion ) );
 
-                if( !String.IsNullOrEmpty( Assembly.Description ) )
+                if ( !String.IsNullOrEmpty( Assembly.Description ) )
                     sb.Append( String.Format( "{0}\n", Assembly.Description ) );
+
+                if ( Assembly.Paths.Count > 0 )
+                    sb.Append( "Found at:\n" );
+                foreach ( string s in Assembly.Paths )
+                {
+                    string path = DependencyUtils.MakeRelativePath( s, Environment.CurrentDirectory );
+                    sb.Append( String.Format( "- {0}\n", path ) );
+                }
 
                 return sb.ToString().TrimEnd( '\n' );
             }

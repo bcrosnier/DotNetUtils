@@ -17,9 +17,9 @@ namespace DependencyVersionChecker
         /// <summary>
         /// Already-loaded assemblies. Used as cache.
         /// </summary>
-        readonly Dictionary<string, AssemblyInfo> _assemblyIndex;
+        private readonly Dictionary<string, AssemblyInfo> _assemblyIndex;
 
-        readonly BorderChecker _borderChecker;
+        private readonly BorderChecker _borderChecker;
 
         public delegate string BorderChecker( AssemblyDefinition newAssembly );
 
@@ -38,11 +38,11 @@ namespace DependencyVersionChecker
 
             string token = BitConverter.ToString( newReference.Name.PublicKeyToken ).Replace( "-", string.Empty ).ToLowerInvariant();
 
-            if( microsoftTokens.Contains( token ) || company == "Microsoft" )
+            if ( microsoftTokens.Contains( token ) || company == "Microsoft" )
             {
                 return "Microsoft";
             }
-            if( newReference.MainModule.FullyQualifiedName.StartsWith( Environment.SystemDirectory ) )
+            if ( newReference.MainModule.FullyQualifiedName.StartsWith( Environment.SystemDirectory ) )
             {
                 return "System";
             }
@@ -72,15 +72,15 @@ namespace DependencyVersionChecker
 
             IAssemblyInfo assembly;
 
-            foreach( FileInfo f in fileList )
+            foreach ( FileInfo f in fileList )
             {
                 assembly = LoadFromFile( f );
 
                 foundAssemblies.Add( assembly );
             }
 
-            if( recurse )
-                foreach( DirectoryInfo d in assemblyDirectory.GetDirectories() ) LoadFromDirectory( d, recurse );
+            if ( recurse )
+                foreach ( DirectoryInfo d in assemblyDirectory.GetDirectories() ) LoadFromDirectory( d, recurse );
 
             return foundAssemblies;
         }
@@ -103,29 +103,29 @@ namespace DependencyVersionChecker
         public IAssemblyInfo LoadFromAssemblyFile( FileInfo assemblyFile )
         {
             AssemblyInfo outputInfo;
-            if( _assemblyIndex.TryGetValue( assemblyFile.FullName, out outputInfo ) ) return outputInfo;
+            if ( _assemblyIndex.TryGetValue( assemblyFile.FullName, out outputInfo ) ) return outputInfo;
 
             try
             {
                 // Load from DLL using Mono.Cecil
                 ModuleDefinition moduleInfo;
-                using( var s = assemblyFile.OpenRead() )
+                using ( var s = assemblyFile.OpenRead() )
                 {
                     moduleInfo = ModuleDefinition.ReadModule( s );
                 }
-                
-                if( !_assemblyIndex.TryGetValue( moduleInfo.Assembly.Name.FullName, out outputInfo ) )
+
+                if ( !_assemblyIndex.TryGetValue( moduleInfo.Assembly.Name.FullName, out outputInfo ) )
                 {
                     outputInfo = CreateAssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
                     Debug.Assert( assemblyFile.FullName == moduleInfo.FullyQualifiedName );
                 }
                 outputInfo.Paths.Add( assemblyFile.FullName );
-
+                _assemblyIndex.Add( assemblyFile.FullName, outputInfo );
                 LoadAssembly( moduleInfo, outputInfo );
             }
-            catch( Exception ex )
+            catch ( Exception ex )
             {
-                if( outputInfo == null )
+                if ( outputInfo == null )
                 {
                     outputInfo = new AssemblyInfo() { AssemblyFullName = assemblyFile.FullName };
                     _assemblyIndex.Add( assemblyFile.FullName, outputInfo );
@@ -137,8 +137,8 @@ namespace DependencyVersionChecker
 
         private void LoadAssembly( ModuleDefinition moduleInfo, AssemblyInfo outputInfo )
         {
-            if( _assemblyIndex.Keys.Contains( moduleInfo.FullyQualifiedName ) )
-                return; // TODO: May load twice
+            //if ( _assemblyIndex.Keys.Contains( moduleInfo.FullyQualifiedName ) )
+            //return; // TODO: May load twice if we take this out
 
             try
             {
@@ -147,12 +147,12 @@ namespace DependencyVersionChecker
                 outputInfo.InformationalVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyInformationalVersionAttribute" );
                 outputInfo.Description = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyDescriptionAttribute" );
                 outputInfo.BorderName = _borderChecker != null ? _borderChecker( moduleInfo.Assembly ) : null;
-                if( outputInfo.BorderName == null )
+                if ( outputInfo.BorderName == null )
                 {
                     ResolveReferences( moduleInfo, outputInfo );
                 }
             }
-            catch( Exception ex )
+            catch ( Exception ex )
             {
                 outputInfo.Error = ex;
             }
@@ -164,29 +164,33 @@ namespace DependencyVersionChecker
             AssemblyDefinition resolvedAssembly;
 
             // Recursively load references.
-            foreach( var referenceAssemblyName in moduleInfo.AssemblyReferences )
+            foreach ( var referenceAssemblyName in moduleInfo.AssemblyReferences )
             {
                 referenceAssemblyInfo = null;
                 resolvedAssembly = null;
 
-                if( !_assemblyIndex.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
+                if ( !_assemblyIndex.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
                 {
                     // Resolve assembly.
                     try
                     {
                         resolvedAssembly = moduleInfo.AssemblyResolver.Resolve( referenceAssemblyName.FullName );
                     }
-                    catch( Exception ex )
+                    catch ( Exception ex )
                     {
                         // Can't resolve assembly, but we can still have data from its name reference.
                         referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
                         referenceAssemblyInfo.Error = ex;
                     }
-                    if( referenceAssemblyInfo == null )
+                    if ( referenceAssemblyInfo == null )
                     {
-                        referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
-                        referenceAssemblyInfo.Paths.Add( resolvedAssembly.MainModule.FullyQualifiedName );
-                        LoadAssembly( resolvedAssembly.MainModule, referenceAssemblyInfo );
+                        if ( !_assemblyIndex.TryGetValue( resolvedAssembly.MainModule.FullyQualifiedName, out referenceAssemblyInfo ) )
+                        {
+                            referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
+                            _assemblyIndex.Add( resolvedAssembly.MainModule.FullyQualifiedName, referenceAssemblyInfo );
+                            referenceAssemblyInfo.Paths.Add( resolvedAssembly.MainModule.FullyQualifiedName );
+                            LoadAssembly( resolvedAssembly.MainModule, referenceAssemblyInfo );
+                        }
                     }
                 }
                 Debug.Assert( referenceAssemblyInfo != null );
@@ -208,7 +212,7 @@ namespace DependencyVersionChecker
         /// </remarks>
         /// <param name="assemblyNameRef">Assembly name reference</param>
         /// <returns>Generated description</returns>
-        AssemblyInfo CreateAssemblyInfoFromAssemblyNameReference( AssemblyNameReference assemblyNameRef )
+        private AssemblyInfo CreateAssemblyInfoFromAssemblyNameReference( AssemblyNameReference assemblyNameRef )
         {
             AssemblyInfo outputInfo = new AssemblyInfo()
             {
@@ -235,7 +239,7 @@ namespace DependencyVersionChecker
                 .Select( attribute => attribute.ConstructorArguments )
                 .FirstOrDefault();
 
-            if( customAttributeConstructorArguments != null )
+            if ( customAttributeConstructorArguments != null )
             {
                 string attributeValue = customAttributeConstructorArguments
                     .FirstOrDefault()
@@ -265,6 +269,5 @@ namespace DependencyVersionChecker
         /// <param name="assemblyDirectory">Directory containing assemblies</param>
         /// <param name="recurse">Recurse into subdirectories</param>
         /// <returns>Assembly information</returns>
-
     }
 }

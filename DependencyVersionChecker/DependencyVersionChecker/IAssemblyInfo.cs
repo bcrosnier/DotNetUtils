@@ -73,5 +73,16 @@ namespace DependencyVersionChecker
         /// Name of the border, if this assembly acted as one.
         /// </summary>
         string BorderName { get; }
+
+        /// <summary>
+        /// Paths at which this assembly was found.
+        /// </summary>
+        IList<string> Paths { get; }
+
+        /// <summary>
+        /// Exception, which happened during the resolution or opening of the assembly.
+        /// Can be null.
+        /// </summary>
+        Exception Error { get; }
     }
 }

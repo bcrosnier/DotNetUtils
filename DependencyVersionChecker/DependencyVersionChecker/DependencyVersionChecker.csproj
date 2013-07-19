@@ -55,6 +55,7 @@
     <Compile Include="IAssemblyLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableAssemblyInfoSet.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
