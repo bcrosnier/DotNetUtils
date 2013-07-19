@@ -75,5 +75,11 @@ namespace DependencyVersionCheckerApp.Wpf
                 _viewModel.SaveXmlFile( file );
             }
         }
+
+        private void GraphTypeMenuItem_Click( object sender, RoutedEventArgs e )
+        {
+            System.Windows.Controls.MenuItem clickedItem = (System.Windows.Controls.MenuItem)e.OriginalSource;
+            _viewModel.LayoutAlgorithmType = clickedItem.Header.ToString();
+        }
     }
 }

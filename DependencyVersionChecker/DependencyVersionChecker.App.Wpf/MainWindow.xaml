@@ -15,6 +15,8 @@
                 <MenuItem Header="_Load from XML" Click="LoadAssemblyXml_Click" />
                 <MenuItem Header="_Save to XML" Click="SaveAssemblyXml_Click" />
             </MenuItem>
+            <MenuItem Header="Graph type" ItemsSource="{Binding LayoutAlgorithmTypes}" MenuItem.Click="GraphTypeMenuItem_Click">
+            </MenuItem>
         </Menu>
 
         <!-- Main panel -->

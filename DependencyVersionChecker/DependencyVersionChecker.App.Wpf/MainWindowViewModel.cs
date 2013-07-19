@@ -100,8 +100,11 @@ namespace DependencyVersionCheckerApp.Wpf
             get { return _layoutAlgorithmType; }
             set
             {
-                _layoutAlgorithmType = value;
-                RaisePropertyChanged();
+                if( _layoutAlgorithmTypes.Contains( value ) )
+                {
+                    _layoutAlgorithmType = value;
+                    RaisePropertyChanged();
+                }
             }
         }
 
@@ -191,21 +194,6 @@ namespace DependencyVersionCheckerApp.Wpf
             }
         }
 
-        public void PrepareGraph( IEnumerable<IAssemblyInfo> assemblies )
-        {
-            Graph = new AssemblyGraph( true );
-            _drawnAssemblies = new List<IAssemblyInfo>();
-            _drawnEdges = new List<AssemblyEdge>();
-            _drawnVertices = new List<AssemblyVertex>();
-
-            foreach( IAssemblyInfo assembly in assemblies )
-            {
-                PrepareVertexFromAssembly( assembly );
-            }
-
-            RaisePropertyChanged( "Graph" );
-        }
-
         public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies )
         {
             LoadAssemblies( assemblies, null );
@@ -256,6 +244,42 @@ namespace DependencyVersionCheckerApp.Wpf
             }
         }
 
+        public void SaveXmlFile( FileInfo fileToWrite )
+        {
+            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
+
+            SerializableAssemblyInfoSet set = new SerializableAssemblyInfoSet();
+
+            List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
+
+            foreach( var assembly in this._drawnAssemblies )
+            {
+                ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
+            }
+
+            set.Assemblies = assemblies.ToArray();
+
+            using( Stream fs = fileToWrite.OpenWrite() )
+            {
+                serializer.Serialize( fs, set );
+            }
+        }
+
+        public void LoadXmlFile( FileInfo fileToRead )
+        {
+            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
+
+            List<AssemblyInfo> assemblies;
+
+            using( Stream fs = fileToRead.OpenRead() )
+            {
+                SerializableAssemblyInfoSet set = serializer.Deserialize( fs ) as SerializableAssemblyInfoSet;
+                assemblies = set.Assemblies.ToList();
+            }
+
+            LoadAssemblies( assemblies );
+        }
+
         private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
         {
             if( _drawnAssemblies.Contains( assembly ) )
@@ -277,6 +301,21 @@ namespace DependencyVersionCheckerApp.Wpf
             }
 
             return v;
+        }
+
+        public void PrepareGraph( IEnumerable<IAssemblyInfo> assemblies )
+        {
+            Graph = new AssemblyGraph( true );
+            _drawnAssemblies = new List<IAssemblyInfo>();
+            _drawnEdges = new List<AssemblyEdge>();
+            _drawnVertices = new List<AssemblyVertex>();
+
+            foreach( IAssemblyInfo assembly in assemblies )
+            {
+                PrepareVertexFromAssembly( assembly );
+            }
+
+            RaisePropertyChanged( "Graph" );
         }
 
         private static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly )
@@ -326,42 +365,6 @@ namespace DependencyVersionCheckerApp.Wpf
 
             DirectoryInfo dir = parameter as DirectoryInfo;
             ChangeAssemblyDirectory( dir );
-        }
-
-        public void SaveXmlFile( FileInfo fileToWrite )
-        {
-            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
-
-            SerializableAssemblyInfoSet set = new SerializableAssemblyInfoSet();
-
-            List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
-
-            foreach( var assembly in this._drawnAssemblies )
-            {
-                ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
-            }
-
-            set.Assemblies = assemblies.ToArray();
-
-            using( Stream fs = fileToWrite.OpenWrite() )
-            {
-                serializer.Serialize( fs, set );
-            }
-        }
-
-        public void LoadXmlFile( FileInfo fileToRead )
-        {
-            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
-
-            List<AssemblyInfo> assemblies;
-
-            using( Stream fs = fileToRead.OpenRead() )
-            {
-                SerializableAssemblyInfoSet set = serializer.Deserialize( fs ) as SerializableAssemblyInfoSet;
-                assemblies = set.Assemblies.ToList();
-            }
-
-            LoadAssemblies( assemblies );
         }
 
         #endregion Command methods
