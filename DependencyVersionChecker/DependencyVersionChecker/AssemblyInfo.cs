@@ -45,7 +45,7 @@ namespace DependencyVersionChecker
         /// Assembly version, as compiled in System.Reflection.AssemblyName, from VersionString.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "Version" )]
+        [XmlIgnore()] // XML adapter below
         public Version Version { get; set; }
 
         /// <summary>
@@ -54,6 +54,24 @@ namespace DependencyVersionChecker
         /// </summary>
         [XmlElement( ElementName = "Culture" )]
         public string Culture { get; set; }
+
+        /// <summary>
+        /// Version string adapter. Used for XML serialization.
+        /// </summary>
+        [XmlElement( ElementName = "Version" )]
+        public string VersionString {
+            get
+            {
+                return Version.ToString();
+            }
+            set
+            {
+                Version v = null;
+                Version.TryParse( value, out v );
+                if( v != null )
+                    Version = v;
+            }
+        }
 
         /**
          * Properties above can be inferred from assembly reference.

@@ -46,7 +46,22 @@ namespace DependencyVersionChecker.Tests
                     .Where( x => x.AssemblyFullName == assemblies1[i].AssemblyFullName )
                     .FirstOrDefault();
 
-                Assert.That( initialAssembly, Is.Not.Null, "Initial assembly matches re-serialized assembly" );
+                Assert.That( initialAssembly, Is.Not.Null, "Initial assembly matches re-serialized assembly full name" );
+
+                Assert.That( initialAssembly.Version == deserializedAssembly.Version,
+                    "Initial assembly matches re-serialized assembly Version" );
+
+                Assert.That( initialAssembly.FileVersion == deserializedAssembly.FileVersion,
+                    "Initial assembly matches re-serialized assembly FileVersion" );
+
+                Assert.That( initialAssembly.InformationalVersion == deserializedAssembly.InformationalVersion,
+                    "Initial assembly matches re-serialized assembly InformationalVersion" );
+
+                Assert.That( initialAssembly.Culture == deserializedAssembly.Culture,
+                    "Initial assembly matches re-serialized assembly Culture" );
+
+                Assert.That( initialAssembly.SimpleName == deserializedAssembly.SimpleName,
+                    "Initial assembly matches re-serialized assembly SimpleName" );
 
                 foreach( var deserializedDependency in deserializedAssembly.Dependencies )
                 {
