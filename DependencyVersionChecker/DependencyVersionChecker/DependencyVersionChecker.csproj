@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyAssembly.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="IAssemblyInfo.cs" />
     <Compile Include="IAssemblyLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializableAssemblyInfoSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

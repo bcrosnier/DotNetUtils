@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace DependencyVersionChecker
 {
@@ -27,25 +28,25 @@ namespace DependencyVersionChecker
         /// The display name typically consists of the simple name, version number, supported culture, and public key.
         /// See: <see cref="System.Reflection.AssemblyName.FullName"/>
         /// </summary>
-        public string AssemblyFullName { get; internal set; }
+        public string AssemblyFullName { get; set; }
 
         /// <summary>
         /// Assembly simple name, from its unique identity.
         /// Equivalent of: <see cref="System.Reflection.AssemblyName.Name"/>
         /// </summary>
-        public string SimpleName { get; internal set; }
+        public string SimpleName { get; set; }
 
         /// <summary>
         /// Assembly version, as compiled in System.Reflection.AssemblyName, from VersionString.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        public Version Version { get; internal set; }
+        public Version Version { get; set; }
 
         /// <summary>
         /// Supported culture, as compiled in System.Reflection.AssemblyName.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        public string Culture { get; internal set; }
+        public string Culture { get; set; }
 
         /**
          * Properties above can be inferred from assembly reference.
@@ -57,20 +58,20 @@ namespace DependencyVersionChecker
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyFileVersionAttribute"/>
         /// </summary>
-        public string FileVersion { get; internal set; }
+        public string FileVersion { get; set; }
 
         /// <summary>
         /// Assembly version string, as usually declared in Properties/AssemblyInfo.cs,
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        public string InformationalVersion { get; internal set; }
+        public string InformationalVersion { get; set; }
 
         /// <summary>
         /// Description of the assembly.
         /// See: <see cref="System.Reflection.AssemblyDescriptionAttribute"/>
         /// </summary>
-        public string Description { get; internal set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Assemblies this one has references to.
@@ -80,6 +81,11 @@ namespace DependencyVersionChecker
             get
             {
                 return _internalDependencies.AsReadOnly();
+            }
+
+            set
+            {
+                _internalDependencies = ( ( (IEnumerable<AssemblyInfo>)value ).ToList() );
             }
         }
 
