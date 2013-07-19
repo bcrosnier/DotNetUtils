@@ -46,6 +46,7 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfoXmlSerializer.cs" />
     <Compile Include="DependencyAssembly.cs" />
     <Compile Include="AssemblyCheckResult.cs" />
     <Compile Include="AssemblyLoader.cs" />

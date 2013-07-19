@@ -32,20 +32,20 @@ namespace DependencyVersionChecker.Tests
             Assert.That( r.VersionConflicts.Count() >= 1, "At least one conflict was found" );
         }
 
-        public static IAssemblyInfo[] GetReferencesFromThisAssembly()
+        public static IList<IAssemblyInfo> GetReferencesFromThisAssembly()
         {
             IAssemblyLoader l = new AssemblyLoader( AssemblyLoader.DefaultBorderChecker );
             IAssemblyInfo assembly = null;
             ManualResetEventSlim waiter = new ManualResetEventSlim();
 
             FileInfo assemblyFile = new FileInfo( Assembly.GetExecutingAssembly().Location );
-            Environment.CurrentDirectory = assemblyFile.DirectoryName;
+            //Environment.CurrentDirectory = assemblyFile.DirectoryName;
 
             assembly = l.LoadFromFile( assemblyFile );
 
             Assert.That( assembly, Is.Not.Null, "Entry assembly was correctly loaded" );
 
-            return ListReferencedAssemblies( assembly ).ToArray();
+            return ListReferencedAssemblies( assembly );
         }
 
         public static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly )

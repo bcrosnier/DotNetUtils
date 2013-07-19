@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Xml.Serialization;
 using NUnit.Framework;
 
@@ -12,63 +14,23 @@ namespace DependencyVersionChecker.Tests
         [Test]
         public void XmlSerializeDeserialize()
         {
-            IAssemblyInfo[] assemblies = AssemblyCheckTests.GetReferencesFromThisAssembly();
-           IAssemblyInfo[] assemblies1;
+            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>( AssemblyCheckTests.GetReferencesFromThisAssembly() );
+            List<IAssemblyInfo> assemblies2;
 
             Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
-            Assert.That( assemblies.Count(), Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
+            Assert.That( assemblies.Count, Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
 
-            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
+            AssemblyCheckTests.TestAssembliesInfo( assemblies );
+            AssemblyCheckTests.TestAssembliesInfo( assemblies );
+            AssemblyCheckTests.TestAssembliesInfo( assemblies );
 
-            SerializableAssemblyInfoSet set = new SerializableAssemblyInfoSet();
+            XmlDocument serialized = AssemblyInfoXmlSerializer.Serialize( assemblies );
 
-            set.Assemblies = (AssemblyInfo[])assemblies;
+            assemblies2 = AssemblyInfoXmlSerializer.Deserialize( serialized ).ToList();
 
-            using( MemoryStream ms = new MemoryStream() )
-            {
-                serializer.Serialize( ms, set );
-                ms.Position = 0;
+            CollectionAssert.IsNotEmpty( assemblies2, "Deserialized collection is not empty" );
 
-                SerializableAssemblyInfoSet set1 = serializer.Deserialize( ms ) as SerializableAssemblyInfoSet;
-                assemblies1 = set1.Assemblies;
-            }
-
-            Assert.That( assemblies1, Is.Not.Null );
-            Assert.That( assemblies1.Count() == assemblies.Count() );
-
-            for( int i = 0; i < assemblies.Count(); i++ )
-            {
-                IAssemblyInfo deserializedAssembly = assemblies1[i];
-                IAssemblyInfo initialAssembly = assemblies
-                    .Where( x => x.AssemblyFullName == assemblies1[i].AssemblyFullName )
-                    .FirstOrDefault();
-
-                Assert.That( initialAssembly, Is.Not.Null, "Initial assembly matches re-serialized assembly full name" );
-
-                Assert.That( initialAssembly.Version == deserializedAssembly.Version,
-                    "Initial assembly matches re-serialized assembly Version" );
-
-                Assert.That( initialAssembly.FileVersion == deserializedAssembly.FileVersion,
-                    "Initial assembly matches re-serialized assembly FileVersion" );
-
-                Assert.That( initialAssembly.InformationalVersion == deserializedAssembly.InformationalVersion,
-                    "Initial assembly matches re-serialized assembly InformationalVersion" );
-
-                Assert.That( initialAssembly.Culture == deserializedAssembly.Culture,
-                    "Initial assembly matches re-serialized assembly Culture" );
-
-                Assert.That( initialAssembly.SimpleName == deserializedAssembly.SimpleName,
-                    "Initial assembly matches re-serialized assembly SimpleName" );
-
-                foreach( var deserializedDependency in deserializedAssembly.Dependencies )
-                {
-                    IAssemblyInfo initialDependency = initialAssembly.Dependencies
-                        .Where( x => x.AssemblyFullName == deserializedDependency.AssemblyFullName )
-                        .FirstOrDefault();
-
-                    Assert.That( initialAssembly, Is.Not.Null, "Initial dependency matches re-serialized dependency" );
-                }
-            }
+            AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
         }
     }
 }
