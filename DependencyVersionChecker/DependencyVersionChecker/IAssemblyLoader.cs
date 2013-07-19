@@ -10,24 +10,19 @@ namespace DependencyVersionChecker
     public interface IAssemblyLoader
     {
         /// <summary>
-        /// Fires on completion of a LoadFromFileAsync().
-        /// </summary>
-        event EventHandler<AssemblyLoadingCompleteEventArgs> AsyncAssemblyLoaded;
-
-        /// <summary>
-        /// Assemblies that failed to resolve.
-        /// </summary>
-        IDictionary<IAssemblyInfo, Exception> UnresolvedAssemblies { get; }
-
-        /// <summary>
         /// Load an assembly from a single file.
         /// </summary>
         IAssemblyInfo LoadFromFile( FileInfo assemblyFile );
 
         /// <summary>
-        /// Load an assembly from a single file. Fires AsyncAssemblyLoaded on completion (whether it ends in error or success).
+        /// Load an assembly from an entire directory.
         /// </summary>
-        void LoadFromFileAsync( FileInfo assemblyFile );
+        IEnumerable<IAssemblyInfo> LoadFromDirectory( DirectoryInfo assemblyDirectory, bool recurse );
+
+        /// <summary>
+        /// Assemblies loaded previously.
+        /// </summary>
+        IEnumerable<IAssemblyInfo> Assemblies { get; }
 
         /// <summary>
         /// Clear assembly cache.

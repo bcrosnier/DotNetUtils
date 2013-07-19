@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,29 +12,77 @@ namespace DependencyVersionChecker
     /// <summary>
     /// Utility class for describing an assembly, and its dependencies.
     /// </summary>
-    public class AssemblyLoader
-        : IAssemblyLoader
+    public class AssemblyLoader : IAssemblyLoader
     {
-        public event EventHandler<AssemblyLoadingCompleteEventArgs> AsyncAssemblyLoaded;
-
         /// <summary>
         /// Already-loaded assemblies. Used as cache.
         /// </summary>
-        private ConcurrentDictionary<string, AssemblyInfo> _assemblyIndex;
+        readonly Dictionary<string, AssemblyInfo> _assemblyIndex;
 
-        /// <summary>
-        /// Assemblies that failed to resolve.
-        /// </summary>
-        public IDictionary<IAssemblyInfo, Exception> UnresolvedAssemblies { get; private set; }
+        readonly BorderChecker _borderChecker;
+
+        public delegate string BorderChecker( AssemblyDefinition newAssembly );
+
+        public static BorderChecker DefaultBorderChecker = ( newReference ) =>
+        {
+            string company = AssemblyLoader.GetCustomAttributeString( newReference, @"System.Reflection.AssemblyCompanyAttribute " );
+
+            /** Microsoft tokens:
+             * "PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
+             * "System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+             * "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+             * "mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
+             * */
+
+            string[] microsoftTokens = new string[] { "b77a5c561934e089", "31bf3856ad364e35", "b03f5f7f11d50a3a", "7cec85d7bea7798e" };
+
+            string token = BitConverter.ToString( newReference.Name.PublicKeyToken ).Replace( "-", string.Empty ).ToLowerInvariant();
+
+            if( microsoftTokens.Contains( token ) || company == "Microsoft" )
+            {
+                return "Microsoft";
+            }
+            if( newReference.MainModule.FullyQualifiedName.StartsWith( Environment.SystemDirectory ) )
+            {
+                return "System";
+            }
+            return null;
+        };
 
         /// <summary>
         /// Utility class for describing an assembly, and its dependencies.
         /// </summary>
-        public AssemblyLoader()
+        public AssemblyLoader( BorderChecker borderChecker )
         {
-            _assemblyIndex = new ConcurrentDictionary<string, AssemblyInfo>();
+            _borderChecker = borderChecker;
+            _assemblyIndex = new Dictionary<string, AssemblyInfo>();
+        }
 
-            UnresolvedAssemblies = new Dictionary<IAssemblyInfo, Exception>();
+        public IEnumerable<IAssemblyInfo> Assemblies
+        {
+            get { return _assemblyIndex.Values.Distinct(); }
+        }
+
+        public IEnumerable<IAssemblyInfo> LoadFromDirectory( DirectoryInfo assemblyDirectory, bool recurse )
+        {
+            List<IAssemblyInfo> foundAssemblies = new List<IAssemblyInfo>();
+
+            List<FileInfo> fileList = assemblyDirectory.GetFiles( "*.dll" ).ToList();
+            fileList.AddRange( assemblyDirectory.GetFiles( "*.exe" ) );
+
+            IAssemblyInfo assembly;
+
+            foreach( FileInfo f in fileList )
+            {
+                assembly = LoadFromFile( f );
+
+                foundAssemblies.Add( assembly );
+            }
+
+            if( recurse )
+                foreach( DirectoryInfo d in assemblyDirectory.GetDirectories() ) LoadFromDirectory( d, recurse );
+
+            return foundAssemblies;
         }
 
         /// <summary>
@@ -51,62 +100,76 @@ namespace DependencyVersionChecker
         /// </summary>
         /// <param name="assemblyFile">Assembly file to load</param>
         /// <returns>Assembly information</returns>
-        public AssemblyInfo LoadFromAssemblyFile( FileInfo assemblyFile )
+        public IAssemblyInfo LoadFromAssemblyFile( FileInfo assemblyFile )
         {
-            // Load from DLL using Mono.Cecil
-            ModuleDefinition moduleInfo;
+            AssemblyInfo outputInfo;
+            if( _assemblyIndex.TryGetValue( assemblyFile.FullName, out outputInfo ) ) return outputInfo;
+
             try
             {
-                moduleInfo = ModuleDefinition.ReadModule( assemblyFile.OpenRead() );
+                // Load from DLL using Mono.Cecil
+                ModuleDefinition moduleInfo;
+                using( var s = assemblyFile.OpenRead() )
+                {
+                    moduleInfo = ModuleDefinition.ReadModule( s );
+                }
+                
+                if( !_assemblyIndex.TryGetValue( moduleInfo.Assembly.Name.FullName, out outputInfo ) )
+                {
+                    outputInfo = CreateAssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
+                    Debug.Assert( assemblyFile.FullName == moduleInfo.FullyQualifiedName );
+                }
+                outputInfo.Paths.Add( assemblyFile.FullName );
+
+                LoadAssembly( moduleInfo, outputInfo );
             }
-            catch( BadImageFormatException )
+            catch( Exception ex )
             {
-                // Pass invalid DLLs
-                throw;
+                if( outputInfo == null )
+                {
+                    outputInfo = new AssemblyInfo() { AssemblyFullName = assemblyFile.FullName };
+                    _assemblyIndex.Add( assemblyFile.FullName, outputInfo );
+                }
+                outputInfo.Error = ex;
             }
+            return outputInfo;
+        }
 
-            AssemblyInfo outputInfo;
+        private void LoadAssembly( ModuleDefinition moduleInfo, AssemblyInfo outputInfo )
+        {
+            if( _assemblyIndex.Keys.Contains( moduleInfo.FullyQualifiedName ) )
+                return; // TODO: May load twice
 
-            // Cache lock
-            if( _assemblyIndex.Keys.Contains( moduleInfo.Assembly.Name.FullName ) )
+            try
             {
-                return _assemblyIndex[moduleInfo.Assembly.Name.FullName];
+                // Most custom attributes are optional.
+                outputInfo.FileVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyFileVersionAttribute" );
+                outputInfo.InformationalVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyInformationalVersionAttribute" );
+                outputInfo.Description = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyDescriptionAttribute" );
+                outputInfo.BorderName = _borderChecker != null ? _borderChecker( moduleInfo.Assembly ) : null;
+                if( outputInfo.BorderName == null )
+                {
+                    ResolveReferences( moduleInfo, outputInfo );
+                }
             }
-            else
+            catch( Exception ex )
             {
-                outputInfo = AssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
-                Console.WriteLine( "Adding {0}.", moduleInfo.Assembly.Name );
-                _assemblyIndex.TryAdd( moduleInfo.Assembly.Name.FullName, outputInfo );
+                outputInfo.Error = ex;
             }
+        }
 
-            // Most custom attributes are optional.
-            outputInfo.FileVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyFileVersionAttribute" );
-            outputInfo.InformationalVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyInformationalVersionAttribute" );
-            outputInfo.Description = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyDescriptionAttribute" );
-
+        private void ResolveReferences( ModuleDefinition moduleInfo, AssemblyInfo outputInfo )
+        {
             AssemblyInfo referenceAssemblyInfo;
             AssemblyDefinition resolvedAssembly;
-            bool cached = false;
 
             // Recursively load references.
             foreach( var referenceAssemblyName in moduleInfo.AssemblyReferences )
             {
                 referenceAssemblyInfo = null;
                 resolvedAssembly = null;
-                cached = false;
 
-                if( _assemblyIndex.ContainsKey( referenceAssemblyName.FullName ) )
-                {
-                    referenceAssemblyInfo = _assemblyIndex[referenceAssemblyName.FullName];
-                    cached = true;
-                }
-                else
-                {
-                    cached = false;
-                }
-
-                // Only resolve assemblies if they're not already resolved.
-                if( !cached )
+                if( !_assemblyIndex.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
                 {
                     // Resolve assembly.
                     try
@@ -116,46 +179,24 @@ namespace DependencyVersionChecker
                     catch( Exception ex )
                     {
                         // Can't resolve assembly, but we can still have data from its name reference.
-                        referenceAssemblyInfo = AssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
-                        UnresolvedAssemblies.Add( referenceAssemblyInfo, ex );
-                        Console.WriteLine( "Failed to resolve: {0} ({1})", referenceAssemblyName.FullName, ex.Message );
-                        // Not going through LoadFromAssemblyFile, so adding to index here.
-                        if( !_assemblyIndex.Keys.Contains( referenceAssemblyName.FullName ) )
-                        {
-                            _assemblyIndex.TryAdd( referenceAssemblyName.FullName, referenceAssemblyInfo );
-                        }
+                        referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
+                        referenceAssemblyInfo.Error = ex;
                     }
-
-                    if( resolvedAssembly != null )
+                    if( referenceAssemblyInfo == null )
                     {
-                        // Take only assemblies in the working folder.
-                        if( Path.GetDirectoryName( resolvedAssembly.MainModule.FullyQualifiedName ) ==
-                            assemblyFile.DirectoryName )
-                        {
-                            Console.WriteLine( "{0} wasn't cached.", referenceAssemblyName.Name );
-                            referenceAssemblyInfo = LoadFromAssemblyFile( new FileInfo( resolvedAssembly.MainModule.FullyQualifiedName ) );
-                        }
+                        referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
+                        referenceAssemblyInfo.Paths.Add( resolvedAssembly.MainModule.FullyQualifiedName );
+                        LoadAssembly( resolvedAssembly.MainModule, referenceAssemblyInfo );
                     }
                 }
-                else
-                {
-                    Console.WriteLine( "{0} was cached.", referenceAssemblyName.Name );
-                    referenceAssemblyInfo = _assemblyIndex[referenceAssemblyName.FullName];
-                }
-
-                if( referenceAssemblyInfo != null )
-                {
-                    outputInfo.InternalDependencies.Add( referenceAssemblyInfo );
-                }
+                Debug.Assert( referenceAssemblyInfo != null );
+                outputInfo.InternalDependencies.Add( referenceAssemblyInfo );
             }
-
-            return outputInfo;
         }
 
         public void Reset()
         {
-            _assemblyIndex = new ConcurrentDictionary<string, AssemblyInfo>();
-            UnresolvedAssemblies = new Dictionary<IAssemblyInfo, Exception>();
+            _assemblyIndex.Clear();
         }
 
         /// <summary>
@@ -167,18 +208,16 @@ namespace DependencyVersionChecker
         /// </remarks>
         /// <param name="assemblyNameRef">Assembly name reference</param>
         /// <returns>Generated description</returns>
-        private static AssemblyInfo AssemblyInfoFromAssemblyNameReference( AssemblyNameReference assemblyNameRef )
+        AssemblyInfo CreateAssemblyInfoFromAssemblyNameReference( AssemblyNameReference assemblyNameRef )
         {
-            AssemblyInfo outputInfo = new AssemblyInfo();
-
-            outputInfo.AssemblyFullName = assemblyNameRef.FullName;
-
-            outputInfo.SimpleName = assemblyNameRef.Name;
-
-            outputInfo.Version = assemblyNameRef.Version;
-
-            outputInfo.Culture = assemblyNameRef.Culture;
-
+            AssemblyInfo outputInfo = new AssemblyInfo()
+            {
+                AssemblyFullName = assemblyNameRef.FullName,
+                SimpleName = assemblyNameRef.Name,
+                Version = assemblyNameRef.Version,
+                Culture = assemblyNameRef.Culture
+            };
+            _assemblyIndex.Add( assemblyNameRef.FullName, outputInfo );
             return outputInfo;
         }
 
@@ -188,7 +227,7 @@ namespace DependencyVersionChecker
         /// <param name="assembly">Assembly to examine</param>
         /// <param name="attributeTypeName">Attribute type to get value from</param>
         /// <returns>Value of attribute, or String.Empty if not found.</returns>
-        private static string GetCustomAttributeString( AssemblyDefinition assembly, string attributeTypeName )
+        public static string GetCustomAttributeString( AssemblyDefinition assembly, string attributeTypeName )
         {
             var customAttributeConstructorArguments =
                 assembly.CustomAttributes
@@ -210,38 +249,6 @@ namespace DependencyVersionChecker
             }
         }
 
-        public void LoadFromFileAsync( FileInfo f )
-        {
-            Task.Factory.StartNew( () => DoLoadFromFileAsyncTask( f ) );
-        }
-
-        private void DoLoadFromFileAsyncTask( FileInfo f )
-        {
-            IAssemblyInfo resultAssembly = null;
-            Exception exception = null;
-
-            try
-            {
-                resultAssembly = LoadFromAssemblyFile( f );
-            }
-            catch( Exception ex )
-            {
-                exception = ex;
-            }
-
-            AssemblyLoadingCompleteEventArgs args = new AssemblyLoadingCompleteEventArgs( f, resultAssembly, exception );
-
-            RaiseAsyncAssemblyLoaded( args );
-        }
-
-        private void RaiseAsyncAssemblyLoaded( AssemblyLoadingCompleteEventArgs args )
-        {
-            if( AsyncAssemblyLoaded != null )
-            {
-                AsyncAssemblyLoaded( this, args );
-            }
-        }
-
         /// <summary>
         /// Load Assembly information from a directory
         /// </summary>
@@ -258,34 +265,6 @@ namespace DependencyVersionChecker
         /// <param name="assemblyDirectory">Directory containing assemblies</param>
         /// <param name="recurse">Recurse into subdirectories</param>
         /// <returns>Assembly information</returns>
-        //public IEnumerable<IAssemblyInfo> LoadAssembliesFromFolder( DirectoryInfo assemblyDirectory, bool recurse )
-        //{
-        //    List<AssemblyInfo> foundAssemblies = new List<AssemblyInfo>();
 
-        //    List<FileInfo> fileList = assemblyDirectory.GetFiles( "*.dll" ).ToList();
-        //    fileList.AddRange( assemblyDirectory.GetFiles( "*.exe" ) );
-
-        //    AssemblyInfo assembly;
-
-        //    foreach( FileInfo f in fileList )
-        //    {
-        //        try
-        //        {
-        //            assembly = LoadFromAssemblyFile( f );
-        //        }
-        //        catch( BadImageFormatException ex )
-        //        {
-        //            Console.WriteLine( "Bad image: {0}", f );
-        //            continue;
-        //        }
-
-        //        foundAssemblies.Add( assembly );
-        //    }
-
-        //    if( recurse )
-        //        foreach( DirectoryInfo d in assemblyDirectory.GetDirectories() ) LoadAssembliesFromFolder( d, recurse );
-
-        //    return foundAssemblies;
-        //}
     }
 }

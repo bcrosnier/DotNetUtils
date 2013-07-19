@@ -12,8 +12,8 @@ namespace DependencyVersionChecker.Tests
         [Test]
         public void XmlSerializeDeserialize()
         {
-            AssemblyInfo[] assemblies = AssemblyCheckTests.GetReferencesFromThisAssembly();
-            AssemblyInfo[] assemblies1;
+            IAssemblyInfo[] assemblies = AssemblyCheckTests.GetReferencesFromThisAssembly();
+           IAssemblyInfo[] assemblies1;
 
             Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
             Assert.That( assemblies.Count(), Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
@@ -38,8 +38,8 @@ namespace DependencyVersionChecker.Tests
 
             for( int i = 0; i < assemblies.Count(); i++ )
             {
-                AssemblyInfo deserializedAssembly = assemblies1[i];
-                AssemblyInfo initialAssembly = assemblies
+                IAssemblyInfo deserializedAssembly = assemblies1[i];
+                IAssemblyInfo initialAssembly = assemblies
                     .Where( x => x.AssemblyFullName == assemblies1[i].AssemblyFullName )
                     .FirstOrDefault();
 

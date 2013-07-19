@@ -19,30 +19,14 @@ namespace DependencyVersionChecker.Tests
 
             IEnumerable<FileInfo> fileList = AssemblyVersionChecker.ListAssembliesFromDirectory( testDir, false );
 
-            IAssemblyLoader loader = new AssemblyLoader();
+            IAssemblyLoader l = new AssemblyLoader( AssemblyLoader.DefaultBorderChecker );
 
             List<IAssemblyInfo> Files = new List<IAssemblyInfo>();
 
-            CountdownEvent countdown = new CountdownEvent( fileList.Count() );
-
-            EventHandler<AssemblyLoadingCompleteEventArgs> OnAssemblyComplete =
-                delegate( object s, AssemblyLoadingCompleteEventArgs e )
-                {
-                    if( e.ResultingAssembly != null )
-                        Files.Add( e.ResultingAssembly );
-                    countdown.Signal();
-                };
-
-            loader.AsyncAssemblyLoaded += OnAssemblyComplete;
-
             foreach( var f in fileList )
             {
-                loader.LoadFromFileAsync( f );
+                Files.Add( l.LoadFromFile( f ) );
             }
-
-            countdown.Wait();
-
-            loader.AsyncAssemblyLoaded -= OnAssemblyComplete;
 
             CollectionAssert.AllItemsAreUnique( Files );
             CollectionAssert.AllItemsAreNotNull( Files );
@@ -58,7 +42,7 @@ namespace DependencyVersionChecker.Tests
 
             dependencyAssembly =
                 Files
-                .Where( x => x.SimpleName == loader.GetType().Assembly.GetName().Name )
+                .Where( x => x.SimpleName == l.GetType().Assembly.GetName().Name )
                 .Select( x => x )
                 .FirstOrDefault();
 
@@ -80,8 +64,8 @@ namespace DependencyVersionChecker.Tests
 
             Assert.That( File.Exists( pathToExternalAssembly ), "External assembly file exists" );
 
-            IAssemblyLoader loader = new AssemblyLoader();
-            IAssemblyInfo info = loader.LoadFromFile( new FileInfo( pathToExternalAssembly ) );
+            IAssemblyLoader l = new AssemblyLoader( AssemblyLoader.DefaultBorderChecker );
+            IAssemblyInfo info = l.LoadFromFile( new FileInfo( pathToExternalAssembly ) );
 
             Assert.That( IsAssemblyLoaded( info.AssemblyFullName ), Is.False, "External assembly wasn't loaded when reflecting" );
         }

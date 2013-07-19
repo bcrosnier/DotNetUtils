@@ -18,55 +18,46 @@ namespace DependencyVersionChecker.Tests
 
             Assert.That( Directory.Exists( assemblyDirectory ), "External assembly directory exists" );
 
-            IAssemblyLoader l = new AssemblyLoader();
+            IAssemblyLoader l = new AssemblyLoader( AssemblyLoader.DefaultBorderChecker );
 
             AssemblyVersionChecker checker = new AssemblyVersionChecker( l );
 
             Environment.CurrentDirectory = assemblyDirectory;
             checker.AddDirectory( new DirectoryInfo( assemblyDirectory ), true );
+            
+            var r = checker.Check();
 
-            IEnumerable<DependencyAssembly> conflicts = null;
-
-            ManualResetEventSlim waiter = new ManualResetEventSlim();
-            checker.AssemblyCheckComplete += ( s, e ) => { conflicts = e.VersionConflicts; waiter.Set(); };
-            checker.Check();
-
-            waiter.Wait();
-
-            Assert.That( conflicts.Count() >= 1, "At least one conflict was found" );
+            Assert.That( r.VersionConflicts.Count() >= 1, "At least one conflict was found" );
         }
 
-        public static AssemblyInfo[] GetReferencesFromThisAssembly()
+        public static IAssemblyInfo[] GetReferencesFromThisAssembly()
         {
-            IAssemblyLoader l = new AssemblyLoader();
-            AssemblyInfo assembly = null;
+            IAssemblyLoader l = new AssemblyLoader( AssemblyLoader.DefaultBorderChecker );
+            IAssemblyInfo assembly = null;
             ManualResetEventSlim waiter = new ManualResetEventSlim();
-
-            l.AsyncAssemblyLoaded += ( s, e ) => { assembly = (AssemblyInfo)e.ResultingAssembly; waiter.Set(); };
 
             FileInfo assemblyFile = new FileInfo( Assembly.GetExecutingAssembly().Location );
             Environment.CurrentDirectory = assemblyFile.DirectoryName;
 
-            l.LoadFromFileAsync( assemblyFile );
+            assembly = l.LoadFromFile( assemblyFile );
 
-            waiter.Wait();
 
             Assert.That( assembly, Is.Not.Null, "Entry assembly was correctly loaded" );
 
             return ListReferencedAssemblies( assembly ).ToArray();
         }
 
-        public static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly )
+        public static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly )
         {
-            return ListReferencedAssemblies( assembly, new List<AssemblyInfo>() );
+            return ListReferencedAssemblies( assembly, new List<IAssemblyInfo>() );
         }
 
-        public static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly, IList<AssemblyInfo> existingAssemblies )
+        public static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly, IList<IAssemblyInfo> existingAssemblies )
         {
             if( !existingAssemblies.Contains( assembly ) )
                 existingAssemblies.Add( assembly );
 
-            foreach( AssemblyInfo dep in assembly.Dependencies )
+            foreach( IAssemblyInfo dep in assembly.Dependencies )
             {
                 ListReferencedAssemblies( dep, existingAssemblies );
             }

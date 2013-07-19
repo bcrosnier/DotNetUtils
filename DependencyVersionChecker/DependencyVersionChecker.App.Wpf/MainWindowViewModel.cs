@@ -143,7 +143,6 @@ namespace DependencyVersionCheckerApp.Wpf
             _logger.Output.RegisterClient( logClient );
 
             _checker = checker;
-            _checker.AssemblyCheckComplete += OnNewAssemblyCheck;
 
             _assemblyViewModels = new ObservableCollection<AssemblyInfoViewModel>();
             PrepareCommands();
@@ -169,7 +168,9 @@ namespace DependencyVersionCheckerApp.Wpf
 
                 _checker.Reset();
                 _checker.AddDirectory( dir, true );
-                _checker.Check();
+
+                AssemblyCheckResult r = _checker.Check();
+                LoadAssemblies( r.Assemblies, r.VersionConflicts );
             }
             else
             {
@@ -186,7 +187,9 @@ namespace DependencyVersionCheckerApp.Wpf
 
                 _checker.Reset();
                 _checker.AddFile( file );
-                _checker.Check();
+                AssemblyCheckResult r = _checker.Check();
+
+                LoadAssemblies( r.Assemblies, r.VersionConflicts );
             }
             else
             {
@@ -206,17 +209,15 @@ namespace DependencyVersionCheckerApp.Wpf
                 conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList( assemblies );
             }
 
-            Application.Current.Dispatcher.Invoke( new Action( () =>
+            AssemblyViewModels.Clear();
+            foreach( var assembly in assemblies )
             {
-                AssemblyViewModels.Clear();
-                foreach( var assembly in assemblies )
-                {
-                    _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
-                    AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
-                }
+                _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
+                AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
+            }
 
-                PrepareGraph( assemblies );
-            } ) );
+            PrepareGraph( assemblies );
+
             _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
 
             int i = 0;
@@ -294,8 +295,11 @@ namespace DependencyVersionCheckerApp.Wpf
 
             foreach( IAssemblyInfo dep in assembly.Dependencies )
             {
+                if( dep.BorderName != null )
+                    continue;
+
                 AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
-                AssemblyEdge depEdge = new AssemblyEdge( vDep, v );
+                AssemblyEdge depEdge = new AssemblyEdge( v, vDep );
                 _drawnEdges.Add( depEdge );
                 Graph.AddEdge( depEdge );
             }
@@ -341,17 +345,7 @@ namespace DependencyVersionCheckerApp.Wpf
         #endregion Methods
 
         #region Event handler methods
-
-        public void OnNewAssemblyCheck( object sender, AssemblyCheckCompleteEventArgs e )
-        {
-            var checkedAssemblies =
-                e.AssemblyCompleteEventArgs
-                .Where( x => x.ResultingAssembly != null )
-                .Select( x => x.ResultingAssembly );
-
-            LoadAssemblies( checkedAssemblies, e.VersionConflicts );
-        }
-
+        
         #endregion Event handler methods
 
         #region Command methods

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Linq;
 using DependencyVersionChecker;
+using Mono.Cecil;
 
 namespace DependencyVersionCheckerApp.Wpf
 {
@@ -18,7 +19,33 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public MainWindow()
         {
-            AssemblyVersionChecker checker = new AssemblyVersionChecker( new AssemblyLoader() ); ;
+            AssemblyLoader.BorderChecker c = ( newReference ) =>
+            {
+                string company = AssemblyLoader.GetCustomAttributeString( newReference, @"System.Reflection.AssemblyCompanyAttribute " );
+
+                /** Microsoft tokens:
+                 * "PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
+                 * "System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+                 * "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+                 * "mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
+                 * */
+
+                string[] microsoftTokens = new string[] { "b77a5c561934e089", "31bf3856ad364e35", "b03f5f7f11d50a3a", "7cec85d7bea7798e" };
+
+                string token = BitConverter.ToString( newReference.Name.PublicKeyToken ).Replace( "-", string.Empty ).ToLowerInvariant();
+
+                if( microsoftTokens.Contains( token ) || company == "Microsoft" )
+                {
+                    return "Microsoft";
+                }
+                if( newReference.MainModule.FullyQualifiedName.StartsWith( Environment.SystemDirectory ) )
+                {
+                    return "System";
+                }
+                return null;
+            };
+
+            AssemblyVersionChecker checker = new AssemblyVersionChecker( new AssemblyLoader( c ) );
             _viewModel = new MainWindowViewModel( checker );
             this.DataContext = _viewModel;
             InitializeComponent();

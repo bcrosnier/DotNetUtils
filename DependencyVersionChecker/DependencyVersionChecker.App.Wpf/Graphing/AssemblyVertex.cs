@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -30,11 +31,18 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
             }
         }
 
+        public IEnumerable<IAssemblyInfo> LocalReferences
+        {
+            get {
+               return Assembly.Dependencies.Where( x => x.BorderName == null);
+            }
+        }
+
         public bool HasDependencies
         {
             get
             {
-                return Assembly.Dependencies.Count() > 0;
+                return LocalReferences.Count() > 0;
             }
         }
 
@@ -42,12 +50,12 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
         {
             get
             {
-                if( Assembly.Dependencies.Count() == 0 )
+                if( LocalReferences.Count() == 0 )
                     return "No references";
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append( "References:\n" );
-                foreach( var dep in Assembly.Dependencies )
+                foreach( var dep in LocalReferences )
                 {
                     sb.Append( String.Format( "- {0} ({1})\n", dep.SimpleName, dep.Version ) );
                 }
@@ -65,7 +73,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
                 sb.Append( String.Format( "Assembly version: {0}\n", Assembly.Version ) );
 
                 if( !String.IsNullOrEmpty( Assembly.InformationalVersion ) )
-                    sb.Append( String.Format( "Product version: {0}\n", Assembly.InformationalVersion ) );
+                    sb.Append( String.Format( "Informational version: {0}\n", Assembly.InformationalVersion ) );
 
                 if( !String.IsNullOrEmpty( Assembly.FileVersion ) )
                     sb.Append( String.Format( "File version: {0}\n", Assembly.FileVersion ) );

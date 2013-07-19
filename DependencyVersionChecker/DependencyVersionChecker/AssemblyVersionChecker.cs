@@ -13,8 +13,6 @@ namespace DependencyVersionChecker
     /// </summary>
     public class AssemblyVersionChecker
     {
-        public event EventHandler<AssemblyCheckCompleteEventArgs> AssemblyCheckComplete;
-
         private List<FileInfo> _filesToCheck;
         private IAssemblyLoader _assemblyLoader;
 
@@ -64,13 +62,13 @@ namespace DependencyVersionChecker
             try
             {
                 fileList = dir.GetFiles( "*.dll" ).ToList();
+                fileList.AddRange( dir.GetFiles( "*.exe" ) );
             }
             catch( UnauthorizedAccessException ex )
             {
                 Console.WriteLine( ex );
                 return new List<FileInfo>();
             }
-            fileList.AddRange( dir.GetFiles( "*.exe" ) );
 
             if( recurse )
                 foreach( DirectoryInfo d in dir.GetDirectories() ) fileList.AddRange( ListAssembliesFromDirectory( d, recurse ) );
@@ -78,68 +76,23 @@ namespace DependencyVersionChecker
             return fileList;
         }
 
-        public void Check()
+        public AssemblyCheckResult  Check()
         {
-            Task.Factory.StartNew( DoAsyncCheck );
-        }
-
-        private void DoAsyncCheck()
-        {
-            List<AssemblyLoadingCompleteEventArgs> assembliesCompleteArgs = new List<AssemblyLoadingCompleteEventArgs>();
+            List<IAssemblyInfo> assemblies;
             List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
-
-            // Async
-            CountdownEvent countdown = new CountdownEvent( _filesToCheck.Count );
-
-            EventHandler<AssemblyLoadingCompleteEventArgs> OnAssemblyComplete =
-                delegate( object s, AssemblyLoadingCompleteEventArgs e )
-                {
-                    assembliesCompleteArgs.Add( e );
-                    countdown.Signal();
-                };
-
-            _assemblyLoader.AsyncAssemblyLoaded += OnAssemblyComplete;
-
+            
             foreach( var f in _filesToCheck )
             {
-                _assemblyLoader.LoadFromFileAsync( f );
+                _assemblyLoader.LoadFromFile( f );
             }
 
-            countdown.Wait();
-            _assemblyLoader.AsyncAssemblyLoaded -= OnAssemblyComplete;
-
-            // Sync
-            /*
-            ManualResetEventSlim waiter = new ManualResetEventSlim();
-
-            EventHandler<AssemblyLoadingCompleteEventArgs> OnAssemblyComplete =
-                delegate( object s, AssemblyLoadingCompleteEventArgs e )
-                {
-                    assembliesComplete.Add( e );
-                    waiter.Set();
-                };
-
-            _assemblyLoader.AsyncAssemblyLoaded += OnAssemblyComplete;
-
-            foreach( var f in _filesToCheck )
-            {
-                _assemblyLoader.LoadFromFileAsync( f );
-                waiter.Wait();
-                waiter.Reset();
-            }
-
-            _assemblyLoader.AsyncAssemblyLoaded -= OnAssemblyComplete;
-             * */
-
-            var assemblies = assembliesCompleteArgs
-                .Where( x => x.ResultingAssembly != null )
-                .Select( x => x.ResultingAssembly );
-
+            assemblies = _assemblyLoader.Assemblies.Where( x => x.BorderName == null ).ToList();
+            
             var conflicts = GetConflictsFromAssemblyList( assemblies );
 
-            AssemblyCheckCompleteEventArgs args = new AssemblyCheckCompleteEventArgs( assembliesCompleteArgs, dependencies, conflicts );
+            AssemblyCheckResult result = new AssemblyCheckResult( assemblies, dependencies, conflicts );
 
-            RaiseAssemblyCheckComplete( args );
+            return result;
         }
 
         public static IEnumerable<DependencyAssembly> GetConflictsFromAssemblyList( IEnumerable<IAssemblyInfo> assemblies )
@@ -162,14 +115,6 @@ namespace DependencyVersionChecker
             return conflicts;
         }
 
-        private void RaiseAssemblyCheckComplete( AssemblyCheckCompleteEventArgs args )
-        {
-            if( AssemblyCheckComplete != null )
-            {
-                AssemblyCheckComplete( this, args );
-            }
-        }
-
         private static List<DependencyAssembly> GetAssemblyDependencies( IAssemblyInfo info )
         {
             return GetAssemblyDependencies( info, new List<DependencyAssembly>() );
@@ -179,6 +124,9 @@ namespace DependencyVersionChecker
         {
             foreach( IAssemblyInfo dep in info.Dependencies )
             {
+                if( dep.BorderName != null )
+                    continue; // Ignore bordering dependencies
+
                 DependencyAssembly dependencyItem = existingDependencies
                     .Where( x => x.AssemblyName == dep.SimpleName )
                     .FirstOrDefault();

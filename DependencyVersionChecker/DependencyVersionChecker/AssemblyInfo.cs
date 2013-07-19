@@ -10,16 +10,20 @@ namespace DependencyVersionChecker
     /// </summary>
     [DebuggerDisplay( "AssemblyInfo = {AssemblyFullName}" )]
     [XmlRoot( "AssemblyInfo" )]
-    public class AssemblyInfo
-        : IAssemblyInfo
+    public class AssemblyInfo : IAssemblyInfo
     {
         #region Fields
+
+        /// <summary>
+        /// This assembly's paths.
+        /// </summary>
+        private readonly List<string> _paths;
 
         /// <summary>
         /// This assembly's dependencies (as Assemblies from the assembly's references).
         /// </summary>
         [XmlElement( ElementName = "References" )]
-        private List<AssemblyInfo> _internalDependencies;
+        private readonly List<AssemblyInfo> _internalDependencies;
 
         #endregion Fields
 
@@ -49,7 +53,7 @@ namespace DependencyVersionChecker
 
         /// <summary>
         /// Supported culture, as compiled in System.Reflection.AssemblyName.
-        /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
+        /// See: <see cref="System.Reflection.AssemblyCultureAttribute"/>
         /// </summary>
         [XmlElement( ElementName = "Culture" )]
         public string Culture { get; set; }
@@ -73,6 +77,28 @@ namespace DependencyVersionChecker
             }
         }
 
+        /// <summary>
+        /// Exception, which happened during the resolution or opening of the assembly.
+        /// Can be null.
+        /// </summary>
+        public Exception Error { get; set; }
+
+        /// <summary>
+        /// The paths at which this assembly was found.
+        /// </summary>
+        public IList<string> Paths
+        {
+            get
+            {
+                return _paths;
+            }
+        }
+
+        /// <summary>
+        /// Name of the border, if this assembly acted as one.
+        /// </summary>
+        public string BorderName { get; set; }
+
         /**
          * Properties above can be inferred from assembly reference.
          * Properties below require assembly resolution.
@@ -89,7 +115,7 @@ namespace DependencyVersionChecker
         /// <summary>
         /// Assembly version string, as usually declared in Properties/AssemblyInfo.cs,
         /// or through Project Properties.
-        /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
+        /// See: <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>
         /// </summary>
         [XmlElement( ElementName = "InformationalVersion" )]
         public string InformationalVersion { get; set; }
@@ -127,11 +153,20 @@ namespace DependencyVersionChecker
         #region Constructor
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AssemblyInfo" /> class, with an exception set.
+        /// </summary>
+        internal AssemblyInfo(Exception ex) : this()
+        {
+            Error = ex;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyInfo" /> class.
         /// </summary>
         internal AssemblyInfo()
         {
             _internalDependencies = new List<AssemblyInfo>();
+            _paths = new List<string>();
         }
 
         #endregion Constructor

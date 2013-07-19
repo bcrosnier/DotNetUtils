@@ -47,10 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyAssembly.cs" />
-    <Compile Include="AssemblyDirectoryLoadingCompleteEventArgs.cs" />
+    <Compile Include="AssemblyCheckResult.cs" />
     <Compile Include="AssemblyLoader.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="AssemblyLoadingCompleteEventArgs.cs" />
     <Compile Include="AssemblyVersionChecker.cs" />
     <Compile Include="IAssemblyInfo.cs" />
     <Compile Include="IAssemblyLoader.cs" />

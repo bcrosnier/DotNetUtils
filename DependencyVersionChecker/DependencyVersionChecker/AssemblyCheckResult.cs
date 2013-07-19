@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace DependencyVersionChecker
 {
-    public class AssemblyCheckCompleteEventArgs : EventArgs
+    public class AssemblyCheckResult
     {
-        public IEnumerable<AssemblyLoadingCompleteEventArgs> AssemblyCompleteEventArgs
+        public IEnumerable<IAssemblyInfo> Assemblies
         {
             get;
             private set;
@@ -23,9 +23,9 @@ namespace DependencyVersionChecker
             private set;
         }
 
-        public AssemblyCheckCompleteEventArgs( IEnumerable<AssemblyLoadingCompleteEventArgs> assemblyEventArgs, IEnumerable<DependencyAssembly> dependencies, IEnumerable<DependencyAssembly> versionConflicts )
+        public AssemblyCheckResult( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> dependencies, IEnumerable<DependencyAssembly> versionConflicts )
         {
-            AssemblyCompleteEventArgs = assemblyEventArgs;
+            Assemblies = assemblies;
             Dependencies = dependencies;
             VersionConflicts = versionConflicts;
         }
