@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
+using System.Linq;
 using DependencyVersionChecker;
 
 namespace DependencyVersionCheckerApp.Wpf
@@ -20,6 +22,21 @@ namespace DependencyVersionCheckerApp.Wpf
             _viewModel = new MainWindowViewModel( checker );
             this.DataContext = _viewModel;
             InitializeComponent();
+
+            ((INotifyCollectionChanged)LogListBox.Items).CollectionChanged += LogListBox_CollectionChanged;
+
+        }
+
+        void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        {
+            if( e.Action == NotifyCollectionChangedAction.Add )
+            {
+                if( e.NewItems.Count > 0 )
+                {
+                    object lastItem = e.NewItems[e.NewItems.Count - 1];
+                    LogListBox.ScrollIntoView( lastItem );
+                }
+            }
         }
 
         private void LoadAssemblyDirectory_Click( object sender, RoutedEventArgs e )
