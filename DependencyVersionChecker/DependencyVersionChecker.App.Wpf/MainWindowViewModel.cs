@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml;
 using System.Xml.Serialization;
 using CK.Core;
 using DependencyVersionChecker;
@@ -48,7 +49,7 @@ namespace DependencyVersionCheckerApp.Wpf
             }
             private set
             {
-                if( value != _assemblyViewModels )
+                if ( value != _assemblyViewModels )
                 {
                     _assemblyViewModels = value;
                     RaisePropertyChanged();
@@ -65,7 +66,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
             private set
             {
-                if( this._logItems != value )
+                if ( this._logItems != value )
                 {
                     this._logItems = value;
                     RaisePropertyChanged();
@@ -82,7 +83,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
             private set
             {
-                if( this._graph != value )
+                if ( this._graph != value )
                 {
                     this._graph = value;
                     RaisePropertyChanged();
@@ -100,7 +101,7 @@ namespace DependencyVersionCheckerApp.Wpf
             get { return _layoutAlgorithmType; }
             set
             {
-                if( _layoutAlgorithmTypes.Contains( value ) )
+                if ( _layoutAlgorithmTypes.Contains( value ) )
                 {
                     _layoutAlgorithmType = value;
                     RaisePropertyChanged();
@@ -114,7 +115,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public MainWindowViewModel( AssemblyVersionChecker checker )
         {
-            if( checker == null )
+            if ( checker == null )
             {
                 throw new ArgumentNullException( "checker" );
             }
@@ -162,7 +163,7 @@ namespace DependencyVersionCheckerApp.Wpf
         public void ChangeAssemblyDirectory( DirectoryInfo dir )
         {
             _logger.Info( "Loading directory: {0}", dir.FullName );
-            if( dir.Exists )
+            if ( dir.Exists )
             {
                 _assemblyDirectory = dir;
 
@@ -181,7 +182,7 @@ namespace DependencyVersionCheckerApp.Wpf
         public void ChangeAssemblyFile( FileInfo file )
         {
             _logger.Info( "Loading file: {0}", file.FullName );
-            if( file.Exists )
+            if ( file.Exists )
             {
                 _assemblyDirectory = null;
 
@@ -204,13 +205,13 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> conflicts )
         {
-            if( conflicts == null )
+            if ( conflicts == null )
             {
                 conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList( assemblies );
             }
 
             AssemblyViewModels.Clear();
-            foreach( var assembly in assemblies )
+            foreach ( var assembly in assemblies )
             {
                 _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
                 AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
@@ -221,13 +222,13 @@ namespace DependencyVersionCheckerApp.Wpf
             _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
 
             int i = 0;
-            foreach( var dep in conflicts )
+            foreach ( var dep in conflicts )
             {
                 i++;
                 _logger.Warn( "Found a version mismatch about dependency: {0}", dep.AssemblyName );
-                using( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
+                using ( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
                 {
-                    foreach( var pair in dep.DependencyLinks )
+                    foreach ( var pair in dep.DependencyLinks )
                     {
                         _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.AssemblyFullName );
                         Graph.MarkAssembly( pair.Value );
@@ -235,7 +236,7 @@ namespace DependencyVersionCheckerApp.Wpf
                 }
             }
 
-            if( i == 0 )
+            if ( i == 0 )
             {
                 _logger.Info( "No version mismatch found." );
             }
@@ -247,43 +248,40 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public void SaveXmlFile( FileInfo fileToWrite )
         {
-            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
-
-            SerializableAssemblyInfoSet set = new SerializableAssemblyInfoSet();
-
             List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
 
-            foreach( var assembly in this._drawnAssemblies )
+            foreach ( var assembly in this._drawnAssemblies )
             {
                 ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
             }
 
-            set.Assemblies = assemblies.ToArray();
+            XmlDocument doc = AssemblyInfoXmlSerializer.Serialize( assemblies );
 
-            using( Stream fs = fileToWrite.OpenWrite() )
+            using ( Stream s = fileToWrite.OpenWrite() )
             {
-                serializer.Serialize( fs, set );
+                doc.Save( s );
             }
         }
 
         public void LoadXmlFile( FileInfo fileToRead )
         {
-            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
+            IEnumerable<IAssemblyInfo> assemblies;
 
-            List<AssemblyInfo> assemblies;
+            XmlDocument doc = new XmlDocument();
 
-            using( Stream fs = fileToRead.OpenRead() )
+            using ( Stream fs = fileToRead.OpenRead() )
             {
-                SerializableAssemblyInfoSet set = serializer.Deserialize( fs ) as SerializableAssemblyInfoSet;
-                assemblies = set.Assemblies.ToList();
+                doc.Load( fs );
             }
 
-            LoadAssemblies( assemblies );
+            assemblies = AssemblyInfoXmlSerializer.Deserialize( doc );
+
+            LoadAssemblies( assemblies.Where( x => x.BorderName == null ) );
         }
 
         private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
         {
-            if( _drawnAssemblies.Contains( assembly ) )
+            if ( _drawnAssemblies.Contains( assembly ) )
                 return _drawnVertices.Where( x => x.Assembly == assembly ).First();
 
             AssemblyVertex v = new AssemblyVertex( assembly );
@@ -293,9 +291,9 @@ namespace DependencyVersionCheckerApp.Wpf
 
             Graph.AddVertex( v );
 
-            foreach( IAssemblyInfo dep in assembly.Dependencies )
+            foreach ( IAssemblyInfo dep in assembly.Dependencies )
             {
-                if( dep.BorderName != null )
+                if ( dep.BorderName != null )
                     continue;
 
                 AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
@@ -314,7 +312,7 @@ namespace DependencyVersionCheckerApp.Wpf
             _drawnEdges = new List<AssemblyEdge>();
             _drawnVertices = new List<AssemblyVertex>();
 
-            foreach( IAssemblyInfo assembly in assemblies )
+            foreach ( IAssemblyInfo assembly in assemblies )
             {
                 PrepareVertexFromAssembly( assembly );
             }
@@ -329,12 +327,12 @@ namespace DependencyVersionCheckerApp.Wpf
 
         private static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly, IList<AssemblyInfo> existingAssemblies )
         {
-            if( existingAssemblies.Contains( assembly ) )
+            if ( existingAssemblies.Contains( assembly ) )
                 return existingAssemblies;
 
             existingAssemblies.Add( assembly );
 
-            foreach( AssemblyInfo dep in assembly.Dependencies )
+            foreach ( AssemblyInfo dep in assembly.Dependencies )
             {
                 ListReferencedAssemblies( dep, existingAssemblies );
             }
@@ -345,14 +343,14 @@ namespace DependencyVersionCheckerApp.Wpf
         #endregion Methods
 
         #region Event handler methods
-        
+
         #endregion Event handler methods
 
         #region Command methods
 
         public void ExecuteChangeAssemblyFolder( object parameter )
         {
-            if( !(parameter is DirectoryInfo) )
+            if ( !( parameter is DirectoryInfo ) )
             {
                 throw new ArgumentException( "Parameter must be a DirectoryInfo", "parameter" );
             }

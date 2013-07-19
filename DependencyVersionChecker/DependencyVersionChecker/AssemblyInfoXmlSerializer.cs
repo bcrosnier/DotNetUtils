@@ -112,11 +112,21 @@ namespace DependencyVersionChecker
             a.AssemblyFullName = n["AssemblyFullName"].FirstChild.Value;
             a.SimpleName = n["SimpleName"].FirstChild.Value;
             a.Version = Version.Parse( n["Version"].FirstChild.Value );
-            a.Culture = n["Culture"].FirstChild.Value;
-            a.FileVersion = n["FileVersion"].FirstChild.Value;
-            a.InformationalVersion = n["InformationalVersion"].FirstChild.Value;
-            a.Description = n["Description"].FirstChild.Value;
-            a.BorderName = String.IsNullOrEmpty( n["BorderName"].FirstChild.Value ) ? null : n["BorderName"].FirstChild.Value;
+
+            a.Culture = n["Culture"].FirstChild == null ? String.Empty : n["Culture"].FirstChild.Value;
+
+            a.FileVersion = n["FileVersion"].FirstChild == null ? String.Empty : n["FileVersion"].FirstChild.Value;
+            a.InformationalVersion = n["InformationalVersion"].FirstChild == null ? String.Empty : n["InformationalVersion"].FirstChild.Value;
+            a.Description = n["Description"].FirstChild == null ? String.Empty : n["Description"].FirstChild.Value;
+
+            if ( n["BorderName"].FirstChild == null || String.IsNullOrEmpty( n["BorderName"].FirstChild.Value ) )
+            {
+                a.BorderName = null;
+            }
+            else
+            {
+                a.BorderName = n["BorderName"].FirstChild.Value;
+            }
 
             foreach ( XmlNode p in n["Paths"] )
             {
