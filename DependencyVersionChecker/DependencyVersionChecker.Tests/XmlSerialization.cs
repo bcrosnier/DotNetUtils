@@ -15,10 +15,13 @@ namespace DependencyVersionChecker.Tests
         [Test]
         public void XmlSerializeDeserialize()
         {
-            IAssemblyInfo[] assemblies = AssemblyCheckTests.GetReferencesFromThisAssembly();
-            IAssemblyInfo[] assemblies1;
+            AssemblyInfo[] assemblies = AssemblyCheckTests.GetReferencesFromThisAssembly();
+            AssemblyInfo[] assemblies1;
 
-            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ) );
+            Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
+            Assert.That( assemblies.Count(), Is.GreaterThan(1), "Test assembly references at least 1 other assembly" );
+
+            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[]{typeof(AssemblyInfo)} );
 
             SerializableAssemblyInfoSet set = new SerializableAssemblyInfoSet();
 
@@ -26,11 +29,11 @@ namespace DependencyVersionChecker.Tests
 
             using ( MemoryStream ms = new MemoryStream() )
             {
-                serializer.Serialize( ms, assemblies );
+                serializer.Serialize( ms, set );
                 ms.Position = 0;
 
                 SerializableAssemblyInfoSet set1 = serializer.Deserialize( ms ) as SerializableAssemblyInfoSet;
-                assemblies1 = (IAssemblyInfo[])set1.Assemblies;
+                assemblies1 = set1.Assemblies;
             }
 
             Assert.That( assemblies1, Is.Not.Null );
@@ -38,10 +41,22 @@ namespace DependencyVersionChecker.Tests
 
             for ( int i = 0; i < assemblies.Count(); i++ )
             {
-                Assert.That( assemblies
+                AssemblyInfo deserializedAssembly = assemblies1[i];
+                AssemblyInfo initialAssembly = assemblies
                     .Where( x => x.AssemblyFullName == assemblies1[i].AssemblyFullName )
-                    .Count() == 1
-                    );
+                    .FirstOrDefault();
+
+                Assert.That( initialAssembly, Is.Not.Null, "Initial assembly matches re-serialized assembly" );
+
+                foreach( var deserializedDependency in deserializedAssembly.Dependencies )
+                {
+                    IAssemblyInfo initialDependency = initialAssembly.Dependencies
+                        .Where( x => x.AssemblyFullName == deserializedDependency.AssemblyFullName )
+                        .FirstOrDefault();
+
+
+                    Assert.That( initialAssembly, Is.Not.Null, "Initial dependency matches re-serialized dependency" );
+                }
             }
         }
     }

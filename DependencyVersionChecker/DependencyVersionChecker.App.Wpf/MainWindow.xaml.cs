@@ -49,5 +49,31 @@ namespace DependencyVersionCheckerApp.Wpf
                 _viewModel.ChangeAssemblyFile( file );
             }
         }
+
+        private void LoadAssemblyXml_Click( object sender, RoutedEventArgs e )
+        {
+            OpenFileDialog d = new OpenFileDialog();
+            d.CheckFileExists = true;
+            d.Filter = "XML file (*.xml)|*.xml";
+            DialogResult result = d.ShowDialog();
+            if( result == System.Windows.Forms.DialogResult.OK )
+            {
+                FileInfo file = new FileInfo( d.FileName );
+                _viewModel.LoadXmlFile( file );
+            }
+        }
+
+        private void SaveAssemblyXml_Click( object sender, RoutedEventArgs e )
+        {
+            SaveFileDialog d = new SaveFileDialog();
+            d.OverwritePrompt = true;
+            d.Filter = "XML file (*.xml)|*.xml";
+            DialogResult result = d.ShowDialog();
+            if( result == System.Windows.Forms.DialogResult.OK )
+            {
+                FileInfo file = new FileInfo( d.FileName );
+                _viewModel.SaveXmlFile( file );
+            }
+        }
     }
 }

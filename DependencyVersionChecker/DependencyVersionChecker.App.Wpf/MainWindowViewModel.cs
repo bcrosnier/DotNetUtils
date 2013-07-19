@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml.Serialization;
 using CK.Core;
 using DependencyVersionChecker;
 using DependencyVersionCheckerApp.Wpf.Graphing;
@@ -205,6 +206,55 @@ namespace DependencyVersionCheckerApp.Wpf
             RaisePropertyChanged( "Graph" );
         }
 
+        public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies )
+        {
+            LoadAssemblies( assemblies, null );
+        }
+        public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> conflicts )
+        {
+            if( conflicts == null )
+            {
+                conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList( assemblies );
+            }
+
+            Application.Current.Dispatcher.Invoke( new Action( () =>
+            {
+                AssemblyViewModels.Clear();
+                foreach( var assembly in assemblies )
+                {
+                    _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
+                    AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
+                }
+
+                PrepareGraph( assemblies );
+            } ) );
+            _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
+
+            int i = 0;
+            foreach( var dep in conflicts )
+            {
+                i++;
+                _logger.Warn( "Found a version mismatch about dependency: {0}", dep.AssemblyName );
+                using( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
+                {
+                    foreach( var pair in dep.DependencyLinks )
+                    {
+                        _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.AssemblyFullName );
+                        Graph.MarkAssembly( pair.Value );
+                    }
+                }
+            }
+
+            if( i == 0 )
+            {
+                _logger.Info( "No version mismatch found." );
+            }
+            else
+            {
+                _logger.Warn( "{0} version mismatches found.", i );
+            }
+        }
+
         private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
         {
             if( _drawnAssemblies.Contains( assembly ) )
@@ -228,6 +278,26 @@ namespace DependencyVersionCheckerApp.Wpf
             return v;
         }
 
+        private static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly )
+        {
+            return ListReferencedAssemblies( assembly, new List<AssemblyInfo>() );
+        }
+
+        private static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly, IList<AssemblyInfo> existingAssemblies )
+        {
+            if( existingAssemblies.Contains( assembly ) )
+                return existingAssemblies;
+            
+            existingAssemblies.Add( assembly );
+
+            foreach( AssemblyInfo dep in assembly.Dependencies )
+            {
+                ListReferencedAssemblies( dep, existingAssemblies );
+            }
+
+            return existingAssemblies;
+        }
+
         #endregion Methods
 
         #region Event handler methods
@@ -239,44 +309,7 @@ namespace DependencyVersionCheckerApp.Wpf
                 .Where( x => x.ResultingAssembly != null )
                 .Select( x => x.ResultingAssembly );
 
-            Application.Current.Dispatcher.Invoke( new Action( () =>
-            {
-                AssemblyViewModels.Clear();
-                foreach( var assembly in checkedAssemblies )
-                {
-                    _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
-                    AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
-                }
-
-                PrepareGraph( checkedAssemblies );
-            } ) );
-            _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
-
-            IEnumerable<DependencyAssembly> deps = e.VersionConflicts;
-
-            int i = 0;
-            foreach( var dep in deps )
-            {
-                i++;
-                _logger.Warn( "Found a version mismatch about dependency: {0}", dep.AssemblyName );
-                using( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
-                {
-                    foreach( var pair in dep.DependencyLinks )
-                    {
-                        _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.AssemblyFullName );
-                        Graph.MarkAssembly( pair.Value );
-                    }
-                }
-            }
-
-            if( i == 0 )
-            {
-                _logger.Info( "No version mismatch found." );
-            }
-            else
-            {
-                _logger.Warn( "{0} version mismatch found.", i );
-            }
+            LoadAssemblies( checkedAssemblies, e.VersionConflicts );
         }
 
         #endregion Event handler methods
@@ -292,6 +325,42 @@ namespace DependencyVersionCheckerApp.Wpf
 
             DirectoryInfo dir = parameter as DirectoryInfo;
             ChangeAssemblyDirectory( dir );
+        }
+
+        public void SaveXmlFile( FileInfo fileToWrite )
+        {
+            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
+
+            SerializableAssemblyInfoSet set = new SerializableAssemblyInfoSet();
+
+            List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
+
+            foreach( var assembly in this._drawnAssemblies )
+            {
+                ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
+            }
+
+            set.Assemblies = assemblies.ToArray();
+
+            using( Stream fs = fileToWrite.OpenWrite() )
+            {
+                serializer.Serialize( fs, set );
+            }
+        }
+
+        public void LoadXmlFile( FileInfo fileToRead )
+        {
+            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
+
+            List<AssemblyInfo> assemblies;
+
+            using( Stream fs = fileToRead.OpenRead() )
+            {
+                SerializableAssemblyInfoSet set = serializer.Deserialize( fs ) as SerializableAssemblyInfoSet;
+                assemblies = set.Assemblies.ToList();
+            }
+
+            LoadAssemblies( assemblies );
         }
 
         #endregion Command methods

@@ -11,6 +11,9 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Open file" Click="LoadAssemblyFile_Click" />
                 <MenuItem Header="Open _directory" Click="LoadAssemblyDirectory_Click" />
+                <Separator />
+                <MenuItem Header="_Load from XML" Click="LoadAssemblyXml_Click" />
+                <MenuItem Header="_Save to XML" Click="SaveAssemblyXml_Click" />
             </MenuItem>
         </Menu>
 

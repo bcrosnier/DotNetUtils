@@ -85,7 +85,7 @@ namespace DependencyVersionChecker
 
         private void DoAsyncCheck()
         {
-            List<AssemblyLoadingCompleteEventArgs> assembliesComplete = new List<AssemblyLoadingCompleteEventArgs>();
+            List<AssemblyLoadingCompleteEventArgs> assembliesCompleteArgs = new List<AssemblyLoadingCompleteEventArgs>();
             List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
 
             // Async
@@ -94,7 +94,7 @@ namespace DependencyVersionChecker
             EventHandler<AssemblyLoadingCompleteEventArgs> OnAssemblyComplete =
                 delegate( object s, AssemblyLoadingCompleteEventArgs e )
                 {
-                    assembliesComplete.Add( e );
+                    assembliesCompleteArgs.Add( e );
                     countdown.Signal();
                 };
 
@@ -131,10 +131,24 @@ namespace DependencyVersionChecker
             _assemblyLoader.AsyncAssemblyLoaded -= OnAssemblyComplete;
              * */
 
-            foreach( var assemblyArgs in assembliesComplete )
+            var assemblies = assembliesCompleteArgs
+                .Where( x => x.ResultingAssembly != null )
+                .Select( x => x.ResultingAssembly );
+
+            var conflicts = GetConflictsFromAssemblyList( assemblies );
+
+            AssemblyCheckCompleteEventArgs args = new AssemblyCheckCompleteEventArgs( assembliesCompleteArgs, dependencies, conflicts );
+
+            RaiseAssemblyCheckComplete( args );
+        }
+
+        public static IEnumerable<DependencyAssembly> GetConflictsFromAssemblyList( IEnumerable<IAssemblyInfo> assemblies )
+        {
+            List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
+            foreach( var assembly in assemblies )
             {
-                if( assemblyArgs.ResultingAssembly != null )
-                    dependencies = GetAssemblyDependencies( assemblyArgs.ResultingAssembly, dependencies );
+                if( assembly != null )
+                    dependencies = GetAssemblyDependencies( assembly, dependencies );
             }
 
             // Only get dependencies with multiple links
@@ -145,9 +159,7 @@ namespace DependencyVersionChecker
                 .Select( x => x )
                 .ToList();
 
-            AssemblyCheckCompleteEventArgs args = new AssemblyCheckCompleteEventArgs( assembliesComplete, dependencies, conflicts );
-
-            RaiseAssemblyCheckComplete( args );
+            return conflicts;
         }
 
         private void RaiseAssemblyCheckComplete( AssemblyCheckCompleteEventArgs args )

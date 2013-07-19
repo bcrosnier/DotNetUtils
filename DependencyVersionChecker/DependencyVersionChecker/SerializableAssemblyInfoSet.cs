@@ -14,7 +14,7 @@ namespace DependencyVersionChecker
 
         public SerializableAssemblyInfoSet()
         {
-            _assemblies.Clear();
+            _assemblies = new List<AssemblyInfo>();
         }
 
         public void Clear()

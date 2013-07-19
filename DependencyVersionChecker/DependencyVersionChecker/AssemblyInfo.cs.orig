@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+<<<<<<< HEAD
 using System.Linq;
+=======
 using System.Xml.Serialization;
+>>>>>>> master
 
 namespace DependencyVersionChecker
 {
@@ -31,29 +34,45 @@ namespace DependencyVersionChecker
         /// The display name typically consists of the simple name, version number, supported culture, and public key.
         /// See: <see cref="System.Reflection.AssemblyName.FullName"/>
         /// </summary>
-        [XmlElement( ElementName = "AssemblyFullName" )]
+<<<<<<< HEAD
         public string AssemblyFullName { get; set; }
+=======
+        [XmlElement( ElementName = "AssemblyFullName" )]
+        public string AssemblyFullName { get; internal set; }
+>>>>>>> master
 
         /// <summary>
         /// Assembly simple name, from its unique identity.
         /// Equivalent of: <see cref="System.Reflection.AssemblyName.Name"/>
         /// </summary>
-        [XmlElement( ElementName = "SimpleName" )]
+<<<<<<< HEAD
         public string SimpleName { get; set; }
+=======
+        [XmlElement( ElementName = "SimpleName" )]
+        public string SimpleName { get; internal set; }
+>>>>>>> master
 
         /// <summary>
         /// Assembly version, as compiled in System.Reflection.AssemblyName, from VersionString.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "Version" )]
+<<<<<<< HEAD
         public Version Version { get; set; }
+=======
+        [XmlElement( ElementName = "Version" )]
+        public Version Version { get; internal set; }
+>>>>>>> master
 
         /// <summary>
         /// Supported culture, as compiled in System.Reflection.AssemblyName.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "Culture" )]
+<<<<<<< HEAD
         public string Culture { get; set; }
+=======
+        [XmlElement( ElementName = "Culture" )]
+        public string Culture { get; internal set; }
+>>>>>>> master
 
         /**
          * Properties above can be inferred from assembly reference.
@@ -65,40 +84,55 @@ namespace DependencyVersionChecker
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyFileVersionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "FileVersion" )]
+<<<<<<< HEAD
         public string FileVersion { get; set; }
+=======
+        [XmlElement( ElementName = "FileVersion" )]
+        public string FileVersion { get; internal set; }
+>>>>>>> master
 
         /// <summary>
         /// Assembly version string, as usually declared in Properties/AssemblyInfo.cs,
         /// or through Project Properties.
         /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "InformationalVersion" )]
+<<<<<<< HEAD
         public string InformationalVersion { get; set; }
+=======
+        [XmlElement( ElementName = "InformationalVersion" )]
+        public string InformationalVersion { get; internal set; }
+>>>>>>> master
 
         /// <summary>
         /// Description of the assembly.
         /// See: <see cref="System.Reflection.AssemblyDescriptionAttribute"/>
         /// </summary>
-        [XmlElement( ElementName = "Description" )]
+<<<<<<< HEAD
         public string Description { get; set; }
+=======
+        [XmlElement( ElementName = "Description" )]
+        public string Description { get; internal set; }
+>>>>>>> master
 
         /// <summary>
         /// Assemblies this one has references to.
         /// </summary>
-        [XmlIgnore()]
         public IEnumerable<IAssemblyInfo> Dependencies
         {
             get
             {
                 return _internalDependencies.AsReadOnly();
             }
+
+            set
+            {
+                _internalDependencies = ( ( (IEnumerable<AssemblyInfo>)value ).ToList() );
+            }
         }
 
         /// <summary>
         /// Dependencies (as Assemblies from the assembly's references).
         /// </summary>
-        [XmlIgnore()]
         internal List<AssemblyInfo> InternalDependencies
         {
             get { return _internalDependencies; }

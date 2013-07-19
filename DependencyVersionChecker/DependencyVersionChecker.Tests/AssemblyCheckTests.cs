@@ -36,15 +36,18 @@ namespace DependencyVersionChecker.Tests
             Assert.That( conflicts.Count() >= 1, "At least one conflict was found" );
         }
 
-        public static IAssemblyInfo[] GetReferencesFromThisAssembly()
+        public static AssemblyInfo[] GetReferencesFromThisAssembly()
         {
             IAssemblyLoader l = new AssemblyLoader();
-            IAssemblyInfo assembly = null;
+            AssemblyInfo assembly = null;
             ManualResetEventSlim waiter = new ManualResetEventSlim();
 
-            l.AsyncAssemblyLoaded += ( s, e ) => { assembly = e.ResultingAssembly; waiter.Set(); };
+            l.AsyncAssemblyLoaded += ( s, e ) => { assembly = (AssemblyInfo) e.ResultingAssembly; waiter.Set(); };
 
-            l.LoadFromFileAsync( new FileInfo( Assembly.GetExecutingAssembly().Location ) );
+            FileInfo assemblyFile = new FileInfo( Assembly.GetExecutingAssembly().Location );
+            Environment.CurrentDirectory = assemblyFile.DirectoryName;
+
+            l.LoadFromFileAsync( assemblyFile );
 
             waiter.Wait();
 
@@ -53,20 +56,19 @@ namespace DependencyVersionChecker.Tests
             return ListReferencedAssemblies( assembly ).ToArray();
         }
 
-        public static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly )
+        public static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly )
         {
-            return ListReferencedAssemblies( assembly, new List<IAssemblyInfo>() );
+            return ListReferencedAssemblies( assembly, new List<AssemblyInfo>() );
         }
 
-        public static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly, IList<IAssemblyInfo> existingAssemblies )
+        public static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly, IList<AssemblyInfo> existingAssemblies )
         {
             if ( !existingAssemblies.Contains( assembly ) )
                 existingAssemblies.Add( assembly );
 
-            foreach ( IAssemblyInfo dep in assembly.Dependencies )
+            foreach ( AssemblyInfo dep in assembly.Dependencies )
             {
-                if ( !existingAssemblies.Contains( dep ) )
-                    existingAssemblies.Add( dep );
+                ListReferencedAssemblies( dep, existingAssemblies );
             }
 
             return existingAssemblies;
