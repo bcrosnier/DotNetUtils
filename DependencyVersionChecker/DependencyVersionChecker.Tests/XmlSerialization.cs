@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using NUnit.Framework;
 
@@ -19,15 +16,15 @@ namespace DependencyVersionChecker.Tests
             AssemblyInfo[] assemblies1;
 
             Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
-            Assert.That( assemblies.Count(), Is.GreaterThan(1), "Test assembly references at least 1 other assembly" );
+            Assert.That( assemblies.Count(), Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
 
-            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[]{typeof(AssemblyInfo)} );
+            XmlSerializer serializer = new XmlSerializer( typeof( SerializableAssemblyInfoSet ), new Type[] { typeof( AssemblyInfo ) } );
 
             SerializableAssemblyInfoSet set = new SerializableAssemblyInfoSet();
 
             set.Assemblies = (AssemblyInfo[])assemblies;
 
-            using ( MemoryStream ms = new MemoryStream() )
+            using( MemoryStream ms = new MemoryStream() )
             {
                 serializer.Serialize( ms, set );
                 ms.Position = 0;
@@ -39,7 +36,7 @@ namespace DependencyVersionChecker.Tests
             Assert.That( assemblies1, Is.Not.Null );
             Assert.That( assemblies1.Count() == assemblies.Count() );
 
-            for ( int i = 0; i < assemblies.Count(); i++ )
+            for( int i = 0; i < assemblies.Count(); i++ )
             {
                 AssemblyInfo deserializedAssembly = assemblies1[i];
                 AssemblyInfo initialAssembly = assemblies
@@ -68,7 +65,6 @@ namespace DependencyVersionChecker.Tests
                     IAssemblyInfo initialDependency = initialAssembly.Dependencies
                         .Where( x => x.AssemblyFullName == deserializedDependency.AssemblyFullName )
                         .FirstOrDefault();
-
 
                     Assert.That( initialAssembly, Is.Not.Null, "Initial dependency matches re-serialized dependency" );
                 }

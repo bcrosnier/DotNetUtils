@@ -210,6 +210,7 @@ namespace DependencyVersionCheckerApp.Wpf
         {
             LoadAssemblies( assemblies, null );
         }
+
         public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> conflicts )
         {
             if( conflicts == null )
@@ -287,7 +288,7 @@ namespace DependencyVersionCheckerApp.Wpf
         {
             if( existingAssemblies.Contains( assembly ) )
                 return existingAssemblies;
-            
+
             existingAssemblies.Add( assembly );
 
             foreach( AssemblyInfo dep in assembly.Dependencies )

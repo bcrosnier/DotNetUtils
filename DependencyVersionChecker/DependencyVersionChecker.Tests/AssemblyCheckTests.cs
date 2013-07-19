@@ -42,7 +42,7 @@ namespace DependencyVersionChecker.Tests
             AssemblyInfo assembly = null;
             ManualResetEventSlim waiter = new ManualResetEventSlim();
 
-            l.AsyncAssemblyLoaded += ( s, e ) => { assembly = (AssemblyInfo) e.ResultingAssembly; waiter.Set(); };
+            l.AsyncAssemblyLoaded += ( s, e ) => { assembly = (AssemblyInfo)e.ResultingAssembly; waiter.Set(); };
 
             FileInfo assemblyFile = new FileInfo( Assembly.GetExecutingAssembly().Location );
             Environment.CurrentDirectory = assemblyFile.DirectoryName;
@@ -63,10 +63,10 @@ namespace DependencyVersionChecker.Tests
 
         public static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly, IList<AssemblyInfo> existingAssemblies )
         {
-            if ( !existingAssemblies.Contains( assembly ) )
+            if( !existingAssemblies.Contains( assembly ) )
                 existingAssemblies.Add( assembly );
 
-            foreach ( AssemblyInfo dep in assembly.Dependencies )
+            foreach( AssemblyInfo dep in assembly.Dependencies )
             {
                 ListReferencedAssemblies( dep, existingAssemblies );
             }

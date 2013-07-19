@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace DependencyVersionChecker
@@ -42,9 +39,9 @@ namespace DependencyVersionChecker
             {
                 List<DependencyLink> links = new List<DependencyLink>();
 
-                for ( int i = 0; i < _assemblies.Count; i++ )
+                for( int i = 0; i < _assemblies.Count; i++ )
                 {
-                    foreach ( var dep in _assemblies[i].Dependencies )
+                    foreach( var dep in _assemblies[i].Dependencies )
                     {
                         links.Add( new DependencyLink()
                         {
@@ -59,7 +56,7 @@ namespace DependencyVersionChecker
 
             set
             {
-                for ( int i = 0; i < value.Length; i++ )
+                for( int i = 0; i < value.Length; i++ )
                 {
                     AssemblyInfo parent =
                         _assemblies

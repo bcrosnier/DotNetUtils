@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Xml.Serialization;
 
 namespace DependencyVersionChecker
@@ -10,7 +9,7 @@ namespace DependencyVersionChecker
     /// Information about a particular .NET assembly.
     /// </summary>
     [DebuggerDisplay( "AssemblyInfo = {AssemblyFullName}" )]
-    [XmlRoot("AssemblyInfo" )]
+    [XmlRoot( "AssemblyInfo" )]
     public class AssemblyInfo
         : IAssemblyInfo
     {
@@ -59,7 +58,8 @@ namespace DependencyVersionChecker
         /// Version string adapter. Used for XML serialization.
         /// </summary>
         [XmlElement( ElementName = "Version" )]
-        public string VersionString {
+        public string VersionString
+        {
             get
             {
                 return Version.ToString();
