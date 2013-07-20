@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using CK.Core;
 using Mono.Cecil;
 
 namespace DependencyVersionChecker
@@ -14,12 +13,16 @@ namespace DependencyVersionChecker
     /// </summary>
     public class AssemblyLoader : IAssemblyLoader
     {
+        #region Fields
+
         /// <summary>
         /// Already-loaded assemblies. Used as cache.
         /// </summary>
         private readonly Dictionary<string, AssemblyInfo> _assemblyIndex;
 
         private readonly BorderChecker _borderChecker;
+
+        private readonly DefaultActivityLogger _logger;
 
         public delegate string BorderChecker( AssemblyDefinition newAssembly );
 
@@ -42,29 +45,75 @@ namespace DependencyVersionChecker
             {
                 return "Microsoft";
             }
-            if ( newReference.MainModule.FullyQualifiedName.StartsWith( Environment.SystemDirectory ) )
+            if ( newReference.MainModule.FullyQualifiedName.ToLowerInvariant().StartsWith( Environment.GetFolderPath( Environment.SpecialFolder.Windows ).ToLowerInvariant() ) )
             {
-                return "System";
+                return "Windows/GAC";
             }
             return null;
         };
 
+        #endregion Fields
+
+        #region Constructors
+
         /// <summary>
-        /// Utility class for describing an assembly, and its dependencies.
+        /// Utility class for describing an assembly, and its dependencies, using the specified borderChecker to determine whether it should recurse on given references.
+        /// <param name="borderChecker">Delegate which determines whether it should recurse on given references. Will recurse it it returns null.</param>
+        /// <param name="parentLogger">Parent IActivityLogger to hook on.</param>
         /// </summary>
-        public AssemblyLoader( BorderChecker borderChecker )
+        public AssemblyLoader( IActivityLogger parentLogger, BorderChecker borderChecker )
         {
             _borderChecker = borderChecker;
             _assemblyIndex = new Dictionary<string, AssemblyInfo>();
+
+            _logger = new DefaultActivityLogger( true );
+            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "AssemblyLoader" );
+            if ( parentLogger != null )
+            {
+                _logger.Output.BridgeTo( parentLogger );
+            }
+            else
+            {
+                _logger.Tap.Register( new ActivityLoggerConsoleSink() );
+            }
         }
+
+        /// <summary>
+        /// Utility class for describing an assembly, and its dependencies, using the specified borderChecker to determine whether it should recurse on given references.
+        /// <param name="borderChecker">Delegate which determines whether it should recurse on given references. Will recurse it it returns null.</param>
+        /// </summary>
+        public AssemblyLoader( BorderChecker borderChecker )
+            : this( null, borderChecker ) { }
+
+        /// <summary>
+        /// Utility class for describing an assembly, and its dependencies, without recursing on system and/or Microsoft DLLs.
+        /// </summary>
+        public AssemblyLoader()
+            : this( null, DefaultBorderChecker ) { }
+
+        /// <summary>
+        /// Utility class for describing an assembly, and its dependencies, without recursing on system and/or Microsoft DLLs.
+        /// <param name="parentLogger">Parent IActivityLogger to hook on.</param>
+        /// </summary>
+        public AssemblyLoader( IActivityLogger parentLogger )
+            : this( parentLogger, DefaultBorderChecker ) { }
+
+        #endregion Constructors
+
+        #region Properties
 
         public IEnumerable<IAssemblyInfo> Assemblies
         {
             get { return _assemblyIndex.Values.Distinct(); }
         }
 
+        #endregion Properties
+
+        #region Public methods
+
         public IEnumerable<IAssemblyInfo> LoadFromDirectory( DirectoryInfo assemblyDirectory, bool recurse )
         {
+            _logger.Info( "Loading directory: {0}", assemblyDirectory.FullName );
             List<IAssemblyInfo> foundAssemblies = new List<IAssemblyInfo>();
 
             List<FileInfo> fileList = assemblyDirectory.GetFiles( "*.dll" ).ToList();
@@ -92,18 +141,13 @@ namespace DependencyVersionChecker
         /// <returns>Assembly information</returns>
         public IAssemblyInfo LoadFromFile( FileInfo assemblyFile )
         {
-            return LoadFromAssemblyFile( assemblyFile );
-        }
-
-        /// <summary>
-        /// Describe an assembly, and its dependencies recursively.
-        /// </summary>
-        /// <param name="assemblyFile">Assembly file to load</param>
-        /// <returns>Assembly information</returns>
-        public IAssemblyInfo LoadFromAssemblyFile( FileInfo assemblyFile )
-        {
+            _logger.Info( "Loading file: {0}", assemblyFile.FullName );
             AssemblyInfo outputInfo;
-            if ( _assemblyIndex.TryGetValue( assemblyFile.FullName, out outputInfo ) ) return outputInfo;
+            if ( _assemblyIndex.TryGetValue( assemblyFile.FullName, out outputInfo ) )
+            {
+                _logger.Trace( "File was already cached" );
+                return outputInfo;
+            }
 
             try
             {
@@ -116,8 +160,13 @@ namespace DependencyVersionChecker
 
                 if ( !_assemblyIndex.TryGetValue( moduleInfo.Assembly.Name.FullName, out outputInfo ) )
                 {
+                    _logger.Trace( "Found new assembly: {0}", moduleInfo.Assembly.Name.FullName );
                     outputInfo = CreateAssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
                     Debug.Assert( assemblyFile.FullName == moduleInfo.FullyQualifiedName );
+                }
+                else
+                {
+                    _logger.Trace( "Found known assembly: {0}", moduleInfo.Assembly.Name.FullName );
                 }
                 outputInfo.Paths.Add( assemblyFile.FullName );
                 _assemblyIndex.Add( assemblyFile.FullName, outputInfo );
@@ -125,6 +174,7 @@ namespace DependencyVersionChecker
             }
             catch ( Exception ex )
             {
+                _logger.Error( ex, "Failed to read module" );
                 if ( outputInfo == null )
                 {
                     outputInfo = new AssemblyInfo() { AssemblyFullName = assemblyFile.FullName };
@@ -135,11 +185,17 @@ namespace DependencyVersionChecker
             return outputInfo;
         }
 
+        public void Reset()
+        {
+            _assemblyIndex.Clear();
+        }
+
+        #endregion Public methods
+
+        #region Private methods
+
         private void LoadAssembly( ModuleDefinition moduleInfo, AssemblyInfo outputInfo )
         {
-            //if ( _assemblyIndex.Keys.Contains( moduleInfo.FullyQualifiedName ) )
-            //return; // TODO: May load twice if we take this out
-
             try
             {
                 // Most custom attributes are optional.
@@ -151,9 +207,14 @@ namespace DependencyVersionChecker
                 {
                     ResolveReferences( moduleInfo, outputInfo );
                 }
+                else
+                {
+                    _logger.Trace( "Border: {0} - Skipping reference resolution.", outputInfo.BorderName );
+                }
             }
             catch ( Exception ex )
             {
+                _logger.Error( ex, "Failed to resolve references" );
                 outputInfo.Error = ex;
             }
         }
@@ -163,9 +224,12 @@ namespace DependencyVersionChecker
             AssemblyInfo referenceAssemblyInfo;
             AssemblyDefinition resolvedAssembly;
 
+            _logger.OpenGroup( LogLevel.Trace, "References of: {0}", outputInfo.AssemblyFullName );
+
             // Recursively load references.
             foreach ( var referenceAssemblyName in moduleInfo.AssemblyReferences )
             {
+                _logger.Trace( "Resolving reference: {0}", referenceAssemblyName.FullName );
                 referenceAssemblyInfo = null;
                 resolvedAssembly = null;
 
@@ -178,6 +242,7 @@ namespace DependencyVersionChecker
                     }
                     catch ( Exception ex )
                     {
+                        _logger.Error( ex, "Failed to resolve assembly" );
                         // Can't resolve assembly, but we can still have data from its name reference.
                         referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
                         referenceAssemblyInfo.Error = ex;
@@ -189,18 +254,24 @@ namespace DependencyVersionChecker
                             referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
                             _assemblyIndex.Add( resolvedAssembly.MainModule.FullyQualifiedName, referenceAssemblyInfo );
                             referenceAssemblyInfo.Paths.Add( resolvedAssembly.MainModule.FullyQualifiedName );
+                            _logger.Trace( "Resolved in: {0}", resolvedAssembly.MainModule.FullyQualifiedName );
                             LoadAssembly( resolvedAssembly.MainModule, referenceAssemblyInfo );
                         }
+                        else
+                        {
+                            _logger.Warn( "Uncached assembly name: {0} tried to load cached file: {1}", referenceAssemblyName.FullName, resolvedAssembly.MainModule.FullyQualifiedName );
+                        }
                     }
+                }
+                else
+                {
+                    _logger.Trace( "Reference was already cached." );
                 }
                 Debug.Assert( referenceAssemblyInfo != null );
                 outputInfo.InternalDependencies.Add( referenceAssemblyInfo );
             }
-        }
 
-        public void Reset()
-        {
-            _assemblyIndex.Clear();
+            _logger.CloseGroup();
         }
 
         /// <summary>
@@ -224,6 +295,10 @@ namespace DependencyVersionChecker
             _assemblyIndex.Add( assemblyNameRef.FullName, outputInfo );
             return outputInfo;
         }
+
+        #endregion Private methods
+
+        #region Private staic methods
 
         /// <summary>
         /// Gets the value of a custom attribute type (using Mono.Cecil).
@@ -253,21 +328,6 @@ namespace DependencyVersionChecker
             }
         }
 
-        /// <summary>
-        /// Load Assembly information from a directory
-        /// </summary>
-        /// <param name="assemblyDirectory">Directory containing assemblies</param>
-        /// <returns>Assembly information</returns>
-        //public IEnumerable<IAssemblyInfo> LoadAssembliesFromFolder( DirectoryInfo assemblyDirectory )
-        //{
-        //    return LoadAssembliesFromFolder( assemblyDirectory, false );
-        //}
-
-        /// <summary>
-        /// Load Assembly information from a directory
-        /// </summary>
-        /// <param name="assemblyDirectory">Directory containing assemblies</param>
-        /// <param name="recurse">Recurse into subdirectories</param>
-        /// <returns>Assembly information</returns>
+        #endregion Private staic methods
     }
 }

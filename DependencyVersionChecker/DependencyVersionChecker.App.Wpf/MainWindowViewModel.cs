@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
-using System.Xml.Serialization;
 using CK.Core;
 using DependencyVersionChecker;
 using DependencyVersionCheckerApp.Wpf.Graphing;
@@ -17,7 +15,7 @@ namespace DependencyVersionCheckerApp.Wpf
     public class MainWindowViewModel
         : ViewModel
     {
-        private readonly int MAX_LOG_ENTRIES = 50; // Maximum number of log entries in the collection
+        private readonly int MAX_LOG_ENTRIES = 1000; // Maximum number of log entries in the collection
 
         #region Members
 
@@ -113,7 +111,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
         #region Constructor/initialization
 
-        public MainWindowViewModel( AssemblyVersionChecker checker )
+        public MainWindowViewModel( IActivityLogger parentLogger, AssemblyVersionChecker checker )
         {
             if ( checker == null )
             {
@@ -121,7 +119,7 @@ namespace DependencyVersionCheckerApp.Wpf
             }
 
             _logger = new DefaultActivityLogger();
-            _logger.Filter = LogLevelFilter.None;
+            _logger.Output.BridgeTo( parentLogger );
             _logItems = new ObservableCollection<ListBoxItem>();
 
             _graph = new AssemblyGraph( true );
@@ -141,7 +139,7 @@ namespace DependencyVersionCheckerApp.Wpf
             LayoutAlgorithmType = "ISOM";
 
             var logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
-            _logger.Output.RegisterClient( logClient );
+            parentLogger.Output.RegisterClient( logClient );
 
             _checker = checker;
 
