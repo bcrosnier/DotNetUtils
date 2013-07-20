@@ -80,7 +80,7 @@ namespace DependencyVersionCheckerApp.Wpf
             _assembly = assembly;
             _children = new List<AssemblyInfoViewModel>();
 
-            _displayName = assembly.AssemblyFullName;
+            _displayName = assembly.FullName;
 
             foreach( IAssemblyInfo dep in assembly.Dependencies )
             {

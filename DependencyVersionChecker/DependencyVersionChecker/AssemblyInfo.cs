@@ -8,7 +8,7 @@ namespace DependencyVersionChecker
     /// <summary>
     /// Information about a particular .NET assembly.
     /// </summary>
-    [DebuggerDisplay( "AssemblyInfo = {AssemblyFullName}" )]
+    [DebuggerDisplay( "AssemblyInfo = {FullName}" )]
     public class AssemblyInfo : IAssemblyInfo
     {
         #region Fields
@@ -33,7 +33,7 @@ namespace DependencyVersionChecker
         /// The display name typically consists of the simple name, version number, supported culture, and public key.
         /// See: <see cref="System.Reflection.AssemblyName.FullName"/>
         /// </summary>
-        public string AssemblyFullName { get; set; }
+        public string FullName { get; set; }
 
         /// <summary>
         /// Assembly simple name, from its unique identity.
@@ -75,6 +75,12 @@ namespace DependencyVersionChecker
         /// </summary>
         public string BorderName { get; set; }
 
+        /// <summary>
+        /// Public key token.
+        /// See: <see cref="System.Reflection.AssemblyName.GetPublicKeyToken"/>
+        /// </summary>
+        public byte[] PublicKeyToken { get; set; }
+
         /**
          * Properties above can be inferred from assembly reference.
          * Properties below require assembly resolution.
@@ -99,6 +105,30 @@ namespace DependencyVersionChecker
         /// See: <see cref="System.Reflection.AssemblyDescriptionAttribute"/>
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Company.
+        /// See: <see cref="System.Reflection.AssemblyCompanyAttribute"/>
+        /// </summary>
+        public string Company { get; set; }
+
+        /// <summary>
+        /// Product.
+        /// See: <see cref="System.Reflection.AssemblyProductAttribute"/>
+        /// </summary>
+        public string Product { get; set; }
+
+        /// <summary>
+        /// Copyright.
+        /// See: <see cref="System.Reflection.AssemblyCopyrightAttribute"/>
+        /// </summary>
+        public string Copyright { get; set; }
+
+        /// <summary>
+        /// Trademark.
+        /// See: <see cref="System.Reflection.AssemblyTrademarkAttribute"/>
+        /// </summary>
+        public string Trademark { get; set; }
 
         /// <summary>
         /// Assemblies this one has references to.

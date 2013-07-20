@@ -28,8 +28,6 @@ namespace DependencyVersionChecker
 
         public static BorderChecker DefaultBorderChecker = ( newReference ) =>
         {
-            string company = AssemblyLoader.GetCustomAttributeString( newReference, @"System.Reflection.AssemblyCompanyAttribute " );
-
             /** Microsoft tokens:
              * "PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
              * "System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
@@ -41,7 +39,7 @@ namespace DependencyVersionChecker
 
             string token = BitConverter.ToString( newReference.Name.PublicKeyToken ).Replace( "-", string.Empty ).ToLowerInvariant();
 
-            if ( microsoftTokens.Contains( token ) || company == "Microsoft" )
+            if ( microsoftTokens.Contains( token ) )
             {
                 return "Microsoft";
             }
@@ -177,7 +175,7 @@ namespace DependencyVersionChecker
                 _logger.Error( ex, "Failed to read module" );
                 if ( outputInfo == null )
                 {
-                    outputInfo = new AssemblyInfo() { AssemblyFullName = assemblyFile.FullName };
+                    outputInfo = new AssemblyInfo() { FullName = assemblyFile.FullName };
                     _assemblyIndex.Add( assemblyFile.FullName, outputInfo );
                 }
                 outputInfo.Error = ex;
@@ -202,6 +200,10 @@ namespace DependencyVersionChecker
                 outputInfo.FileVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyFileVersionAttribute" );
                 outputInfo.InformationalVersion = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyInformationalVersionAttribute" );
                 outputInfo.Description = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyDescriptionAttribute" );
+                outputInfo.Company = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyCompanyAttribute" );
+                outputInfo.Product = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyProductAttribute" );
+                outputInfo.Copyright = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyCopyrightAttribute" );
+                outputInfo.Trademark = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyTrademarkAttribute" );
                 outputInfo.BorderName = _borderChecker != null ? _borderChecker( moduleInfo.Assembly ) : null;
                 if ( outputInfo.BorderName == null )
                 {
@@ -224,7 +226,7 @@ namespace DependencyVersionChecker
             AssemblyInfo referenceAssemblyInfo;
             AssemblyDefinition resolvedAssembly;
 
-            _logger.OpenGroup( LogLevel.Trace, "References of: {0}", outputInfo.AssemblyFullName );
+            _logger.OpenGroup( LogLevel.Trace, "References of: {0}", outputInfo.FullName );
 
             // Recursively load references.
             foreach ( var referenceAssemblyName in moduleInfo.AssemblyReferences )
@@ -287,10 +289,11 @@ namespace DependencyVersionChecker
         {
             AssemblyInfo outputInfo = new AssemblyInfo()
             {
-                AssemblyFullName = assemblyNameRef.FullName,
+                FullName = assemblyNameRef.FullName,
                 SimpleName = assemblyNameRef.Name,
                 Version = assemblyNameRef.Version,
-                Culture = assemblyNameRef.Culture
+                Culture = assemblyNameRef.Culture,
+                PublicKeyToken = assemblyNameRef.PublicKeyToken
             };
             _assemblyIndex.Add( assemblyNameRef.FullName, outputInfo );
             return outputInfo;
@@ -298,7 +301,7 @@ namespace DependencyVersionChecker
 
         #endregion Private methods
 
-        #region Private staic methods
+        #region Private static methods
 
         /// <summary>
         /// Gets the value of a custom attribute type (using Mono.Cecil).
@@ -328,6 +331,6 @@ namespace DependencyVersionChecker
             }
         }
 
-        #endregion Private staic methods
+        #endregion Private static methods
     }
 }

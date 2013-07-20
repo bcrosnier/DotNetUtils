@@ -24,9 +24,9 @@ namespace DependencyVersionChecker
 
                 foreach( var link in DependencyLinks )
                 {
-                    if( fullName != null && link.Value.AssemblyFullName != fullName )
+                    if( fullName != null && link.Value.FullName != fullName )
                         hasConflict = true;
-                    fullName = link.Value.AssemblyFullName;
+                    fullName = link.Value.FullName;
                 }
 
                 return hasConflict;

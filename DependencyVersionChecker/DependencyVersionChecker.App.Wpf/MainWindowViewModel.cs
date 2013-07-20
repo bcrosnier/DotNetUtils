@@ -228,7 +228,7 @@ namespace DependencyVersionCheckerApp.Wpf
                 {
                     foreach ( var pair in dep.DependencyLinks )
                     {
-                        _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.AssemblyFullName );
+                        _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.FullName );
                         Graph.MarkAssembly( pair.Value );
                     }
                 }

@@ -26,8 +26,8 @@ namespace DependencyVersionChecker
         {
             XmlNode assemblyNode = doc.CreateElement( "AssemblyInfo" );
 
-            XmlElement assemblyFullName = doc.CreateElement( "AssemblyFullName" );
-            assemblyFullName.AppendChild( doc.CreateTextNode( a.AssemblyFullName ) );
+            XmlElement assemblyFullName = doc.CreateElement( "FullName" );
+            assemblyFullName.AppendChild( doc.CreateTextNode( a.FullName ) );
             assemblyNode.AppendChild( assemblyFullName );
 
             XmlElement simpleName = doc.CreateElement( "SimpleName" );
@@ -54,9 +54,29 @@ namespace DependencyVersionChecker
             description.AppendChild( doc.CreateTextNode( a.Description ) );
             assemblyNode.AppendChild( description );
 
+            XmlElement company = doc.CreateElement( "Company" );
+            company.AppendChild( doc.CreateTextNode( a.Company ) );
+            assemblyNode.AppendChild( company );
+
+            XmlElement product = doc.CreateElement( "Product" );
+            product.AppendChild( doc.CreateTextNode( a.Product ) );
+            assemblyNode.AppendChild( product );
+
+            XmlElement trademark = doc.CreateElement( "Trademark" );
+            trademark.AppendChild( doc.CreateTextNode( a.Trademark ) );
+            assemblyNode.AppendChild( trademark );
+
+            XmlElement copyright = doc.CreateElement( "Copyright" );
+            copyright.AppendChild( doc.CreateTextNode( a.Copyright ) );
+            assemblyNode.AppendChild( copyright );
+
             XmlElement borderName = doc.CreateElement( "BorderName" );
             borderName.AppendChild( doc.CreateTextNode( a.BorderName ) );
             assemblyNode.AppendChild( borderName );
+
+            XmlElement publicKeyToken = doc.CreateElement( "PublicKeyToken" );
+            publicKeyToken.AppendChild( doc.CreateTextNode( DependencyUtils.ByteArrayToHexString( a.PublicKeyToken ) ) );
+            assemblyNode.AppendChild( publicKeyToken );
 
             XmlElement paths = doc.CreateElement( "Paths" );
             foreach ( string p in a.Paths )
@@ -71,7 +91,7 @@ namespace DependencyVersionChecker
             foreach ( IAssemblyInfo d in a.Dependencies )
             {
                 XmlElement reference = doc.CreateElement( "Reference" );
-                reference.AppendChild( doc.CreateTextNode( d.AssemblyFullName ) );
+                reference.AppendChild( doc.CreateTextNode( d.FullName ) );
                 dependencies.AppendChild( reference );
             }
             assemblyNode.AppendChild( dependencies );
@@ -86,12 +106,12 @@ namespace DependencyVersionChecker
             foreach ( XmlNode n in doc.DocumentElement )
             {
                 AssemblyInfo a = GetInfoFromNode( n );
-                assemblies.Add( a.AssemblyFullName, a );
+                assemblies.Add( a.FullName, a );
             }
 
             foreach ( XmlNode n in doc.DocumentElement )
             {
-                AssemblyInfo a = assemblies[n["AssemblyFullName"].FirstChild.Value];
+                AssemblyInfo a = assemblies[n["FullName"].FirstChild.Value];
                 foreach ( XmlNode r in n["Dependencies"] )
                 {
                     AssemblyInfo d = assemblies[r.FirstChild.Value];
@@ -106,7 +126,7 @@ namespace DependencyVersionChecker
         {
             AssemblyInfo a = new AssemblyInfo();
 
-            a.AssemblyFullName = n["AssemblyFullName"].FirstChild.Value;
+            a.FullName = n["FullName"].FirstChild.Value;
             a.SimpleName = n["SimpleName"].FirstChild.Value;
             a.Version = Version.Parse( n["Version"].FirstChild.Value );
 
@@ -115,6 +135,13 @@ namespace DependencyVersionChecker
             a.FileVersion = n["FileVersion"].FirstChild == null ? String.Empty : n["FileVersion"].FirstChild.Value;
             a.InformationalVersion = n["InformationalVersion"].FirstChild == null ? String.Empty : n["InformationalVersion"].FirstChild.Value;
             a.Description = n["Description"].FirstChild == null ? String.Empty : n["Description"].FirstChild.Value;
+
+            a.Company = n["Company"].FirstChild == null ? String.Empty : n["Company"].FirstChild.Value;
+            a.Product = n["Product"].FirstChild == null ? String.Empty : n["Product"].FirstChild.Value;
+            a.Trademark = n["Trademark"].FirstChild == null ? String.Empty : n["Trademark"].FirstChild.Value;
+            a.Copyright = n["Copyright"].FirstChild == null ? String.Empty : n["Copyright"].FirstChild.Value;
+
+            a.PublicKeyToken = n["PublicKeyToken"].FirstChild == null ? null : DependencyUtils.HexStringToByteArray( n["PublicKeyToken"].FirstChild.Value );
 
             if ( n["BorderName"].FirstChild == null || String.IsNullOrEmpty( n["BorderName"].FirstChild.Value ) )
             {

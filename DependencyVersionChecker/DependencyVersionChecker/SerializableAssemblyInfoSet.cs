@@ -45,8 +45,8 @@ namespace DependencyVersionChecker
                     {
                         links.Add( new DependencyLink()
                         {
-                            Parent = _assemblies[i].AssemblyFullName,
-                            Child = dep.AssemblyFullName
+                            Parent = _assemblies[i].FullName,
+                            Child = dep.FullName
                         } );
                     }
                 }
@@ -60,12 +60,12 @@ namespace DependencyVersionChecker
                 {
                     AssemblyInfo parent =
                         _assemblies
-                        .Where( x => x.AssemblyFullName == value[i].Parent )
+                        .Where( x => x.FullName == value[i].Parent )
                         .FirstOrDefault();
 
                     AssemblyInfo child =
                         _assemblies
-                        .Where( x => x.AssemblyFullName == value[i].Child )
+                        .Where( x => x.FullName == value[i].Child )
                         .FirstOrDefault();
 
                     Debug.Assert( parent != null, "XML dependency parent reference could be found" );

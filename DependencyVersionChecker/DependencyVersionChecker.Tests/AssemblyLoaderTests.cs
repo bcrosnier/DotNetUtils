@@ -78,7 +78,7 @@ namespace DependencyVersionChecker.Tests
             IAssemblyLoader l = new AssemblyLoader( AssemblyLoader.DefaultBorderChecker );
             IAssemblyInfo info = l.LoadFromFile( new FileInfo( pathToExternalAssembly ) );
 
-            Assert.That( IsAssemblyLoaded( info.AssemblyFullName ), Is.False, "External assembly wasn't loaded when reflecting" );
+            Assert.That( IsAssemblyLoaded( info.FullName ), Is.False, "External assembly wasn't loaded when reflecting" );
 
             Assert.That( info.Error, Is.Null, "No error during assembly loading" );
 

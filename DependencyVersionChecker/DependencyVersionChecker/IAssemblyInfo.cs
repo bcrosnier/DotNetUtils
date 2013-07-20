@@ -13,7 +13,7 @@ namespace DependencyVersionChecker
         /// The display name typically consists of the simple name, version number, supported culture, and public key.
         /// See: <see cref="System.Reflection.AssemblyName.FullName"/>
         /// </summary>
-        string AssemblyFullName { get; }
+        string FullName { get; }
 
         /// <summary>
         /// Assembly simple name, from its unique identity.
@@ -29,9 +29,15 @@ namespace DependencyVersionChecker
 
         /// <summary>
         /// Supported culture, as compiled in System.Reflection.AssemblyName.
-        /// See: <see cref="System.Reflection.AssemblyVersionAttribute"/>
+        /// See: <see cref="System.Reflection.AssemblyCultureAttribute"/>
         /// </summary>
         string Culture { get; }
+
+        /// <summary>
+        /// Public key token.
+        /// See: <see cref="System.Reflection.AssemblyName.GetPublicKeyToken"/>
+        /// </summary>
+        byte[] PublicKeyToken { get; }
 
         /**
          * Properties above can be inferred from assembly reference.
@@ -63,6 +69,30 @@ namespace DependencyVersionChecker
         /// See: <see cref="System.Reflection.AssemblyDescriptionAttribute"/>
         /// </summary>
         string Description { get; }
+
+        /// <summary>
+        /// Company.
+        /// See: <see cref="System.Reflection.AssemblyCompanyAttribute"/>
+        /// </summary>
+        string Company { get; }
+
+        /// <summary>
+        /// Product.
+        /// See: <see cref="System.Reflection.AssemblyProductAttribute"/>
+        /// </summary>
+        string Product { get; }
+
+        /// <summary>
+        /// Copyright.
+        /// See: <see cref="System.Reflection.AssemblyCopyrightAttribute"/>
+        /// </summary>
+        string Copyright { get; }
+
+        /// <summary>
+        /// Trademark.
+        /// See: <see cref="System.Reflection.AssemblyTrademarkAttribute"/>
+        /// </summary>
+        string Trademark { get; }
 
         /// <summary>
         /// Assemblies this one has references to.
