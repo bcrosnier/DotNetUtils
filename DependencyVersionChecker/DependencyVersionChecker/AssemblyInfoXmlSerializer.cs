@@ -14,7 +14,7 @@ namespace DependencyVersionChecker
 
             XmlNode assembliesNode = doc.CreateElement( "Assemblies" );
 
-            foreach ( IAssemblyInfo a in assemblies )
+            foreach( IAssemblyInfo a in assemblies )
             {
                 assembliesNode.AppendChild( GetAssemblyNode( a, doc ) );
             }
@@ -79,7 +79,7 @@ namespace DependencyVersionChecker
             assemblyNode.AppendChild( publicKeyToken );
 
             XmlElement paths = doc.CreateElement( "Paths" );
-            foreach ( string p in a.Paths )
+            foreach( string p in a.Paths )
             {
                 XmlElement path = doc.CreateElement( "Path" );
                 path.AppendChild( doc.CreateTextNode( p ) );
@@ -88,7 +88,7 @@ namespace DependencyVersionChecker
             assemblyNode.AppendChild( paths );
 
             XmlElement dependencies = doc.CreateElement( "Dependencies" );
-            foreach ( IAssemblyInfo d in a.Dependencies )
+            foreach( IAssemblyInfo d in a.Dependencies )
             {
                 XmlElement reference = doc.CreateElement( "Reference" );
                 reference.AppendChild( doc.CreateTextNode( d.FullName ) );
@@ -103,16 +103,16 @@ namespace DependencyVersionChecker
         {
             Dictionary<string, AssemblyInfo> assemblies = new Dictionary<string, AssemblyInfo>();
 
-            foreach ( XmlNode n in doc.DocumentElement )
+            foreach( XmlNode n in doc.DocumentElement )
             {
                 AssemblyInfo a = GetInfoFromNode( n );
                 assemblies.Add( a.FullName, a );
             }
 
-            foreach ( XmlNode n in doc.DocumentElement )
+            foreach( XmlNode n in doc.DocumentElement )
             {
                 AssemblyInfo a = assemblies[n["FullName"].FirstChild.Value];
-                foreach ( XmlNode r in n["Dependencies"] )
+                foreach( XmlNode r in n["Dependencies"] )
                 {
                     AssemblyInfo d = assemblies[r.FirstChild.Value];
                     a.InternalDependencies.Add( d );
@@ -122,7 +122,7 @@ namespace DependencyVersionChecker
             return assemblies.Values;
         }
 
-        public static AssemblyInfo GetInfoFromNode( XmlNode n )
+        private static AssemblyInfo GetInfoFromNode( XmlNode n )
         {
             AssemblyInfo a = new AssemblyInfo();
 
@@ -141,9 +141,9 @@ namespace DependencyVersionChecker
             a.Trademark = n["Trademark"].FirstChild == null ? String.Empty : n["Trademark"].FirstChild.Value;
             a.Copyright = n["Copyright"].FirstChild == null ? String.Empty : n["Copyright"].FirstChild.Value;
 
-            a.PublicKeyToken = n["PublicKeyToken"].FirstChild == null ? null : DependencyUtils.HexStringToByteArray( n["PublicKeyToken"].FirstChild.Value );
+            a.PublicKeyToken = n["PublicKeyToken"].FirstChild == null ? new byte[0] : DependencyUtils.HexStringToByteArray( n["PublicKeyToken"].FirstChild.Value );
 
-            if ( n["BorderName"].FirstChild == null || String.IsNullOrEmpty( n["BorderName"].FirstChild.Value ) )
+            if( n["BorderName"].FirstChild == null || String.IsNullOrEmpty( n["BorderName"].FirstChild.Value ) )
             {
                 a.BorderName = null;
             }
@@ -152,11 +152,304 @@ namespace DependencyVersionChecker
                 a.BorderName = n["BorderName"].FirstChild.Value;
             }
 
-            foreach ( XmlNode p in n["Paths"] )
+            foreach( XmlNode p in n["Paths"] )
             {
                 a.Paths.Add( p.FirstChild.Value );
             }
             return a;
+        }
+
+        public static void WriteToXmlWriter( IEnumerable<IAssemblyInfo> assemblies, XmlWriter w )
+        {
+            w.WriteStartDocument( true );
+            w.WriteStartElement( "Assemblies" );
+
+            foreach( IAssemblyInfo a in assemblies )
+            {
+                WriteAssemblyInfo( a, w );
+            }
+
+            w.WriteEndElement();
+            w.WriteEndDocument();
+        }
+
+        private static void WriteAssemblyInfo( IAssemblyInfo a, XmlWriter w )
+        {
+            w.WriteStartElement( "AssemblyInfo" );
+
+            w.WriteStartElement( "FullName" );
+            w.WriteValue( a.FullName );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "SimpleName" );
+            w.WriteValue( a.SimpleName );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Version" );
+            w.WriteValue( a.Version.ToString() );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Culture" );
+            w.WriteValue( a.Culture );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "FileVersion" );
+            w.WriteValue( a.FileVersion );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "InformationalVersion" );
+            w.WriteValue( a.InformationalVersion );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Description" );
+            w.WriteValue( a.Description );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Company" );
+            w.WriteValue( a.Company );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Product" );
+            w.WriteValue( a.Product );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Trademark" );
+            w.WriteValue( a.Trademark );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Copyright" );
+            w.WriteValue( a.Copyright );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "BorderName" );
+            w.WriteValue( a.BorderName );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "PublicKeyToken" );
+            w.WriteValue( DependencyUtils.ByteArrayToHexString( a.PublicKeyToken ) );
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Paths" );
+            foreach( var p in a.Paths )
+            {
+                w.WriteStartElement( "Path" );
+                w.WriteValue( p );
+                w.WriteEndElement();
+            }
+            w.WriteEndElement();
+
+            w.WriteStartElement( "Dependencies" );
+            foreach( IAssemblyInfo d in a.Dependencies )
+            {
+                w.WriteStartElement( "Reference" );
+                w.WriteValue( d.FullName );
+                w.WriteEndElement();
+            }
+            w.WriteEndElement();
+
+            w.WriteEndElement();
+        }
+
+        public static IEnumerable<IAssemblyInfo> ReadFromXmlReader( XmlReader r )
+        {
+            // Assemblies read by the reader.
+            Dictionary<string, AssemblyInfo> assemblies = new Dictionary<string, AssemblyInfo>();
+
+            // Assembly names which still need resolution, with the assemblies that need it.
+            Dictionary<string, List<AssemblyInfo>> pendingResolution = new Dictionary<string, List<AssemblyInfo>>();
+
+
+            while( r.Read() )
+            {
+                if( r.IsStartElement() && r.Name == "AssemblyInfo" )
+                {
+                    ReadAssembly( r.ReadSubtree(), assemblies, pendingResolution );
+                }
+            }
+
+
+            return assemblies.Values;
+        }
+
+        private static void ReadAssembly( XmlReader r, Dictionary<string, AssemblyInfo> assemblies, Dictionary<string, List<AssemblyInfo>> pendingResolution )
+        {
+            AssemblyInfo a = new AssemblyInfo();
+
+            a.Culture = String.Empty;
+            a.Description = String.Empty;
+            a.FileVersion = String.Empty;
+            a.InformationalVersion = String.Empty;
+            a.Description = String.Empty;
+            a.Company = String.Empty;
+            a.Product = String.Empty;
+            a.Trademark = String.Empty;
+            a.Copyright = String.Empty;
+            a.BorderName = null;
+            a.PublicKeyToken = new byte[0];
+
+            while( r.Read() )
+            {
+                if( r.IsStartElement() && !r.IsEmptyElement )
+                {
+                    switch( r.Name )
+                    {
+                        case "FullName":
+                            if( r.Read() )
+                            {
+                                a.FullName = r.Value;
+
+                                assemblies.Add( a.FullName, a );
+
+                                List<AssemblyInfo> assembliesReferencingThis;
+                                if( pendingResolution.TryGetValue( a.FullName, out assembliesReferencingThis ) )
+                                {
+                                    // There are assemblies pending this one
+                                    foreach( AssemblyInfo parent in assembliesReferencingThis )
+                                    {
+                                        parent.InternalDependencies.Add( a );
+                                    }
+
+                                    // Now that they're fixed, we can remove the pending references
+                                    pendingResolution.Remove( a.FullName );
+                                }
+                            }
+                            break;
+                        case "SimpleName":
+                            if( r.Read() )
+                            {
+                                a.SimpleName = r.Value;
+                            }
+                            break;
+                        case "Version":
+                            if( r.Read() )
+                            {
+                                Version v;
+                                if( Version.TryParse( r.Value, out v ) )
+                                    a.Version = v;
+                            }
+                            break;
+                        case "Culture":
+                            if( r.Read() )
+                            {
+                                a.Culture = r.Value;
+                            }
+                            break;
+                        case "FileVersion":
+                            if( r.Read() )
+                            {
+                                a.FileVersion = r.Value;
+                            }
+                            break;
+                        case "InformationalVersion":
+                            if( r.Read() )
+                            {
+                                a.InformationalVersion = r.Value;
+                            }
+                            break;
+                        case "Description":
+                            if( r.Read() )
+                            {
+                                a.Description = r.Value.Replace( "\n", "\r\n" );
+                            }
+                            break;
+                        case "Company":
+                            if( r.Read() )
+                            {
+                                a.Company = r.Value;
+                            }
+                            break;
+                        case "Product":
+                            if( r.Read() )
+                            {
+                                a.Product = r.Value;
+                            }
+                            break;
+                        case "Trademark":
+                            if( r.Read() )
+                            {
+                                a.Trademark = r.Value;
+                            }
+                            break;
+                        case "Copyright":
+                            if( r.Read() )
+                            {
+                                a.Copyright = r.Value.Replace( "\n", "\r\n" );
+                            }
+                            break;
+                        case "BorderName":
+                            if( r.Read() )
+                            {
+                                string value = r.Value;
+                                if( String.IsNullOrEmpty( value ) )
+                                    a.BorderName = null;
+                                else
+                                    a.BorderName = value;
+                            }
+                            break;
+                        case "PublicKeyToken":
+                            if( r.Read() )
+                            {
+                                a.PublicKeyToken = DependencyUtils.HexStringToByteArray( r.Value );
+                            }
+                            break;
+                        case "Paths":
+                            while( r.Read() )
+                            {
+                                if( r.IsStartElement() && r.Name == "Path" )
+                                {
+
+                                    if( r.Read() )
+                                    {
+                                        a.Paths.Add( r.Value );
+                                    }
+                                }
+                                else if( r.NodeType == XmlNodeType.EndElement && r.Name == "Paths" )
+                                {
+                                    break;
+                                }
+                            }
+                            break;
+                        case "Dependencies":
+                            while( r.Read() )
+                            {
+                                if( r.IsStartElement() && r.Name == "Reference" )
+                                {
+                                    if( r.Read() )
+                                    {
+                                        string assemblyFullName = r.Value;
+                                        AssemblyInfo d;
+                                        if( assemblies.TryGetValue( assemblyFullName, out d ) )
+                                        {
+                                            // Already resolved
+                                            a.InternalDependencies.Add( d );
+                                        }
+                                        else
+                                        {
+                                            // Not resolved yet
+                                            List<AssemblyInfo> pendingResolutionList;
+                                            if( !pendingResolution.TryGetValue( assemblyFullName, out pendingResolutionList ) )
+                                            {
+                                                pendingResolutionList = new List<AssemblyInfo>();
+                                                pendingResolution.Add( assemblyFullName, pendingResolutionList );
+                                            }
+
+                                            pendingResolutionList.Add( a );
+                                        }
+                                    }
+                                }
+                                else if( r.NodeType == XmlNodeType.EndElement && r.Name == "Dependencies" )
+                                {
+                                    break;
+                                }
+                            }
+                            break;
+                    }
+                }
+                else if( r.NodeType == XmlNodeType.EndElement && r.Name == "AssemblyInfo" )
+                {
+                    return;
+                }
+            }
         }
     }
 }

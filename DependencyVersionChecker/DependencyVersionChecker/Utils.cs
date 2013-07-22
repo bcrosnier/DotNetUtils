@@ -34,6 +34,9 @@ namespace DependencyVersionChecker
         /// <returns></returns>
         public static byte[] HexStringToByteArray( string str )
         {
+            if( String.IsNullOrEmpty( str ) )
+                return new byte[0];
+
             int offset = str.StartsWith( "0x" ) ? 2 : 0;
             if ( ( str.Length % 2 ) != 0 )
             {
