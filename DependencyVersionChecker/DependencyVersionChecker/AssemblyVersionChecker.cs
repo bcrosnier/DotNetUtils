@@ -16,7 +16,7 @@ namespace DependencyVersionChecker
 
         public AssemblyVersionChecker( IAssemblyLoader loader )
         {
-            if ( loader == null )
+            if( loader == null )
             {
                 throw new ArgumentNullException( "loader" );
             }
@@ -37,12 +37,12 @@ namespace DependencyVersionChecker
 
         public void AddFile( FileInfo file )
         {
-            if ( !file.Exists )
+            if( !file.Exists )
             {
                 throw new FileNotFoundException( "Assembly file does not exist", file.FullName );
             }
 
-            if ( !_filesToCheck.Contains( file ) )
+            if( !_filesToCheck.Contains( file ) )
                 _filesToCheck.Add( file );
         }
 
@@ -50,7 +50,7 @@ namespace DependencyVersionChecker
         {
             IEnumerable<FileInfo> fileList = ListAssembliesFromDirectory( dir, recurse );
 
-            foreach ( FileInfo f in fileList )
+            foreach( FileInfo f in fileList )
                 AddFile( f );
         }
 
@@ -62,14 +62,14 @@ namespace DependencyVersionChecker
                 fileList = dir.GetFiles( "*.dll" ).ToList();
                 fileList.AddRange( dir.GetFiles( "*.exe" ) );
             }
-            catch ( UnauthorizedAccessException ex )
+            catch( UnauthorizedAccessException ex )
             {
                 Console.WriteLine( ex );
                 return new List<FileInfo>();
             }
 
-            if ( recurse )
-                foreach ( DirectoryInfo d in dir.GetDirectories() ) fileList.AddRange( ListAssembliesFromDirectory( d, recurse ) );
+            if( recurse )
+                foreach( DirectoryInfo d in dir.GetDirectories() ) fileList.AddRange( ListAssembliesFromDirectory( d, recurse ) );
 
             return fileList;
         }
@@ -79,7 +79,7 @@ namespace DependencyVersionChecker
             List<IAssemblyInfo> assemblies;
             List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
 
-            foreach ( var f in _filesToCheck )
+            foreach( var f in _filesToCheck )
             {
                 _assemblyLoader.LoadFromFile( f );
             }
@@ -96,9 +96,9 @@ namespace DependencyVersionChecker
         public static IEnumerable<DependencyAssembly> GetConflictsFromAssemblyList( IEnumerable<IAssemblyInfo> assemblies )
         {
             List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
-            foreach ( var assembly in assemblies )
+            foreach( var assembly in assemblies )
             {
-                if ( assembly != null )
+                if( assembly != null )
                     dependencies = GetAssemblyDependencies( assembly, dependencies );
             }
 
@@ -120,21 +120,21 @@ namespace DependencyVersionChecker
 
         private static List<DependencyAssembly> GetAssemblyDependencies( IAssemblyInfo info, List<DependencyAssembly> existingDependencies )
         {
-            foreach ( IAssemblyInfo dep in info.Dependencies )
+            foreach( IAssemblyInfo dep in info.Dependencies )
             {
-                if ( dep.BorderName != null )
+                if( dep.BorderName != null )
                     continue; // Ignore bordering dependencies
 
                 DependencyAssembly dependencyItem = existingDependencies
                     .Where( x => x.AssemblyName == dep.SimpleName )
                     .FirstOrDefault();
 
-                if ( dependencyItem == null )
+                if( dependencyItem == null )
                 {
                     dependencyItem = new DependencyAssembly( dep.SimpleName );
                     existingDependencies.Add( dependencyItem );
                 }
-                if ( !dependencyItem.DependencyLinks.Keys.Contains( info ) )
+                if( !dependencyItem.DependencyLinks.Keys.Contains( info ) )
                     dependencyItem.Add( info, dep );
 
                 GetAssemblyDependencies( dep, existingDependencies );

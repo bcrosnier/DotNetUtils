@@ -42,7 +42,7 @@ namespace DependencyVersionChecker.Tests
 
             using( MemoryStream ms = new MemoryStream() )
             {
-                using(XmlWriter w = XmlWriter.Create( ms ) )
+                using( XmlWriter w = XmlWriter.Create( ms ) )
                 {
                     AssemblyInfoXmlSerializer.WriteToXmlWriter( assemblies, w );
                 }
@@ -51,7 +51,6 @@ namespace DependencyVersionChecker.Tests
 
                 XmlDocument d = new XmlDocument();
                 d.Load( ms );
-
 
                 assemblies2 = AssemblyInfoXmlSerializer.Deserialize( d ).ToList();
             }

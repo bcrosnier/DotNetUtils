@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using NUnit.Framework;
 
 namespace DependencyVersionChecker.Tests
@@ -23,7 +22,7 @@ namespace DependencyVersionChecker.Tests
 
             List<IAssemblyInfo> Files = new List<IAssemblyInfo>();
 
-            foreach ( FileInfo f in fileList )
+            foreach( FileInfo f in fileList )
             {
                 IAssemblyInfo a = l.LoadFromFile( f );
                 IAssemblyInfo b = l.LoadFromFile( f );
@@ -87,9 +86,9 @@ namespace DependencyVersionChecker.Tests
 
         private bool IsAssemblyLoaded( string assemblyFullName )
         {
-            foreach ( Assembly a in AppDomain.CurrentDomain.GetAssemblies() )
+            foreach( Assembly a in AppDomain.CurrentDomain.GetAssemblies() )
             {
-                if ( a.GetName().FullName == assemblyFullName )
+                if( a.GetName().FullName == assemblyFullName )
                     return true;
             }
             return false;

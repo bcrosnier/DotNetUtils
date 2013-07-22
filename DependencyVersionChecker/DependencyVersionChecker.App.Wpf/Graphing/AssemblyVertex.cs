@@ -23,7 +23,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
             }
             internal set
             {
-                if ( value != _isMarked )
+                if( value != _isMarked )
                 {
                     _isMarked = value;
                     RaisePropertyChanged();
@@ -61,7 +61,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
             {
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append( String.Format("Version {0}\n", Assembly.Version.ToString()) );
+                sb.Append( String.Format( "Version {0}\n", Assembly.Version.ToString() ) );
 
                 if( LocalReferences.Count() > 0 )
                 {
@@ -90,35 +90,35 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
                 StringBuilder sb = new StringBuilder();
                 //sb.Append( String.Format( "{0}\n", Assembly.AssemblyFullName ) );
 
-                if ( !String.IsNullOrEmpty( Assembly.Description ) )
+                if( !String.IsNullOrEmpty( Assembly.Description ) )
                     sb.Append( String.Format( "{0}\n", Assembly.Description ) );
 
                 sb.Append( String.Format( "Assembly version: {0}\n", Assembly.Version ) );
 
-                if ( !String.IsNullOrEmpty( Assembly.InformationalVersion ) )
+                if( !String.IsNullOrEmpty( Assembly.InformationalVersion ) )
                     sb.Append( String.Format( "Informational version: {0}\n", Assembly.InformationalVersion ) );
 
-                if ( !String.IsNullOrEmpty( Assembly.FileVersion ) )
+                if( !String.IsNullOrEmpty( Assembly.FileVersion ) )
                     sb.Append( String.Format( "File version: {0}\n", Assembly.FileVersion ) );
 
-                if ( !String.IsNullOrEmpty( Assembly.Product ) )
+                if( !String.IsNullOrEmpty( Assembly.Product ) )
                     sb.Append( String.Format( "Product: {0}\n", Assembly.Product ) );
 
-                if ( !String.IsNullOrEmpty( Assembly.Trademark ) )
+                if( !String.IsNullOrEmpty( Assembly.Trademark ) )
                     sb.Append( String.Format( "Trademark: {0}\n", Assembly.Trademark ) );
 
-                if ( !String.IsNullOrEmpty( Assembly.Company ) )
+                if( !String.IsNullOrEmpty( Assembly.Company ) )
                     sb.Append( String.Format( "By {0}\n", Assembly.Company ) );
 
-                if ( !String.IsNullOrEmpty( Assembly.Copyright ) )
+                if( !String.IsNullOrEmpty( Assembly.Copyright ) )
                     sb.Append( String.Format( "{0}\n", Assembly.Copyright ) );
 
-                if ( Assembly.PublicKeyToken != null && Assembly.PublicKeyToken.Length > 0 )
+                if( Assembly.PublicKeyToken != null && Assembly.PublicKeyToken.Length > 0 )
                     sb.Append( String.Format( "Public key token: {0}\n", DependencyUtils.ByteArrayToHexString( Assembly.PublicKeyToken ) ) );
 
-                if ( Assembly.Paths.Count > 0 )
+                if( Assembly.Paths.Count > 0 )
                     sb.Append( "Found in files:\n" );
-                foreach ( string s in Assembly.Paths )
+                foreach( string s in Assembly.Paths )
                 {
                     string path = DependencyUtils.MakeRelativePath( s, Environment.CurrentDirectory );
                     sb.Append( String.Format( "- {0}\n", path ) );

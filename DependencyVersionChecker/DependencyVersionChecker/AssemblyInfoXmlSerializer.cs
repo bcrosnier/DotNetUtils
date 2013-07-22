@@ -258,7 +258,6 @@ namespace DependencyVersionChecker
             // Assembly names which still need resolution, with the assemblies that need it.
             Dictionary<string, List<AssemblyInfo>> pendingResolution = new Dictionary<string, List<AssemblyInfo>>();
 
-
             while( r.Read() )
             {
                 if( r.IsStartElement() && r.Name == "AssemblyInfo" )
@@ -266,7 +265,6 @@ namespace DependencyVersionChecker
                     ReadAssembly( r.ReadSubtree(), assemblies, pendingResolution );
                 }
             }
-
 
             return assemblies.Values;
         }
@@ -314,12 +312,14 @@ namespace DependencyVersionChecker
                                 }
                             }
                             break;
+
                         case "SimpleName":
                             if( r.Read() )
                             {
                                 a.SimpleName = r.Value;
                             }
                             break;
+
                         case "Version":
                             if( r.Read() )
                             {
@@ -328,54 +328,63 @@ namespace DependencyVersionChecker
                                     a.Version = v;
                             }
                             break;
+
                         case "Culture":
                             if( r.Read() )
                             {
                                 a.Culture = r.Value;
                             }
                             break;
+
                         case "FileVersion":
                             if( r.Read() )
                             {
                                 a.FileVersion = r.Value;
                             }
                             break;
+
                         case "InformationalVersion":
                             if( r.Read() )
                             {
                                 a.InformationalVersion = r.Value;
                             }
                             break;
+
                         case "Description":
                             if( r.Read() )
                             {
                                 a.Description = r.Value.Replace( "\n", "\r\n" );
                             }
                             break;
+
                         case "Company":
                             if( r.Read() )
                             {
                                 a.Company = r.Value;
                             }
                             break;
+
                         case "Product":
                             if( r.Read() )
                             {
                                 a.Product = r.Value;
                             }
                             break;
+
                         case "Trademark":
                             if( r.Read() )
                             {
                                 a.Trademark = r.Value;
                             }
                             break;
+
                         case "Copyright":
                             if( r.Read() )
                             {
                                 a.Copyright = r.Value.Replace( "\n", "\r\n" );
                             }
                             break;
+
                         case "BorderName":
                             if( r.Read() )
                             {
@@ -386,18 +395,19 @@ namespace DependencyVersionChecker
                                     a.BorderName = value;
                             }
                             break;
+
                         case "PublicKeyToken":
                             if( r.Read() )
                             {
                                 a.PublicKeyToken = DependencyUtils.HexStringToByteArray( r.Value );
                             }
                             break;
+
                         case "Paths":
                             while( r.Read() )
                             {
                                 if( r.IsStartElement() && r.Name == "Path" )
                                 {
-
                                     if( r.Read() )
                                     {
                                         a.Paths.Add( r.Value );
@@ -409,6 +419,7 @@ namespace DependencyVersionChecker
                                 }
                             }
                             break;
+
                         case "Dependencies":
                             while( r.Read() )
                             {
