@@ -16,6 +16,12 @@
                 <MenuItem Header="_Save to XML" Click="SaveAssemblyXml_Click" />
             </MenuItem>
             <MenuItem Header="Graph type" ItemsSource="{Binding LayoutAlgorithmTypes}" MenuItem.Click="GraphTypeMenuItem_Click">
+                <ItemsControl.Triggers>
+                </ItemsControl.Triggers>
+            </MenuItem>
+            <MenuItem Header="Settings">
+                <MenuItem IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.IsSystemAssembliesEnabled }"
+                          Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.ToggleSystemAssembliesCommand }" Header="Show system assemblies" />
             </MenuItem>
         </Menu>
 

@@ -39,6 +39,14 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
             }
         }
 
+        public IEnumerable<IAssemblyInfo> BorderReferences
+        {
+            get
+            {
+                return Assembly.Dependencies.Where( x => x.BorderName != null );
+            }
+        }
+
         public bool HasDependencies
         {
             get
@@ -51,16 +59,26 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
         {
             get
             {
-                if ( LocalReferences.Count() == 0 )
-                    return "No references";
-
                 StringBuilder sb = new StringBuilder();
-                sb.Append( "References:\n" );
-                foreach ( var dep in LocalReferences )
-                {
-                    sb.Append( String.Format( "- {0} ({1})\n", dep.SimpleName, dep.Version ) );
-                }
 
+                sb.Append( String.Format("Version {0}\n", Assembly.Version.ToString()) );
+
+                if( LocalReferences.Count() > 0 )
+                {
+                    sb.Append( "References:\n" );
+                    foreach( var dep in LocalReferences )
+                    {
+                        sb.Append( String.Format( "- {0} ({1})\n", dep.SimpleName, dep.Version ) );
+                    }
+                }
+                if( BorderReferences.Count() > 0 )
+                {
+                    sb.Append( "Special references:\n" );
+                    foreach( var dep in BorderReferences )
+                    {
+                        sb.Append( String.Format( "- {0} v. {1} ({2})\n", dep.SimpleName, dep.Version, dep.BorderName ) );
+                    }
+                }
                 return sb.ToString().TrimEnd( '\n' );
             }
         }

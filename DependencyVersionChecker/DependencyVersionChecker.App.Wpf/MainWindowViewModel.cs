@@ -24,11 +24,14 @@ namespace DependencyVersionCheckerApp.Wpf
         private DirectoryInfo _assemblyDirectory;
         private IDefaultActivityLogger _logger;
         private ObservableCollection<ListBoxItem> _logItems;
+        private bool _isSystemAssembliesEnabled;
 
-        public ICommand ChangeAssemblyFolderCommand;
+        public ICommand ChangeAssemblyFolderCommand { get; private set; }
+        public ICommand ToggleSystemAssembliesCommand { get; private set; }
 
         private AssemblyGraph _graph;
         private List<IAssemblyInfo> _drawnAssemblies;
+        private List<IAssemblyInfo> _activeAssemblies;
         private List<AssemblyVertex> _drawnVertices;
         private List<AssemblyEdge> _drawnEdges;
 
@@ -107,6 +110,23 @@ namespace DependencyVersionCheckerApp.Wpf
             }
         }
 
+        public bool IsSystemAssembliesEnabled
+        {
+            get
+            {
+                return _isSystemAssembliesEnabled;
+            }
+            set
+            {
+                if( value != _isSystemAssembliesEnabled )
+                {
+                    _isSystemAssembliesEnabled = value;
+                    LoadAssemblies( _activeAssemblies );
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         #endregion Observed properties
 
         #region Constructor/initialization
@@ -152,6 +172,7 @@ namespace DependencyVersionCheckerApp.Wpf
         public void PrepareCommands()
         {
             ChangeAssemblyFolderCommand = new RelayCommand( ExecuteChangeAssemblyFolder );
+            ToggleSystemAssembliesCommand = new RelayCommand( ExecuteToggleSystemAssemblies );
         }
 
         #endregion Constructor/initialization
@@ -169,7 +190,9 @@ namespace DependencyVersionCheckerApp.Wpf
                 _checker.AddDirectory( dir, true );
 
                 AssemblyCheckResult r = _checker.Check();
-                LoadAssemblies( r.Assemblies, r.VersionConflicts );
+                _activeAssemblies = r.Assemblies.ToList();
+
+                LoadAssemblies( _activeAssemblies, r.VersionConflicts );
             }
             else
             {
@@ -187,8 +210,9 @@ namespace DependencyVersionCheckerApp.Wpf
                 _checker.Reset();
                 _checker.AddFile( file );
                 AssemblyCheckResult r = _checker.Check();
+                _activeAssemblies = r.Assemblies.ToList();
 
-                LoadAssemblies( r.Assemblies, r.VersionConflicts );
+                LoadAssemblies( _activeAssemblies, r.VersionConflicts );
             }
             else
             {
@@ -203,6 +227,11 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> conflicts )
         {
+            if( !_isSystemAssembliesEnabled )
+            {
+                assemblies = assemblies.Where( x => x.BorderName == null );
+            }
+
             if ( conflicts == null )
             {
                 conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList( assemblies );
@@ -246,35 +275,30 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public void SaveXmlFile( FileInfo fileToWrite )
         {
-            List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
-
-            foreach ( var assembly in this._drawnAssemblies )
+            using( XmlWriter w = XmlWriter.Create( fileToWrite.FullName ) )
             {
-                ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
+                List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
+
+                foreach( var assembly in this._drawnAssemblies )
+                {
+                    ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
+                }
+
+                AssemblyInfoXmlSerializer.WriteToXmlWriter( assemblies, w );
             }
 
-            XmlDocument doc = AssemblyInfoXmlSerializer.Serialize( assemblies );
-
-            using ( Stream s = fileToWrite.OpenWrite() )
-            {
-                doc.Save( s );
-            }
         }
 
         public void LoadXmlFile( FileInfo fileToRead )
         {
             IEnumerable<IAssemblyInfo> assemblies;
 
-            XmlDocument doc = new XmlDocument();
-
-            using ( Stream fs = fileToRead.OpenRead() )
+            using( XmlReader r = XmlReader.Create( fileToRead.FullName ) )
             {
-                doc.Load( fs );
+                assemblies = AssemblyInfoXmlSerializer.ReadFromXmlReader( r );
             }
-
-            assemblies = AssemblyInfoXmlSerializer.Deserialize( doc );
-
-            LoadAssemblies( assemblies.Where( x => x.BorderName == null ) );
+            _activeAssemblies = assemblies.ToList();
+            LoadAssemblies( assemblies );
         }
 
         private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
@@ -291,7 +315,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
             foreach ( IAssemblyInfo dep in assembly.Dependencies )
             {
-                if ( dep.BorderName != null )
+                if ( !_isSystemAssembliesEnabled && dep.BorderName != null )
                     continue;
 
                 AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
@@ -355,6 +379,11 @@ namespace DependencyVersionCheckerApp.Wpf
 
             DirectoryInfo dir = parameter as DirectoryInfo;
             ChangeAssemblyDirectory( dir );
+        }
+
+        public void ExecuteToggleSystemAssemblies( object parameter )
+        {
+            IsSystemAssembliesEnabled = !IsSystemAssembliesEnabled;
         }
 
         #endregion Command methods

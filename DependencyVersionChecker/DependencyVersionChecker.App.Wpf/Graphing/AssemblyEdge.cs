@@ -22,8 +22,8 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
         public AssemblyEdge( AssemblyVertex source, AssemblyVertex target )
             : base( source, target )
         {
-            Parent = target.Assembly;
-            Child = source.Assembly;
+            Child = target.Assembly;
+            Parent = source.Assembly;
         }
     }
 }

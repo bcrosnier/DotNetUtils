@@ -49,6 +49,8 @@ namespace DependencyVersionCheckerApp.Wpf
                 item.Content = str;
                 item.Foreground = color;
                 item.Padding = this._currentPadding;
+                item.HorizontalContentAlignment = HorizontalAlignment.Left;
+                item.VerticalContentAlignment = VerticalAlignment.Top;
 
                 _outputCollection.Add( item );
             } );
