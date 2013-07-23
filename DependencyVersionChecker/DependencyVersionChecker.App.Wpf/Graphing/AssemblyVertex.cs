@@ -66,7 +66,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
                 if( LocalReferences.Count() > 0 )
                 {
                     sb.Append( "References:\n" );
-                    foreach( var dep in LocalReferences )
+                    foreach( var dep in LocalReferences.OrderBy(x => x.Version).OrderBy( x => x.SimpleName ) )
                     {
                         sb.Append( String.Format( "- {0} ({1})\n", dep.SimpleName, dep.Version ) );
                     }
@@ -74,7 +74,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
                 if( BorderReferences.Count() > 0 )
                 {
                     sb.Append( "Special references:\n" );
-                    foreach( var dep in BorderReferences )
+                    foreach( var dep in BorderReferences.OrderBy( x => x.Version ).OrderBy( x => x.SimpleName ) )
                     {
                         sb.Append( String.Format( "- {0} v. {1} ({2})\n", dep.SimpleName, dep.Version, dep.BorderName ) );
                     }
@@ -118,7 +118,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
 
                 if( Assembly.Paths.Count > 0 )
                     sb.Append( "Found in files:\n" );
-                foreach( string s in Assembly.Paths )
+                foreach( string s in Assembly.Paths.OrderBy(x => x) )
                 {
                     string path = DependencyUtils.MakeRelativePath( s, Environment.CurrentDirectory );
                     sb.Append( String.Format( "- {0}\n", path ) );

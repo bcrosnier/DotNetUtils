@@ -33,6 +33,7 @@ namespace NuGetPackageProber.Tests
             IPackage p = new ZipPackage( s );
             Assert.That( p.Id == "CK.Core" );
 
+
             CollectionAssert.IsSubsetOf( p.AssemblyReferences.Select( x => x.Path ), p.GetLibFiles().Select( x => x.Path ) );
         }
 
