@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,32 +19,23 @@ namespace ActivePackageSource.Tests
     public class ActivePackageSourceTests
     {
         [Test]
-        public void ActivePackageConfigTest()
+        public void ActivePackageTaskTest()
         {
             UnityContainer cTask = new UnityContainer();
-            CKUnityHost.Start( new HostMultiFileRepository( Path.Combine( Environment.CurrentDirectory, @"task-cache" ) ), cTask );
 
-            string packageSource = @"https://get-package.com/feed/CiviKey/feed-CiviKey";
-            string packageCachePath = Path.Combine( Environment.CurrentDirectory, @"package-cache" );
-            TimeSpan maxAge = new TimeSpan( 60, 0, 0, 0 );
+            string taskCachePath = Path.Combine( Environment.CurrentDirectory, @"task-cache" );
 
-            Directory.CreateDirectory( packageCachePath );
-
-            ActivePackageSourceConfig config = new ActivePackageSourceConfig()
-            {
-                PackageSource = packageSource,
-                UpdateDelay = new TimeSpan( 0, 10, 0 ),
-                PackageCachePath = packageCachePath,
-                MaximumPackageAge = maxAge
-            };
+            CKUnityHost.Start( new HostMultiFileRepository( taskCachePath ), cTask );
 
             AutoResetEvent ev = new AutoResetEvent( false );
 
-            int _ckTaskId = CKUnityHost.RegisterTask( typeof( ActivePackageSourceTask ), "Package source update task", DateTime.UtcNow, d => { d = config; } );
+            int _ckTaskId = CKUnityHost.RegisterTask( typeof( ActivePackageSourceTask ), "Package source update task", DateTime.UtcNow );
 
             CKHost.Bus.RegisterOnOneRunCompleted( _ckTaskId, t => { ev.Set(); } );
 
             ev.WaitOne();
+
+            Directory.Delete( taskCachePath, true );
         }
     }
 }

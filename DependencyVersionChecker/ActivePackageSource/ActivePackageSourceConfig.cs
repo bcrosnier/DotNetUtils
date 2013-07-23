@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace ActivePackageSource
     /// Configuration object for an ActivePackageSource.
     /// </summary>
     [Serializable()]
-    public class ActivePackageSourceConfig : CK.TaskHost.Impl.DynamicSerializable
+    public class ActivePackageSourceConfig : DynamicObject
     {
         /// <summary>
         /// NuGet Package repository
@@ -43,7 +44,7 @@ namespace ActivePackageSource
         /// <summary>
         /// Last time when the update was started.
         /// </summary>
-        public DateTime LastUpdateTime;
+        public DateTimeOffset LastUpdateTime;
 
     }
 }

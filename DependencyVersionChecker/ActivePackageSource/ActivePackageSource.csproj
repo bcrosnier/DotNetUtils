@@ -66,9 +66,7 @@
   <ItemGroup>
     <Compile Include="ActivePackageSourceConfig.cs" />
     <Compile Include="ActivePackageSourceTask.cs" />
-    <Compile Include="NewPackageReadyEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UpdateCompleteEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

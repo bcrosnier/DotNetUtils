@@ -12,17 +12,33 @@ namespace ActivePackageSource
     public class ActivePackageSourceTask : CKTask
     {
         private IPackageRepository _repository;
+        dynamic Config;
 
-        public ActivePackageSourceTask( CKTaskBuilder builder )
+        public ActivePackageSourceTask( CKTaskBuilder builder, dynamic dataBag )
             : base( builder )
         {
         }
 
         protected override void Execute()
         {
-            ActivePackageSourceConfig c = (ActivePackageSourceConfig)this.DataBag;
+            string packageSource = @"https://get-package.net/feed/CiviKey/feed-CiviKey/";
+            string packageCachePath = Path.Combine( Environment.CurrentDirectory, @"package-cache" );
+            TimeSpan maxAge = new TimeSpan( 60, 0, 0, 0 );
 
-            _repository = PackageRepositoryFactory.Default.CreateRepository( this.DataBag.PackageSource );
+            Directory.CreateDirectory( packageCachePath );
+
+            ActivePackageSourceConfig config = new ActivePackageSourceConfig()
+            {
+                PackageSource = packageSource,
+                UpdateDelay = new TimeSpan( 0, 10, 0 ),
+                PackageCachePath = packageCachePath,
+                MaximumPackageAge = maxAge
+            };
+
+            Config = config;
+
+
+            _repository = PackageRepositoryFactory.Default.CreateRepository( this.Config.PackageSource );
 
             Log( "ActivePackageSourceTask started" );
 
@@ -34,34 +50,42 @@ namespace ActivePackageSource
                 packagePaths.Add( DownloadPackage( p ) );
             }
 
-            SetNextRunDate( DateTime.UtcNow.Add( this.DataBag.UpdateDelay ) );
+            SetNextRunDate( DateTime.UtcNow.Add( this.Config.UpdateDelay ) );
         }
 
         private IEnumerable<IPackage> DownloadPackageInfo()
         {
             IQueryable<IPackage> packages = _repository.GetPackages();
 
-            DateTime? minimumPackageDate = null;
+            DateTimeOffset? minimumPackageDate = null;
+            DateTimeOffset now = new DateTimeOffset( DateTime.UtcNow );
+            DateTimeOffset lastUpdate = this.Config.LastUpdateTime;
+            TimeSpan maxPackageAge = this.Config.MaximumPackageAge;
 
-            if( this.DataBag.LastUpdateTime != null )
+            if( (now - lastUpdate) > maxPackageAge )
             {
-                minimumPackageDate = this.DataBag.LastUpdateTime;
+                minimumPackageDate = now.Subtract( maxPackageAge );
             }
-            if( minimumPackageDate == null || (DateTime.UtcNow - minimumPackageDate) > this.DataBag.MaximumPackageAge )
+            else
             {
-                minimumPackageDate = DateTime.UtcNow.Subtract( this.DataBag.MaximumPackageAge );
+                minimumPackageDate = lastUpdate;
             }
 
-            this.DataBag.LastUpdateTime = DateTime.UtcNow;
-            List<IPackage> newPackages = packages.Where( x => x.Published > minimumPackageDate ).ToList();
+            this.Config.LastUpdateTime = DateTimeOffset.UtcNow;
 
+            List<IPackage> newPackages = new List<IPackage>();
+            foreach( var p in packages )
+            {
+                if( p.Published >= minimumPackageDate )
+                    newPackages.Add( p );
+            }
             return newPackages;
         }
 
 
         private string DownloadPackage( IPackage package )
         {
-            string packagePath = Path.Combine( this.DataBag.PackageCachePath, String.Format( "{0}.{1}.nupkg", package.Id, package.Version.ToString() ) );
+            string packagePath = Path.Combine( this.Config.PackageCachePath, String.Format( "{0}.{1}.nupkg", package.Id, package.Version.ToString() ) );
 
             if( File.Exists( packagePath ) )
             {
