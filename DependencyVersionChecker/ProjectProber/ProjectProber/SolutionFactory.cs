@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ProjectProber.Impl;
 using ProjectProber.Interfaces;
 
@@ -34,14 +30,14 @@ namespace ProjectProber
         /// <returns>ISolution object</returns>
         public static ISolution ReadFromSolutionFile( string filePath )
         {
-            if( String.IsNullOrEmpty( filePath ) )
+            if ( String.IsNullOrEmpty( filePath ) )
                 throw new ArgumentNullException( "filePath" );
-            if( !File.Exists( filePath ) )
+            if ( !File.Exists( filePath ) )
                 throw new ArgumentException( "File must exist", "filePath" );
 
             List<ISolutionProjectItem> projectItems = ParseItemsFromSolutionFile( filePath );
 
-            Solution solution = new Solution() { ProjectItems = projectItems, DirectoryPath = Path.GetDirectoryName(filePath) };
+            Solution solution = new Solution() { ProjectItems = projectItems, DirectoryPath = Path.GetDirectoryName( filePath ) };
 
             return solution;
         }
@@ -53,9 +49,9 @@ namespace ProjectProber
         /// <returns>ISolution objects</returns>
         public static IEnumerable<ISolution> ReadSolutionsFromDirectory( string directoryPath )
         {
-            if( String.IsNullOrEmpty( directoryPath ) )
+            if ( String.IsNullOrEmpty( directoryPath ) )
                 throw new ArgumentNullException( "directoryPath" );
-            if( !Directory.Exists( directoryPath ) )
+            if ( !Directory.Exists( directoryPath ) )
                 throw new ArgumentException( "Directory must exist", "directoryPath" );
 
             List<ISolution> solutions = new List<ISolution>();
@@ -64,7 +60,7 @@ namespace ProjectProber
 
             IEnumerable<FileInfo> solutionFiles = dir.GetFiles( "*.sln", SearchOption.TopDirectoryOnly );
 
-            foreach( FileInfo solutionFile in solutionFiles )
+            foreach ( FileInfo solutionFile in solutionFiles )
             {
                 ISolution s = ReadFromSolutionFile( solutionFile.FullName );
                 solutions.Add( s );
@@ -79,11 +75,11 @@ namespace ProjectProber
 
             StreamReader reader = File.OpenText( filePath );
 
-            while( !reader.EndOfStream )
+            while ( !reader.EndOfStream )
             {
                 string line = reader.ReadLine();
                 Match m = Regex.Match( line, SOLUTION_PROJECT_PATTERN );
-                if( m.Success )
+                if ( m.Success )
                 {
                     Guid projectTypeGuid = Guid.Parse( m.Groups[1].Value );
                     string projectName = m.Groups[2].Value;

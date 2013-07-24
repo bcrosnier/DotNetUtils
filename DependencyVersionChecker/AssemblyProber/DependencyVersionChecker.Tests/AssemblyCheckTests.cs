@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading;
 using NUnit.Framework;
 
-namespace DependencyVersionChecker.Tests
+namespace AssemblyProber.Tests
 {
     [TestFixture]
     public class AssemblyCheckTests
@@ -55,10 +55,10 @@ namespace DependencyVersionChecker.Tests
 
         public static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly, IList<IAssemblyInfo> existingAssemblies )
         {
-            if( !existingAssemblies.Contains( assembly ) )
+            if ( !existingAssemblies.Contains( assembly ) )
                 existingAssemblies.Add( assembly );
 
-            foreach( IAssemblyInfo dep in assembly.Dependencies )
+            foreach ( IAssemblyInfo dep in assembly.Dependencies )
             {
                 ListReferencedAssemblies( dep, existingAssemblies );
             }
@@ -71,7 +71,7 @@ namespace DependencyVersionChecker.Tests
             Assert.That( a, Is.Not.Null, "Tested assembly is not null" );
             Assert.That( a.FullName, Is.Not.Null.Or.Empty, "Assembly full name exists and is not empty" );
 
-            if( a.Error == null )
+            if ( a.Error == null )
             {
                 Assert.That( a.SimpleName, Is.Not.Null.Or.Empty, "SimpleName exists and is not empty" );
                 Assert.That( a.Version, Is.Not.Null, "Version is not null" );
@@ -91,12 +91,12 @@ namespace DependencyVersionChecker.Tests
                 CollectionAssert.AllItemsAreUnique( a.Paths, "All assembly paths are unique" );
                 CollectionAssert.AllItemsAreUnique( a.Dependencies, "All references are unique" );
 
-                if( a.BorderName != null )
+                if ( a.BorderName != null )
                 {
                     Assert.That( a.Dependencies.Count() == 0, "Border assembly does not recurse into its references" );
                 }
 
-                if( a.PublicKeyToken != null && a.PublicKeyToken.Length > 0 )
+                if ( a.PublicKeyToken != null && a.PublicKeyToken.Length > 0 )
                 {
                     Assert.That( a.PublicKeyToken.Length == 8, "PublicKeyToken is exactly 8 bytes" );
                 }
@@ -105,7 +105,7 @@ namespace DependencyVersionChecker.Tests
 
         public static void TestAssembliesInfo( IEnumerable<IAssemblyInfo> assemblies )
         {
-            foreach( var a in assemblies )
+            foreach ( var a in assemblies )
             {
                 TestAssemblyInfo( a );
             }
@@ -118,7 +118,7 @@ namespace DependencyVersionChecker.Tests
 
             Assert.That( a.FullName == b.FullName );
 
-            if( a.Error == null )
+            if ( a.Error == null )
             {
                 Assert.That( a.SimpleName == b.SimpleName );
                 Assert.That( a.Version == b.Version );
@@ -134,7 +134,7 @@ namespace DependencyVersionChecker.Tests
 
                 Assert.That( a.Dependencies.Count() == b.Dependencies.Count() );
 
-                foreach( var d in a.Dependencies )
+                foreach ( var d in a.Dependencies )
                 {
                     Assert.That( b.Dependencies
                         .Where( d2 => d2.FullName == d.FullName )
@@ -153,7 +153,7 @@ namespace DependencyVersionChecker.Tests
         {
             Assert.That( aGroup.Count() == bGroup.Count() );
 
-            foreach( IAssemblyInfo a in aGroup )
+            foreach ( IAssemblyInfo a in aGroup )
             {
                 Assert.That( bGroup
                     .Where( a2 => a2.FullName == a.FullName )

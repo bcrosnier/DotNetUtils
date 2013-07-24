@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProjectProber.Interfaces
+﻿namespace ProjectProber.Interfaces
 {
     /// <summary>
     /// Reference to an assembly, which is part of a NuGet package, from a project.

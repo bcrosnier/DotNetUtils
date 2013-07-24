@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using DependencyVersionChecker;
+using AssemblyProber;
 using QuickGraph;
 
-namespace DependencyVersionCheckerApp.Wpf.Graphing
+namespace AssemblyProberApp.Wpf.Graphing
 {
     [DebuggerDisplay( "{Source.Assembly} -> {Target.Assembly}" )]
     public class AssemblyEdge : Edge<AssemblyVertex>

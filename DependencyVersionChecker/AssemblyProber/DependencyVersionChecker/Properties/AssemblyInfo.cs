@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assemblyNameRef is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assemblyNameRef.
-[assembly: AssemblyTitle( "DependencyVersionChecker" )]
+[assembly: AssemblyTitle( "AssemblyProber" )]
 [assembly: AssemblyDescription( "Assembly description and referencing utilities" )]
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "B. Crosnier" )]
-[assembly: AssemblyProduct( "DependencyVersionChecker" )]
+[assembly: AssemblyProduct( "AssemblyProber" )]
 [assembly: AssemblyCopyright( "Copyright © 2013" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]

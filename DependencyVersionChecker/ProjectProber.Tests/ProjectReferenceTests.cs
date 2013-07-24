@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Build.Evaluation;
 using NUnit.Framework;
 using ProjectProber.Interfaces;
 
@@ -16,7 +12,7 @@ namespace ProjectProber.Tests
         [Test]
         public void TestReferences()
         {
-            var projectItem = GetDependencyVersionCheckerProjectItem();
+            var projectItem = GetAssemblyProberProjectItem();
             string filename = Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, projectItem.ProjectPath );
 
             Assert.That( File.Exists( filename ), "Found project file" );
@@ -26,7 +22,7 @@ namespace ProjectProber.Tests
             IEnumerable<string> hintPaths = ProjectUtils.GetPackageLibraryReferences( filename );
 
             List<IPackageLibraryReference> refs = new List<IPackageLibraryReference>();
-            foreach( string hintPath in hintPaths )
+            foreach ( string hintPath in hintPaths )
             {
                 IPackageLibraryReference libRef = ProjectUtils.ParseReferenceFromPath( hintPath );
                 refs.Add( libRef );
@@ -49,7 +45,7 @@ namespace ProjectProber.Tests
 
             Assert.That( Directory.Exists( packageRoot ), "NuGet package root exists" );
 
-            foreach( ISolutionProjectItem projectItem in s.Projects.Where( pi => SolutionUtils.GetProjectType(pi) == SolutionProjectType.VISUAL_C_SHARP ) )
+            foreach ( ISolutionProjectItem projectItem in s.Projects.Where( pi => SolutionUtils.GetProjectType( pi ) == SolutionProjectType.VISUAL_C_SHARP ) )
             {
                 string filename = Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, projectItem.ProjectPath );
 
@@ -57,14 +53,13 @@ namespace ProjectProber.Tests
 
                 IEnumerable<string> hintPaths = ProjectUtils.GetPackageLibraryReferences( filename );
 
-                foreach( string hintPath in hintPaths )
+                foreach ( string hintPath in hintPaths )
                 {
                     IPackageLibraryReference libRef = ProjectUtils.ParseReferenceFromPath( hintPath );
                     refs.Add( libRef );
                     var package = ProjectUtils.GetPackageFromReference( libRef, packageRoot );
                     packages.Add( package );
                 }
-
             }
 
             CollectionAssert.IsNotEmpty( refs );
@@ -84,13 +79,13 @@ namespace ProjectProber.Tests
             return i;
         }
 
-        public static ISolutionProjectItem GetDependencyVersionCheckerProjectItem()
+        public static ISolutionProjectItem GetAssemblyProberProjectItem()
         {
             ISolution s = SolutionParseTests.GetTestSolution();
 
-            ISolutionProjectItem i = s.Projects.Where( pi => pi.ProjectName == @"DependencyVersionChecker" ).FirstOrDefault();
+            ISolutionProjectItem i = s.Projects.Where( pi => pi.ProjectName == @"AssemblyProber" ).FirstOrDefault();
 
-            Assert.That( i != null, "Found DependencyVersionChecker project item" );
+            Assert.That( i != null, "Found AssemblyProber project item" );
 
             return i;
         }

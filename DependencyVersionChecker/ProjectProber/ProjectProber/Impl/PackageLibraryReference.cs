@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ProjectProber.Interfaces;
+﻿using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
-    class PackageLibraryReference : IPackageLibraryReference
+    internal class PackageLibraryReference : IPackageLibraryReference
     {
         #region IPackageLibraryReference Members
 
@@ -19,7 +14,7 @@ namespace ProjectProber.Impl
 
         public string FullPath { get; private set; }
 
-        #endregion
+        #endregion IPackageLibraryReference Members
 
         internal PackageLibraryReference( string packageIdVersion, string targetFramework, string assemblyFilename, string fullPath )
         {

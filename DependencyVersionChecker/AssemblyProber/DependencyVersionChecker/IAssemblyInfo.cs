@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DependencyVersionChecker
+namespace AssemblyProber
 {
     /// <summary>
     /// Information about a particular .NET assembly.
@@ -39,10 +39,8 @@ namespace DependencyVersionChecker
         /// </summary>
         byte[] PublicKeyToken { get; }
 
-        /**
-         * Properties above can be inferred from assembly reference.
-         * Properties below require assembly resolution.
-         */
+        // Properties above can be inferred from assembly reference.
+        // Properties below require assembly resolution.
 
         /// <summary>
         /// File version string, as usually declared in Properties/AssemblyInfo.cs,

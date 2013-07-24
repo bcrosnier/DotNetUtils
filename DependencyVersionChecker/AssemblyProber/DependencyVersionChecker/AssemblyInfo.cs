@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml.Serialization;
 
-namespace DependencyVersionChecker
+namespace AssemblyProber
 {
     /// <summary>
     /// Information about a particular .NET assembly.
@@ -81,10 +81,8 @@ namespace DependencyVersionChecker
         /// </summary>
         public byte[] PublicKeyToken { get; set; }
 
-        /**
-         * Properties above can be inferred from assembly reference.
-         * Properties below require assembly resolution.
-         */
+        // Properties above can be inferred from assembly reference.
+        // Properties below require assembly resolution.
 
         /// <summary>
         /// File version string, as usually declared in Properties/AssemblyInfo.cs,

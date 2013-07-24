@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProjectProber
+﻿namespace ProjectProber
 {
     /// <summary>
     /// Type of a solution project, eg. a C# project, a VB project, a solution folder, etc.
@@ -17,26 +11,32 @@ namespace ProjectProber
         /// Unknown/unreferenced project type.
         /// </summary>
         UNKNOWN,
+
         /// <summary>
         /// Solution folder.
         /// </summary>
         PROJECT_FOLDER,
+
         /// <summary>
         /// SQL Server database project.
         /// </summary>
         SQL_DATABASE_PROJECT,
+
         /// <summary>
         /// Visual C++ project.
         /// </summary>
         VISUAL_CPP,
+
         /// <summary>
         /// Visual Basic project.
         /// </summary>
         VISUAL_BASIC,
+
         /// <summary>
         /// Visual C# project.
         /// </summary>
         VISUAL_C_SHARP,
+
         /// <summary>
         /// Visual F# project.
         /// </summary>

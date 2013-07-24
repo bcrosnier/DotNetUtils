@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DependencyVersionCheckerApp.Wpf.Properties {
+namespace AssemblyProberApp.Wpf.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DependencyVersionCheckerApp.Wpf.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DependencyVersionCheckerApp.Wpf.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AssemblyProberApp.Wpf.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -81,7 +81,7 @@ namespace DependencyVersionCheckerApp.Wpf.Properties {
         ///
         ///Open the `File` menu, and select `Open directory`.
         ///
-        ///From the folder dialog, [rest of string was truncated]&quot;;.
+        ///From the folder dialog, select the folder c [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string README {
             get {

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
-    class SolutionProjectItem : ISolutionProjectItem
+    internal class SolutionProjectItem : ISolutionProjectItem
     {
         #region ISolutionProjectItem Members
 
@@ -19,7 +15,7 @@ namespace ProjectProber.Impl
 
         public string ProjectPath { get; private set; }
 
-        #endregion
+        #endregion ISolutionProjectItem Members
 
         internal SolutionProjectItem( Guid projectTypeGuid, Guid projectGuid, string projectName, string projectPath )
         {

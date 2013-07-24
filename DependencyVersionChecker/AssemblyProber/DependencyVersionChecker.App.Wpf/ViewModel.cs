@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DependencyVersionCheckerApp.Wpf
+namespace AssemblyProberApp.Wpf
 {
     public abstract class ViewModel : INotifyPropertyChanged
     {
@@ -17,7 +17,7 @@ namespace DependencyVersionCheckerApp.Wpf
         /// <param name="caller">Auto-filled with Member name, when called from a property.</param>
         protected void RaisePropertyChanged( [System.Runtime.CompilerServices.CallerMemberName] string caller = "" )
         {
-            if( PropertyChanged != null )
+            if ( PropertyChanged != null )
             {
                 PropertyChanged( this, new PropertyChangedEventArgs( caller ) );
             }

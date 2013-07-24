@@ -7,7 +7,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using CK.Core;
 
-namespace DependencyVersionCheckerApp.Wpf
+namespace AssemblyProberApp.Wpf
 {
     /// <summary>
     /// Logger client that manages strings in a string collection.
@@ -32,7 +32,7 @@ namespace DependencyVersionCheckerApp.Wpf
         /// <param name="maxLogEntries">Maximum number of entries</param>
         public ListBoxItemCollectionLoggerClient( Collection<ListBoxItem> targetCollection, int maxLogEntries )
         {
-            if( targetCollection == null ) throw new ArgumentNullException( "Output TextWriter must exist." );
+            if ( targetCollection == null ) throw new ArgumentNullException( "Output TextWriter must exist." );
             _outputCollection = targetCollection;
             _maxLogEntries = maxLogEntries;
         }
@@ -41,7 +41,7 @@ namespace DependencyVersionCheckerApp.Wpf
         {
             InvokeOnAppThread( () =>
             {
-                if( _outputCollection.Count >= _maxLogEntries )
+                if ( _outputCollection.Count >= _maxLogEntries )
                 {
                     _outputCollection.RemoveAt( 0 );
                 }
@@ -58,7 +58,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
         private static Brush GetColorFromLevel( LogLevel level )
         {
-            switch( level )
+            switch ( level )
             {
                 case LogLevel.Fatal:
                     return FATAL_COLOR;
@@ -128,7 +128,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
             this._currentPadding.Left += OFFSET_VALUE;
 
-            if( group.Exception != null )
+            if ( group.Exception != null )
             {
                 AddString( group.Exception.ToString(), ERROR_COLOR );
             }
@@ -148,7 +148,7 @@ namespace DependencyVersionCheckerApp.Wpf
         private static void InvokeOnAppThread( Action action )
         {
             Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if( dispatchObject == null || dispatchObject.CheckAccess() )
+            if ( dispatchObject == null || dispatchObject.CheckAccess() )
             {
                 action();
             }
@@ -160,7 +160,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
         private static string DescribeTraits( IEnumerable<CKTrait> traits )
         {
-            if( traits == null )
+            if ( traits == null )
                 return String.Empty;
 
             return String.Join( " ", traits );

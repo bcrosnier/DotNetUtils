@@ -5,11 +5,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "DependencyVersionCheckerApp.Wpf" )]
+[assembly: AssemblyTitle( "AssemblyProberApp.Wpf" )]
 [assembly: AssemblyDescription( "WPF assembly reference tree viewer" )]
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "B. Crosnier" )]
-[assembly: AssemblyProduct( "Dependency tree viewer" )]
+[assembly: AssemblyProduct( "AssemblyProber" )]
 [assembly: AssemblyCopyright( "Copyright © 2013" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]

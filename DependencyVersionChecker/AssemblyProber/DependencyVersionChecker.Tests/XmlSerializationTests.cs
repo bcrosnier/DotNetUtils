@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 
-namespace DependencyVersionChecker.Tests
+namespace AssemblyProber.Tests
 {
     [TestFixture]
     public class XmlSerializationTests
@@ -40,9 +40,9 @@ namespace DependencyVersionChecker.Tests
 
             AssemblyCheckTests.TestAssembliesInfo( assemblies );
 
-            using( MemoryStream ms = new MemoryStream() )
+            using ( MemoryStream ms = new MemoryStream() )
             {
-                using( XmlWriter w = XmlWriter.Create( ms ) )
+                using ( XmlWriter w = XmlWriter.Create( ms ) )
                 {
                     AssemblyInfoXmlSerializer.WriteToXmlWriter( assemblies, w );
                 }
@@ -78,9 +78,9 @@ namespace DependencyVersionChecker.Tests
 
             XmlReaderSettings rs = new XmlReaderSettings();
 
-            using( MemoryStream ms = new MemoryStream() )
+            using ( MemoryStream ms = new MemoryStream() )
             {
-                using( XmlWriter xw = XmlWriter.Create( ms, ws ) )
+                using ( XmlWriter xw = XmlWriter.Create( ms, ws ) )
                 {
                     serialized.WriteContentTo( xw );
                 }
@@ -94,7 +94,7 @@ namespace DependencyVersionChecker.Tests
 
                 ms.Seek( 0, System.IO.SeekOrigin.Begin );
 
-                using( XmlReader r = XmlReader.Create( ms, rs ) )
+                using ( XmlReader r = XmlReader.Create( ms, rs ) )
                 {
                     assemblies2 = AssemblyInfoXmlSerializer.ReadFromXmlReader( r ).ToList();
                 }
@@ -121,9 +121,9 @@ namespace DependencyVersionChecker.Tests
 
             XmlReaderSettings rs = new XmlReaderSettings();
 
-            using( MemoryStream ms = new MemoryStream() )
+            using ( MemoryStream ms = new MemoryStream() )
             {
-                using( XmlWriter xw = XmlWriter.Create( ms, ws ) )
+                using ( XmlWriter xw = XmlWriter.Create( ms, ws ) )
                 {
                     AssemblyInfoXmlSerializer.WriteToXmlWriter( assemblies, xw );
                 }
@@ -136,7 +136,7 @@ namespace DependencyVersionChecker.Tests
                 //    string s = sr.ReadToEnd();
                 //}
 
-                using( XmlReader r = XmlReader.Create( ms, rs ) )
+                using ( XmlReader r = XmlReader.Create( ms, rs ) )
                 {
                     assemblies2 = AssemblyInfoXmlSerializer.ReadFromXmlReader( r ).ToList();
                 }

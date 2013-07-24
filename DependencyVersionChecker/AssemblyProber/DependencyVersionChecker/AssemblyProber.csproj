@@ -4,17 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FFD4299F-70B1-4B3C-9BC9-045108F0A6BE}</ProjectGuid>
+    <ProjectGuid>{E28BEAB0-0116-400D-9AA1-5D4FD2B1DB89}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DependencyVersionChecker.Tests</RootNamespace>
-    <AssemblyName>DependencyVersionChecker.Tests</AssemblyName>
+    <RootNamespace>AssemblyProber</RootNamespace>
+    <AssemblyName>AssemblyProber</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,8 +23,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\AssemblyProber.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,27 +34,40 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CK.Core">
-      <HintPath>..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll</HintPath>
+      <HintPath>..\..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyCheckTests.cs" />
-    <Compile Include="AssemblyLoaderTests.cs" />
+    <Compile Include="AssemblyInfoXmlSerializer.cs" />
+    <Compile Include="DependencyAssembly.cs" />
+    <Compile Include="AssemblyCheckResult.cs" />
+    <Compile Include="AssemblyLoader.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AssemblyVersionChecker.cs" />
+    <Compile Include="IAssemblyInfo.cs" />
+    <Compile Include="IAssemblyLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UtilsTests.cs" />
-    <Compile Include="XmlSerializationTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DependencyVersionChecker\DependencyVersionChecker.csproj">
-      <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>
-      <Name>DependencyVersionChecker</Name>
-    </ProjectReference>
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

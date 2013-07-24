@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NuGet;
 using ProjectProber.Interfaces;
 
@@ -16,13 +14,13 @@ namespace ProjectProber
     /// <seealso cref="SolutionChecker.CheckSolutionFile"/>
     public class SolutionChecker
     {
-        ISolution _solution;
-        string _packageRoot;
+        private ISolution _solution;
+        private string _packageRoot;
 
-        Dictionary <string, IPackage> _solutionPackages;
-        Dictionary <string, List<string>> _packageVersions;
+        private Dictionary<string, IPackage> _solutionPackages;
+        private Dictionary<string, List<string>> _packageVersions;
 
-        Dictionary <ISolutionProjectItem, List<IPackageLibraryReference>> _projectReferences;
+        private Dictionary<ISolutionProjectItem, List<IPackageLibraryReference>> _projectReferences;
 
         /// <summary>
         /// Get a list of project referencing the given full package identifier (PackageId.PackageVersion)
@@ -34,8 +32,7 @@ namespace ProjectProber
             return
                 _projectReferences
                 .Where( x => x.Value.Any( y => y.PackageIdVersion == packageIdVersion ) )
-                .Select( x => x.Key);
-
+                .Select( x => x.Key );
         }
 
         /// <summary>
@@ -77,7 +74,7 @@ namespace ProjectProber
             }
         }
 
-        private SolutionChecker(ISolution s, string packageRoot)
+        private SolutionChecker( ISolution s, string packageRoot )
         {
             _solution = s;
             _packageRoot = packageRoot;
@@ -89,7 +86,7 @@ namespace ProjectProber
 
         private void Check()
         {
-            foreach( ISolutionProjectItem projectItem in _solution.Projects.Where( i => SolutionUtils.GetProjectType(i) == SolutionProjectType.VISUAL_C_SHARP ) )
+            foreach ( ISolutionProjectItem projectItem in _solution.Projects.Where( i => SolutionUtils.GetProjectType( i ) == SolutionProjectType.VISUAL_C_SHARP ) )
             {
                 List<IPackageLibraryReference> references = new List<IPackageLibraryReference>();
 
@@ -97,30 +94,31 @@ namespace ProjectProber
 
                 IEnumerable<string> packageAssemblyPaths = ProjectUtils.GetPackageLibraryReferences( projectPath, _solution.DirectoryPath );
 
-                foreach( string path in packageAssemblyPaths )
+                foreach ( string path in packageAssemblyPaths )
                 {
                     IPackageLibraryReference reference = ProjectUtils.ParseReferenceFromPath( path );
-                    if( reference == null )
+                    if ( reference == null )
                         continue;
 
                     references.Add( reference );
 
                     IPackage package = null;
-                    if( !_solutionPackages.TryGetValue( reference.PackageIdVersion, out package ) )
+                    if ( !_solutionPackages.TryGetValue( reference.PackageIdVersion, out package ) )
                     {
                         package = ProjectUtils.GetPackageFromReference( reference, _packageRoot );
 
                         _solutionPackages.Add( reference.PackageIdVersion, package );
 
                         List<string> packageIdVersions;
-                        if( !_packageVersions.TryGetValue( package.Id, out packageIdVersions ) )
+                        if ( !_packageVersions.TryGetValue( package.Id, out packageIdVersions ) )
                         {
                             packageIdVersions = new List<string>();
 
                             packageIdVersions.Add( reference.PackageIdVersion );
 
                             _packageVersions.Add( package.Id, packageIdVersions );
-                        } else if( !packageIdVersions.Contains( reference.PackageIdVersion ) )
+                        }
+                        else if ( !packageIdVersions.Contains( reference.PackageIdVersion ) )
                         {
                             packageIdVersions.Add( reference.PackageIdVersion );
                         }
@@ -138,9 +136,9 @@ namespace ProjectProber
         /// <returns>SolutionChecker object, containing properties with solution references, NuGet package reference, and other discrepancies.</returns>
         public static SolutionChecker CheckSolutionFile( string slnFilePath )
         {
-            if( String.IsNullOrEmpty( slnFilePath ) )
+            if ( String.IsNullOrEmpty( slnFilePath ) )
                 throw new ArgumentNullException( "slnFilePath" );
-            if( !File.Exists( slnFilePath ) )
+            if ( !File.Exists( slnFilePath ) )
                 throw new ArgumentException( "File must exist", "slnFilePath" );
 
             string packageRoot = Path.Combine( Path.GetDirectoryName( slnFilePath ), "packages" );
@@ -149,7 +147,7 @@ namespace ProjectProber
 
             ISolution s = SolutionFactory.ReadFromSolutionFile( slnFilePath );
 
-            SolutionChecker checker = new SolutionChecker(s, packageRoot);
+            SolutionChecker checker = new SolutionChecker( s, packageRoot );
 
             checker.Check();
 

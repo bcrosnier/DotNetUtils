@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyVersionChecker", "AssemblyProber\DependencyVersionChecker\DependencyVersionChecker.csproj", "{E28BEAB0-0116-400D-9AA1-5D4FD2B1DB89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyProber", "AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj", "{E28BEAB0-0116-400D-9AA1-5D4FD2B1DB89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyVersionChecker.Tests", "AssemblyProber\DependencyVersionChecker.Tests\DependencyVersionChecker.Tests.csproj", "{FFD4299F-70B1-4B3C-9BC9-045108F0A6BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyProber.Tests", "AssemblyProber\DependencyVersionChecker.Tests\AssemblyProber.Tests.csproj", "{FFD4299F-70B1-4B3C-9BC9-045108F0A6BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{56D0B43A-F060-4958-9682-5766616B4375}"
 	ProjectSection(SolutionItems) = preProject
@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostAssembly1", "TestAssemb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostAssembly2", "TestAssemblies\HostAssembly2\HostAssembly2.csproj", "{1905F633-A56F-48E9-84BA-7644129C3EA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyVersionChecker.App.Wpf", "AssemblyProber\DependencyVersionChecker.App.Wpf\DependencyVersionChecker.App.Wpf.csproj", "{D87C110A-C76F-4F8B-A0E4-B061C112498F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyProberApp.Wpf", "AssemblyProber\DependencyVersionChecker.App.Wpf\AssemblyProberApp.Wpf.csproj", "{D87C110A-C76F-4F8B-A0E4-B061C112498F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssemblyProber", "AssemblyProber", "{53A1DD4B-0431-4F68-9D71-E6221F7477FE}"
 EndProject

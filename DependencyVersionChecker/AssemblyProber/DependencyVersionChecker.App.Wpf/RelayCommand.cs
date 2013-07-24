@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace DependencyVersionCheckerApp.Wpf
+namespace AssemblyProberApp.Wpf
 {
     public class RelayCommand : ICommand
     {
@@ -22,7 +22,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public RelayCommand( Action<object> execute, Predicate<object> canExecute )
         {
-            if( execute == null )
+            if ( execute == null )
                 throw new ArgumentNullException( "execute" );
             _execute = execute;
             _canExecute = canExecute;

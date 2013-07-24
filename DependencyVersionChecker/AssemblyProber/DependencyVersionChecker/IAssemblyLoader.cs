@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace DependencyVersionChecker
+namespace AssemblyProber
 {
     /// <summary>
     /// Utility for describing an assembly, and its assembly dependencies.

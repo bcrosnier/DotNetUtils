@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using DependencyVersionChecker;
+using AssemblyProber;
 
-namespace DependencyVersionCheckerApp.Wpf
+namespace AssemblyProberApp.Wpf
 {
     public class AssemblyInfoViewModel
         : ViewModel
@@ -22,7 +22,7 @@ namespace DependencyVersionCheckerApp.Wpf
             }
             set
             {
-                if( value != _isSelected )
+                if ( value != _isSelected )
                 {
                     _isSelected = value;
                     RaisePropertyChanged();
@@ -38,7 +38,7 @@ namespace DependencyVersionCheckerApp.Wpf
             }
             set
             {
-                if( value != _isExpanded )
+                if ( value != _isExpanded )
                 {
                     _isExpanded = value;
                     RaisePropertyChanged();
@@ -54,7 +54,7 @@ namespace DependencyVersionCheckerApp.Wpf
             }
             private set
             {
-                if( value != _displayName )
+                if ( value != _displayName )
                 {
                     _displayName = value;
                     RaisePropertyChanged();
@@ -72,7 +72,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
         public AssemblyInfoViewModel( IAssemblyInfo assembly )
         {
-            if( assembly == null )
+            if ( assembly == null )
             {
                 throw new ArgumentNullException( "assembly" );
             }
@@ -82,7 +82,7 @@ namespace DependencyVersionCheckerApp.Wpf
 
             _displayName = assembly.FullName;
 
-            foreach( IAssemblyInfo dep in assembly.Dependencies )
+            foreach ( IAssemblyInfo dep in assembly.Dependencies )
             {
                 _children.Add( new AssemblyInfoViewModel( dep ) );
             }

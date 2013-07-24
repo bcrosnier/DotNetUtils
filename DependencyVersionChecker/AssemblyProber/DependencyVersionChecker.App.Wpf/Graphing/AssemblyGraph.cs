@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using DependencyVersionChecker;
+using AssemblyProber;
 using GraphSharp.Controls;
 using QuickGraph;
 
-namespace DependencyVersionCheckerApp.Wpf.Graphing
+namespace AssemblyProberApp.Wpf.Graphing
 {
     public class AssemblyGraph
         : BidirectionalGraph<AssemblyVertex, AssemblyEdge>
@@ -25,7 +25,7 @@ namespace DependencyVersionCheckerApp.Wpf.Graphing
                 .Where( x => x.Assembly == assembly )
                 .FirstOrDefault();
 
-            if( vertex != null )
+            if ( vertex != null )
                 vertex.IsMarked = true;
         }
     }

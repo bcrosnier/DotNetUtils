@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DependencyVersionChecker.App.Wpf
+namespace AssemblyProber.App.Wpf
 {
     /// <summary>
     /// Interaction logic for App.xaml

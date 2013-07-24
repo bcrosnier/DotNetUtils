@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Build.Evaluation;
 using ProjectProber.Impl;
 using ProjectProber.Interfaces;
@@ -44,7 +41,7 @@ namespace ProjectProber
         public static IEnumerable<ProjectItem> LoadProjectReferencesFromFile( string projectPath, string solutionDir )
         {
             Dictionary<string, string> globalProperties = new Dictionary<string, string>();
-            if( solutionDir != null )
+            if ( solutionDir != null )
             {
                 globalProperties.Add( "SolutionDir", solutionDir );
             }
@@ -58,7 +55,7 @@ namespace ProjectProber
             return items;
         }
 
-        public static IEnumerable<string> GetPackageLibraryReferences( string projectPath)
+        public static IEnumerable<string> GetPackageLibraryReferences( string projectPath )
         {
             return GetPackageLibraryReferences( projectPath, null );
         }
@@ -84,7 +81,7 @@ namespace ProjectProber
         public static IPackageLibraryReference ParseReferenceFromPath( string path )
         {
             Match m = Regex.Match( path, PACKAGE_PATH_PATTERN );
-            if( m.Success )
+            if ( m.Success )
             {
                 string packageIdVersion = m.Groups[1].Value;
                 string targetFramework = m.Groups[2].Value;

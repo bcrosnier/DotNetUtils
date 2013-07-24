@@ -2,7 +2,7 @@
 using System.IO;
 using NUnit.Framework;
 
-namespace DependencyVersionChecker.Tests
+namespace AssemblyProber.Tests
 {
     [TestFixture]
     public class UtilsTests
@@ -13,8 +13,8 @@ namespace DependencyVersionChecker.Tests
             string targetAbsolutePath = Path.GetFullPath( Path.Combine( Environment.CurrentDirectory, "..", "..", "bin", "Release" ) );
             string relativeFolder = Environment.CurrentDirectory;
 
-            string relativePath = DependencyUtils.MakeRelativePath( targetAbsolutePath, relativeFolder );
-            string reconvertedAbsolutePath = DependencyUtils.MakeAbsolutePath( relativePath, relativeFolder );
+            string relativePath = StringUtils.MakeRelativePath( targetAbsolutePath, relativeFolder );
+            string reconvertedAbsolutePath = StringUtils.MakeAbsolutePath( relativePath, relativeFolder );
 
             Assert.That( reconvertedAbsolutePath == targetAbsolutePath, "New absolute path is correct old one" );
         }
@@ -26,8 +26,8 @@ namespace DependencyVersionChecker.Tests
             byte[] bytes = new byte[8];
             random.NextBytes( bytes );
 
-            string hexstr = DependencyUtils.ByteArrayToHexString( bytes );
-            byte[] hexarr = DependencyUtils.HexStringToByteArray( hexstr );
+            string hexstr = StringUtils.ByteArrayToHexString( bytes );
+            byte[] hexarr = StringUtils.HexStringToByteArray( hexstr );
 
             CollectionAssert.AreEqual( bytes, hexarr, "Could convert hex string back" );
         }
