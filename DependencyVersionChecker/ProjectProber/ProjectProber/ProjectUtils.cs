@@ -55,11 +55,22 @@ namespace ProjectProber
             return items;
         }
 
+        /// <summary>
+        /// Gets all package identifiers referenced by a project file, using default settings.
+        /// </summary>
+        /// <param name="projectPath">Project file to use</param>
+        /// <returns>Collection of package identifiers referenced by the project file</returns>
         public static IEnumerable<string> GetPackageLibraryReferences( string projectPath )
         {
             return GetPackageLibraryReferences( projectPath, null );
         }
 
+        /// <summary>
+        /// Gets all package identifiers referenced by a project file, setting the correct SolutionDir property when evaluating data.
+        /// </summary>
+        /// <param name="projectPath">Project file to use</param>
+        /// <param name="solutionDir">Solution directory path</param>
+        /// <returns>Collection of package identifiers referenced by the project file</returns>
         public static IEnumerable<string> GetPackageLibraryReferences( string projectPath, string solutionDir )
         {
             var items = LoadProjectReferencesFromFile( projectPath, solutionDir );
@@ -78,6 +89,11 @@ namespace ProjectProber
             return hintPaths.Select( a => a.EvaluatedValue );
         }
 
+        /// <summary>
+        /// Parse a NuGet package assembly reference from its path to the project
+        /// </summary>
+        /// <param name="path">Path string to parse</param>
+        /// <returns>New assembly reference</returns>
         public static IPackageLibraryReference ParseReferenceFromPath( string path )
         {
             Match m = Regex.Match( path, PACKAGE_PATH_PATTERN );
@@ -97,6 +113,12 @@ namespace ProjectProber
             }
         }
 
+        /// <summary>
+        /// Find and open a particular NuGet package using a package assembly reference
+        /// </summary>
+        /// <param name="libReference">Package assembly reference to use</param>
+        /// <param name="packageRoot">Root of the NuGet package directory, which contains all NuGet packages</param>
+        /// <returns>Opened NuGet package information</returns>
         public static NuGet.IPackage GetPackageFromReference( IPackageLibraryReference libReference, string packageRoot )
         {
             string packageFile = Path.Combine( packageRoot, libReference.PackageIdVersion, libReference.PackageIdVersion + ".nupkg" );

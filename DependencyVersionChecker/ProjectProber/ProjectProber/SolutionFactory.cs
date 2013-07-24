@@ -45,7 +45,7 @@ namespace ProjectProber
         /// <summary>
         /// Read solution (.sln) files from a directory, and create ISolution objects out of those.
         /// </summary>
-        /// <param name="filePath">Path of the solution directory containing .sln files. Must exist.</param>
+        /// <param name="directoryPath">Path of the solution directory containing .sln files. Must exist.</param>
         /// <returns>ISolution objects</returns>
         public static IEnumerable<ISolution> ReadSolutionsFromDirectory( string directoryPath )
         {

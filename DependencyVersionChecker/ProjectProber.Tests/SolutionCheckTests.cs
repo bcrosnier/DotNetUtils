@@ -15,9 +15,9 @@ namespace ProjectProber.Tests
         {
             IActivityLogger logger = TestUtils.CreateLogger();
 
-            SolutionChecker c = SolutionChecker.CheckSolutionFile( SolutionParseTests.TEST_SLN_FILE_PATH );
+            SolutionChecker d = SolutionChecker.CheckSolutionFile( SolutionParseTests.TEST_SLN_FILE_PATH );
 
-            SolutionChecker d = SolutionChecker.CheckSolutionFile( @"D:\Benjamin\Development\CSharp\ck-certified\CK-Certified.sln" );
+            //SolutionChecker d = SolutionChecker.CheckSolutionFile( @"D:\Benjamin\Development\CSharp\ck-certified\CK-Certified.sln" );
 
             foreach ( KeyValuePair<string, List<string>> pair in d.PackageNamesWithMultipleVersions.OrderBy( x => x.Key ) )
             {
