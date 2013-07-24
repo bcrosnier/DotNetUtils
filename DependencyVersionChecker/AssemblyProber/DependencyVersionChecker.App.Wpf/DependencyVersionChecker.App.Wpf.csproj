@@ -162,7 +162,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DependencyVersionChecker\DependencyVersionChecker.csproj">
       <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>
-      <Name>DependencyVersionChecker %28DependencyVersionChecker\DependencyVersionChecker%29</Name>
+      <Name>DependencyVersionChecker</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
