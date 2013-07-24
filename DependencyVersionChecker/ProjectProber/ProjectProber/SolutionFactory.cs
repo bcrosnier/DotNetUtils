@@ -11,6 +11,9 @@ using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Static utility helper to generate ISolutiob objects from solution files.
+    /// </summary>
     public static class SolutionFactory
     {
         /// <summary>
@@ -24,6 +27,11 @@ namespace ProjectProber
         /// </remarks>
         private static readonly string SOLUTION_PROJECT_PATTERN = @"^Project\(\""([^""]*)\""\) = \""([^""]*)\"", \""([^""]*)\"", \""([^""]*)\""$";
 
+        /// <summary>
+        /// Read a solution (.sln) file, and create a ISolution object out of it.
+        /// </summary>
+        /// <param name="filePath">Path of the solution file. Must exist.</param>
+        /// <returns>ISolution object</returns>
         public static ISolution ReadFromSolutionFile( string filePath )
         {
             if( String.IsNullOrEmpty( filePath ) )
@@ -38,6 +46,11 @@ namespace ProjectProber
             return solution;
         }
 
+        /// <summary>
+        /// Read solution (.sln) files from a directory, and create ISolution objects out of those.
+        /// </summary>
+        /// <param name="filePath">Path of the solution directory containing .sln files. Must exist.</param>
+        /// <returns>ISolution objects</returns>
         public static IEnumerable<ISolution> ReadSolutionsFromDirectory( string directoryPath )
         {
             if( String.IsNullOrEmpty( directoryPath ) )

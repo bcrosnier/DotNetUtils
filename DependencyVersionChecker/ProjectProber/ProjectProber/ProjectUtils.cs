@@ -12,15 +12,35 @@ using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Static utilities to handle parsing of projects, and project references.
+    /// </summary>
     public static class ProjectUtils
     {
-        private static readonly string PACKAGE_PATH_PATTERN = @"\.\.\\packages\\([^\\]+)\\lib\\(?:([^\\]+)\\)?([^\\]+)";
+        /// <summary>
+        /// Pattern to detect package assembly references. Used to create IPackageLibraryReference.
+        /// 1: Full package identifier (eg. CK.Core.1.0.0)
+        /// 2: [optional] Target Framework (eg. net45)
+        /// 3: Assembly file name (eg. CK.Core.dll)
+        /// </summary>
+        private static readonly string PACKAGE_PATH_PATTERN = @"\\packages\\([^\\]+)\\lib\\(?:([^\\]+)\\)?([^\\]+)$";
 
+        /// <summary>
+        /// Load project references from a project file, using default settings.
+        /// </summary>
+        /// <param name="projectPath">Project (.csproj) path</param>
+        /// <returns>Reference ProjectItem</returns>
         public static IEnumerable<ProjectItem> LoadProjectReferencesFromFile( string projectPath )
         {
             return LoadProjectReferencesFromFile( projectPath, null );
         }
 
+        /// <summary>
+        /// Load project references from a project file, setting the correct SolutionDir property when evaluating data.
+        /// </summary>
+        /// <param name="projectPath">Project (.csproj) path</param>
+        /// <param name="solutionDir">Solution directory path</param>
+        /// <returns>Reference ProjectItem</returns>
         public static IEnumerable<ProjectItem> LoadProjectReferencesFromFile( string projectPath, string solutionDir )
         {
             Dictionary<string, string> globalProperties = new Dictionary<string, string>();
@@ -42,6 +62,7 @@ namespace ProjectProber
         {
             return GetPackageLibraryReferences( projectPath, null );
         }
+
         public static IEnumerable<string> GetPackageLibraryReferences( string projectPath, string solutionDir )
         {
             var items = LoadProjectReferencesFromFile( projectPath, solutionDir );

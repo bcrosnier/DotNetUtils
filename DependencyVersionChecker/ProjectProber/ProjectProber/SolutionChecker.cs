@@ -10,6 +10,10 @@ using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Solution check helper. Use CheckSolutionFile() to use.
+    /// </summary>
+    /// <seealso cref="SolutionChecker.CheckSolutionFile"/>
     public class SolutionChecker
     {
         ISolution _solution;
@@ -20,6 +24,11 @@ namespace ProjectProber
 
         Dictionary <ISolutionProjectItem, List<IPackageLibraryReference>> _projectReferences;
 
+        /// <summary>
+        /// Get a list of project referencing the given full package identifier (PackageId.PackageVersion)
+        /// </summary>
+        /// <param name="packageIdVersion">Package identifier to search, in the format "PackageId.PackageVersion", eg. CK.Core.2.8.14</param>
+        /// <returns></returns>
         public IEnumerable<ISolutionProjectItem> GetProjectsReferencing( string packageIdVersion )
         {
             return
@@ -29,6 +38,9 @@ namespace ProjectProber
 
         }
 
+        /// <summary>
+        /// Gets a dictionary associating the full package identifiers (PackageId.PackageVersion) to their found NuGet IPackages.
+        /// </summary>
         public IReadOnlyDictionary<string, IPackage> Packages
         {
             get
@@ -37,6 +49,9 @@ namespace ProjectProber
             }
         }
 
+        /// <summary>
+        /// Gets a dictionary associating solution projects to all their NuGet package references.
+        /// </summary>
         public IReadOnlyDictionary<ISolutionProjectItem, List<IPackageLibraryReference>> ProjectReferences
         {
             get
@@ -45,6 +60,15 @@ namespace ProjectProber
             }
         }
 
+        /// <summary>
+        /// Gets a dictionary associating a simple package id (eg. CK.Core) to all matching full package identifiers detected during the check, when there are multiple.
+        /// </summary>
+        /// <example>
+        /// There are two CK.Core with two distinct versions referenced during the check.
+        /// Entry will be:
+        /// Key: CK.Core
+        /// Value: { "CK.Core.2.1.0", "CK.Core.2.8.5" }
+        /// </example>
         public IDictionary<string, List<string>> PackageNamesWithMultipleVersions
         {
             get
@@ -107,6 +131,11 @@ namespace ProjectProber
             }
         }
 
+        /// <summary>
+        /// Checks given solution file for any discrepancies.
+        /// </summary>
+        /// <param name="slnFilePath">Solution file to check. Must exist.</param>
+        /// <returns>SolutionChecker object, containing properties with solution references, NuGet package reference, and other discrepancies.</returns>
         public static SolutionChecker CheckSolutionFile( string slnFilePath )
         {
             if( String.IsNullOrEmpty( slnFilePath ) )

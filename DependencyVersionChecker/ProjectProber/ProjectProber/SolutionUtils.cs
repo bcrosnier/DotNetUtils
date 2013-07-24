@@ -7,8 +7,16 @@ using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Static solution utilities.
+    /// </summary>
     public static class SolutionUtils
     {
+        /// <summary>
+        /// Dictionary mapping known project type Guids to their Enum equivalent. Used by GetProjectType().
+        /// </summary>
+        /// <seealso cref="ProjectProber.SolutionUtils.GetProjectType"/>
+        /// <seealso cref="ProjectProber.SolutionProjectType"/>
         public static readonly IReadOnlyDictionary<Guid, SolutionProjectType> ProjectTypes =
             new Dictionary<Guid, SolutionProjectType>()
             {
@@ -20,8 +28,11 @@ namespace ProjectProber
                 { new Guid( "F2A71F9B-5D33-465A-A702-920D77279786" ), SolutionProjectType.VISUAL_F_SHARP },
             };
 
-        public static readonly Guid CSharpProjectType = new Guid( "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC" );
-
+        /// <summary>
+        /// Gets the SolutionProjectType of a given ISolutionProjectItem, using the ProjectTypes dictionary.
+        /// </summary>
+        /// <param name="projectItem">Project item to get type of</param>
+        /// <returns>Type of project item, or SolutionProjectType.UNKNOWN if it couldn't be guessed.</returns>
         public static SolutionProjectType GetProjectType( ISolutionProjectItem projectItem )
         {
             SolutionProjectType projectType = SolutionProjectType.UNKNOWN;

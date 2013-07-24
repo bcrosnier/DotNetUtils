@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ProjectProber.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,6 +54,7 @@
     <Compile Include="Interfaces\ISolutionProjectItem.cs" />
     <Compile Include="ProjectUtils.cs" />
     <Compile Include="SolutionChecker.cs" />
+    <Compile Include="SolutionCheckResult.cs" />
     <Compile Include="SolutionFactory.cs" />
     <Compile Include="SolutionProjectType.cs" />
     <Compile Include="SolutionUtils.cs" />
