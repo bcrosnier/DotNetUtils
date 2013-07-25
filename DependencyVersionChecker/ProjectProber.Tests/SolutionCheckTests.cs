@@ -66,7 +66,6 @@ namespace ProjectProber.Tests
             }
 
             // Serialization test
-            string s;
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = ("\t");

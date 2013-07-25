@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectProber", "ProjectPro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectProber.Tests", "ProjectProber.Tests\ProjectProber.Tests.csproj", "{A9835441-7C89-4695-A8E3-84299B3C9282}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolutionChecker", "SolutionChecker\SolutionChecker.csproj", "{D57B0B29-0C9D-4826-8518-0F8898EE8D11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{A9835441-7C89-4695-A8E3-84299B3C9282}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9835441-7C89-4695-A8E3-84299B3C9282}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9835441-7C89-4695-A8E3-84299B3C9282}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D57B0B29-0C9D-4826-8518-0F8898EE8D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D57B0B29-0C9D-4826-8518-0F8898EE8D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D57B0B29-0C9D-4826-8518-0F8898EE8D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D57B0B29-0C9D-4826-8518-0F8898EE8D11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +87,7 @@ Global
 		{1905F633-A56F-48E9-84BA-7644129C3EA4} = {63709F92-300A-4078-9585-114054D0C40C}
 		{7562AA82-1946-4D4F-9672-CC3D2322A4F8} = {2494264F-1AFA-401B-9640-1A8875EB90F7}
 		{A9835441-7C89-4695-A8E3-84299B3C9282} = {2494264F-1AFA-401B-9640-1A8875EB90F7}
+		{D57B0B29-0C9D-4826-8518-0F8898EE8D11} = {2494264F-1AFA-401B-9640-1A8875EB90F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35

@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet type='text/xsl' href='SolutionCheckResult.xslt'?>
+<SolutionCheckResult Path="D:\Benjamin\Development\CSharp\DependencyVersionChecker\DependencyVersionChecker\AssemblyProber.sln">
+	<PackageVersionMismatches />
+	<Projects>
+		<Project Name="AssemblyProber" Path="AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj">
+			<NuGetPackageReferences>
+				<NuGetPackageRef Id="CK.Core" Version="2.8.14" TargetFramework="net45" />
+				<NuGetPackageRef Id="Mono.Cecil" Version="0.9.5.4" TargetFramework="net45" />
+			</NuGetPackageReferences>
+			<NuGetAssemblyReferences>
+				<NuGetAssemblyRef Name="CK.Core.dll" PackageId="CK.Core.2.8.14" Path="..\..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.Mdb.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.Pdb.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.Rocks.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll" />
+			</NuGetAssemblyReferences>
+		</Project>
+		<Project Name="AssemblyProber.Tests" Path="AssemblyProber\DependencyVersionChecker.Tests\AssemblyProber.Tests.csproj">
+			<NuGetPackageReferences>
+				<NuGetPackageRef Id="CK.Core" Version="2.8.14" TargetFramework="net45" />
+			</NuGetPackageReferences>
+			<NuGetAssemblyReferences>
+				<NuGetAssemblyRef Name="CK.Core.dll" PackageId="CK.Core.2.8.14" Path="..\..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll" />
+			</NuGetAssemblyReferences>
+		</Project>
+		<Project Name="AssemblyProberApp.Wpf" Path="AssemblyProber\DependencyVersionChecker.App.Wpf\AssemblyProberApp.Wpf.csproj">
+			<NuGetPackageReferences>
+				<NuGetPackageRef Id="CK.Core" Version="2.8.14" TargetFramework="net45" />
+				<NuGetPackageRef Id="GraphSharp" Version="1.1.0.0" TargetFramework="net45" />
+				<NuGetPackageRef Id="Mono.Cecil" Version="0.9.5.4" TargetFramework="net45" />
+				<NuGetPackageRef Id="QuickGraph" Version="3.6.61119.7" TargetFramework="net45" />
+				<NuGetPackageRef Id="WPFExtensions" Version="1.0.0" TargetFramework="net45" />
+			</NuGetPackageReferences>
+			<NuGetAssemblyReferences>
+				<NuGetAssemblyRef Name="CK.Core.dll" PackageId="CK.Core.2.8.14" Path="..\..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll" />
+				<NuGetAssemblyRef Name="GraphSharp.dll" PackageId="GraphSharp.1.1.0.0" Path="..\..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.dll" />
+				<NuGetAssemblyRef Name="GraphSharp.Controls.dll" PackageId="GraphSharp.1.1.0.0" Path="..\..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.Controls.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.Mdb.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.Pdb.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll" />
+				<NuGetAssemblyRef Name="Mono.Cecil.Rocks.dll" PackageId="Mono.Cecil.0.9.5.4" Path="..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll" />
+				<NuGetAssemblyRef Name="QuickGraph.dll" PackageId="QuickGraph.3.6.61119.7" Path="..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll" />
+				<NuGetAssemblyRef Name="QuickGraph.Data.dll" PackageId="QuickGraph.3.6.61119.7" Path="..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Data.dll" />
+				<NuGetAssemblyRef Name="QuickGraph.Graphviz.dll" PackageId="QuickGraph.3.6.61119.7" Path="..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Graphviz.dll" />
+				<NuGetAssemblyRef Name="QuickGraph.Serialization.dll" PackageId="QuickGraph.3.6.61119.7" Path="..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Serialization.dll" />
+				<NuGetAssemblyRef Name="WPFExtensions.dll" PackageId="WPFExtensions.1.0.0" Path="..\..\packages\WPFExtensions.1.0.0\lib\WPFExtensions.dll" />
+			</NuGetAssemblyReferences>
+		</Project>
+		<Project Name="DependencyAssembly" Path="TestAssemblies\DependencyAssembly\DependencyAssembly.csproj">
+			<NuGetPackageReferences />
+			<NuGetAssemblyReferences />
+		</Project>
+		<Project Name="HostAssembly1" Path="TestAssemblies\HostAssembly1\HostAssembly1.csproj">
+			<NuGetPackageReferences />
+			<NuGetAssemblyReferences />
+		</Project>
+		<Project Name="HostAssembly2" Path="TestAssemblies\HostAssembly2\HostAssembly2.csproj">
+			<NuGetPackageReferences />
+			<NuGetAssemblyReferences />
+		</Project>
+		<Project Name="ProjectProber" Path="ProjectProber\ProjectProber\ProjectProber.csproj">
+			<NuGetPackageReferences>
+				<NuGetPackageRef Id="Microsoft.Web.Xdt" Version="1.0.0" TargetFramework="net45" />
+				<NuGetPackageRef Id="Nuget.Core" Version="2.6.0.1" TargetFramework="net45" />
+			</NuGetPackageReferences>
+			<NuGetAssemblyReferences>
+				<NuGetAssemblyRef Name="Microsoft.Web.XmlTransform.dll" PackageId="Microsoft.Web.Xdt.1.0.0" Path="..\..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll" />
+				<NuGetAssemblyRef Name="NuGet.Core.dll" PackageId="Nuget.Core.2.6.0.1" Path="..\..\packages\Nuget.Core.2.6.0.1\lib\net40-Client\NuGet.Core.dll" />
+			</NuGetAssemblyReferences>
+		</Project>
+		<Project Name="ProjectProber.Tests" Path="ProjectProber.Tests\ProjectProber.Tests.csproj">
+			<NuGetPackageReferences>
+				<NuGetPackageRef Id="CK.Core" Version="2.8.14" TargetFramework="net45" />
+				<NuGetPackageRef Id="Microsoft.Web.Xdt" Version="1.0.0" TargetFramework="net45" />
+				<NuGetPackageRef Id="Nuget.Core" Version="2.6.0.1" TargetFramework="net45" />
+			</NuGetPackageReferences>
+			<NuGetAssemblyReferences>
+				<NuGetAssemblyRef Name="CK.Core.dll" PackageId="CK.Core.2.8.14" Path="..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll" />
+				<NuGetAssemblyRef Name="Microsoft.Web.XmlTransform.dll" PackageId="Microsoft.Web.Xdt.1.0.0" Path="..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll" />
+				<NuGetAssemblyRef Name="NuGet.Core.dll" PackageId="Nuget.Core.2.6.0.1" Path="..\packages\Nuget.Core.2.6.0.1\lib\net40-Client\NuGet.Core.dll" />
+			</NuGetAssemblyReferences>
+		</Project>
+		<Project Name="SolutionChecker" Path="SolutionChecker\SolutionChecker.csproj">
+			<NuGetPackageReferences>
+				<NuGetPackageRef Id="CK.Core" Version="2.8.14" TargetFramework="net45" />
+			</NuGetPackageReferences>
+			<NuGetAssemblyReferences>
+				<NuGetAssemblyRef Name="CK.Core.dll" PackageId="CK.Core.2.8.14" Path="..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll" />
+			</NuGetAssemblyReferences>
+		</Project>
+	</Projects>
+	<NuGetPackages>
+		<NuGetPackage Id="CK.Core" Version="2.8.14">
+			<Title />
+			<Description>A set of utility interfaces and classes.</Description>
+		</NuGetPackage>
+		<NuGetPackage Id="GraphSharp" Version="1.1.0.0">
+			<Title>GraphSharp</Title>
+			<Description>Graph# is a graph layout framework. It contains some layout algorithms and a GraphLayout control for WPF applications. This is a unofficial release of the library.</Description>
+		</NuGetPackage>
+		<NuGetPackage Id="Microsoft.Web.Xdt" Version="1.0.0">
+			<Title>Microsoft Xml Document Transformation</Title>
+			<Description>Microsoft Xml Document Transformation (XDT) library. For more info on XDT please visit http://msdn.microsoft.com/en-us/library/dd465326.aspx.</Description>
+		</NuGetPackage>
+		<NuGetPackage Id="Mono.Cecil" Version="0.9.5.4">
+			<Title>Mono.Cecil</Title>
+			<Description>Cecil is a library written by Jb Evain to generate and inspect programs and libraries in the ECMA CIL format. It has full support for generics, and support some debugging symbol format. In simple English, with Cecil, you can load existing managed assemblies, browse all the contained types, modify them on the fly and save back to the disk the modified assembly.</Description>
+		</NuGetPackage>
+		<NuGetPackage Id="Nuget.Core" Version="2.6.0.1">
+			<Title />
+			<Description>NuGet.Core is the core framework assembly for NuGet that the rest of NuGet builds upon.</Description>
+		</NuGetPackage>
+		<NuGetPackage Id="QuickGraph" Version="3.6.61119.7">
+			<Title>Generic graph data structures and algorithms for .NET</Title>
+			<Description>QuickGraph provides generic directed/undirected graph datastructures and algorithms for .Net, Silverlight, Windows Phone and Win 8. 
+      QuickGraph comes with algorithms such as depth first seach, breath first search, A* search, shortest path, 
+      k-shortest path, maximum flow, minimum spanning tree, least common ancestors, etc...</Description>
+		</NuGetPackage>
+		<NuGetPackage Id="WPFExtensions" Version="1.0.0">
+			<Title></Title>
+			<Description>Some extensions for the WPF framework.
+Controls, attached behaviours, helper classes, etc.</Description>
+		</NuGetPackage>
+	</NuGetPackages>
+</SolutionCheckResult>
