@@ -20,7 +20,7 @@ namespace ProjectProber
         /// </summary>
         /// <param name="filePath">Solution file path</param>
         /// <returns>SolutionCheckResult</returns>
-        public static SolutionCheckResult NewCheckSolutionFile( string filePath )
+        public static SolutionCheckResult CheckSolutionFile( string filePath )
         {
             if( String.IsNullOrEmpty( filePath ) )
                 throw new ArgumentNullException( "filePath" );
@@ -37,6 +37,9 @@ namespace ProjectProber
 
             Dictionary<ISolutionProjectItem, List<INuGetPackageAssemblyReference>> assemblyReferences =
                 new Dictionary<ISolutionProjectItem, List<INuGetPackageAssemblyReference>>();
+
+            Dictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> projectPackageReferences =
+                new Dictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>>();
 
             ISolution solution = SolutionFactory.ReadFromSolutionFile( filePath );
 
@@ -67,11 +70,13 @@ namespace ProjectProber
 
                 assemblyReferences.Add( projectItem, projectAssemblyReferences );
 
+                IEnumerable<INuGetPackageReference> packageReferences = null;
                 // Check NuGet packages from package configuration
                 if( File.Exists( packagesConfigPath ) ) // No packages.config : No NuGet package for this project
                 {
-                    IEnumerable<INuGetPackageReference> packageReferences =
+                    packageReferences =
                     ProjectUtils.GetReferencesFromPackageConfig( packagesConfigPath );
+
 
                     foreach( INuGetPackageReference packageRef in packageReferences )
                     {
@@ -81,20 +86,24 @@ namespace ProjectProber
                         if( !solutionPackages.TryGetValue( packageIdentifier, out package ) )
                         {
                             package = packageRef.GetPackageFromRepository( localRepository );
-                            solutionPackages.Add( packageIdentifier, package );
+                            if( package != null )
+                                solutionPackages.Add( packageIdentifier, package );
                         }
 
                         // Might want to link project to package directly here later
                     }
                 }
+                projectPackageReferences.Add( projectItem, packageReferences );
             }
 
 
             SolutionCheckResult result =
                 new SolutionCheckResult(
+                    filePath,
                     solutionPackages.Values,
                     supportedProjectItems,
-                    assemblyReferences.ToDictionary( x => x.Key, x => (IEnumerable<INuGetPackageAssemblyReference>)x.Value )
+                    assemblyReferences.ToDictionary( x => x.Key, x => (IEnumerable<INuGetPackageAssemblyReference>)x.Value ),
+                    projectPackageReferences.ToDictionary( x => x.Key, x => (IEnumerable<INuGetPackageReference>)x.Value )
                     );
 
             return result;

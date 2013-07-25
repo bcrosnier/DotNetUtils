@@ -11,6 +11,11 @@ namespace ProjectProber
     public class SolutionCheckResult
     {
         /// <summary>
+        /// Path of the solution file (.sln)
+        /// </summary>
+        public string SolutionPath { get; private set; }
+
+        /// <summary>
         /// Evaluated NuGet packages from all projects of the solution.
         /// </summary>
         public IEnumerable<IPackage> NuGetPackages { get; private set; }
@@ -25,10 +30,21 @@ namespace ProjectProber
         /// </summary>
         /// <remarks>
         /// </remarks>
-        public IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageAssemblyReference>> ProjectReferences
+        public IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageAssemblyReference>> ProjectAssemblyReferences
         {
             get;
-            internal set;
+            private set;
+        }
+
+        /// <summary>
+        /// Dictionary associating each project of the solution to all of its references to NuGet packages.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        public IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> ProjectNugetReferences
+        {
+            get;
+            private set;
         }
 
         /// <summary>
@@ -54,17 +70,20 @@ namespace ProjectProber
         public IEnumerable<ISolutionProjectItem> GetProjectsReferencing( string packageIdVersion )
         {
             return
-                ProjectReferences
+                ProjectAssemblyReferences
                 .Where( x => x.Value.Any( y => y.PackageIdVersion == packageIdVersion ) )
                 .Select( x => x.Key );
         }
 
-        internal SolutionCheckResult(IEnumerable<IPackage> scannedPackages, IEnumerable<ISolutionProjectItem> projects,
-            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageAssemblyReference>> references)
+        internal SolutionCheckResult( string solutionPath, IEnumerable<IPackage> scannedPackages, IEnumerable<ISolutionProjectItem> projects,
+            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageAssemblyReference>> assemblyReferences,
+            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> packageReferences)
         {
+            SolutionPath = solutionPath;
             NuGetPackages = scannedPackages;
             Projects = projects;
-            ProjectReferences = references;
+            ProjectAssemblyReferences = assemblyReferences;
+            ProjectNugetReferences = packageReferences;
 
             // Here, we search any discrepancies.
             // Look for multiple versions of each NuGet package.
