@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
+    [DebuggerDisplay( "{ProjectName}" )]
     internal class SolutionProjectItem : ISolutionProjectItem
     {
         #region ISolutionProjectItem Members

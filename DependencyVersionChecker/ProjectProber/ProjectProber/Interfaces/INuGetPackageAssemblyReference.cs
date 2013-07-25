@@ -6,7 +6,7 @@
     /// <remarks>
     /// Can be parsed from a project reference path using ProjectUtils.ParseReferenceFromPath.
     /// </remarks>
-    public interface IPackageLibraryReference
+    public interface INuGetPackageAssemblyReference
     {
         /// <summary>
         /// The full identifier of the NuGet package, in its format PackageId.PackageVersion, as seen on the file system.

@@ -5,153 +5,99 @@ using System.IO;
 using System.Linq;
 using NuGet;
 using ProjectProber.Interfaces;
+using ProjectProber;
 
 namespace ProjectProber
 {
     /// <summary>
-    /// Solution check helper. Use CheckSolutionFile() to use.
+    /// Solution checking utility.
     /// </summary>
     /// <seealso cref="SolutionChecker.CheckSolutionFile"/>
-    public class SolutionChecker
+    public static class SolutionChecker
     {
-        private ISolution _solution;
-        private string _packageRoot;
-
-        private Dictionary<string, IPackage> _solutionPackages;
-        private Dictionary<string, List<string>> _packageVersions;
-
-        private Dictionary<ISolutionProjectItem, List<IPackageLibraryReference>> _projectReferences;
-
         /// <summary>
-        /// Get a list of project referencing the given full package identifier (PackageId.PackageVersion)
+        /// Checks a solution file.
         /// </summary>
-        /// <param name="packageIdVersion">Package identifier to search, in the format "PackageId.PackageVersion", eg. CK.Core.2.8.14</param>
-        /// <returns></returns>
-        public IEnumerable<ISolutionProjectItem> GetProjectsReferencing( string packageIdVersion )
+        /// <param name="filePath">Solution file path</param>
+        /// <returns>SolutionCheckResult</returns>
+        public static SolutionCheckResult NewCheckSolutionFile( string filePath )
         {
-            return
-                _projectReferences
-                .Where( x => x.Value.Any( y => y.PackageIdVersion == packageIdVersion ) )
-                .Select( x => x.Key );
-        }
+            if( String.IsNullOrEmpty( filePath ) )
+                throw new ArgumentNullException( "filePath" );
+            if( !File.Exists( filePath ) )
+                throw new ArgumentException( "File must exist", "filePath" );
 
-        /// <summary>
-        /// Gets a dictionary associating the full package identifiers (PackageId.PackageVersion) to their found NuGet IPackages.
-        /// </summary>
-        public IReadOnlyDictionary<string, IPackage> Packages
-        {
-            get
+            string solutionDirectory = Path.GetDirectoryName( filePath );
+            string packageRoot = Path.Combine( solutionDirectory, "packages" );
+
+            LocalPackageRepository localRepository = new LocalPackageRepository( packageRoot );
+
+            // Key: package identifier (Name.Version)
+            Dictionary<string, IPackage> solutionPackages = new Dictionary<string, IPackage>();
+
+            Dictionary<ISolutionProjectItem, List<INuGetPackageAssemblyReference>> assemblyReferences =
+                new Dictionary<ISolutionProjectItem, List<INuGetPackageAssemblyReference>>();
+
+            ISolution solution = SolutionFactory.ReadFromSolutionFile( filePath );
+
+            IEnumerable<ISolutionProjectItem> supportedProjectItems =
+                solution.Projects
+                .Where( project => project.GetItemType() == SolutionProjectType.VISUAL_C_SHARP );
+
+            // Loop in projects
+            foreach( ISolutionProjectItem projectItem in supportedProjectItems )
             {
-                return _solutionPackages;
-            }
-        }
+                string projectFilePath = Path.Combine( solutionDirectory, projectItem.ProjectPath );
+                string projectDirectory = Path.GetDirectoryName( projectFilePath );
+                string packagesConfigPath = Path.Combine( projectDirectory, "packages.config" );
 
-        /// <summary>
-        /// Gets a dictionary associating solution projects to all their NuGet package references.
-        /// </summary>
-        public IReadOnlyDictionary<ISolutionProjectItem, List<IPackageLibraryReference>> ProjectReferences
-        {
-            get
-            {
-                return _projectReferences;
-            }
-        }
+                // Check assembly references from NuGet packages
+                IEnumerable<string> nugetAssembliesPaths = ProjectUtils.GetPackageAssemblyReferencePaths( projectFilePath );
 
-        /// <summary>
-        /// Gets a dictionary associating a simple package id (eg. CK.Core) to all matching full package identifiers detected during the check, when there are multiple.
-        /// </summary>
-        /// <example>
-        /// There are two CK.Core with two distinct versions referenced during the check.
-        /// Entry will be:
-        /// Key: CK.Core
-        /// Value: { "CK.Core.2.1.0", "CK.Core.2.8.5" }
-        /// </example>
-        public IDictionary<string, List<string>> PackageNamesWithMultipleVersions
-        {
-            get
-            {
-                return _packageVersions.Where( x => x.Value.Count > 1 ).ToDictionary( x => x.Key, x => x.Value );
-            }
-        }
-
-        private SolutionChecker( ISolution s, string packageRoot )
-        {
-            _solution = s;
-            _packageRoot = packageRoot;
-
-            _solutionPackages = new Dictionary<string, IPackage>();
-            _packageVersions = new Dictionary<string, List<string>>();
-            _projectReferences = new Dictionary<ISolutionProjectItem, List<IPackageLibraryReference>>();
-        }
-
-        private void Check()
-        {
-            foreach ( ISolutionProjectItem projectItem in _solution.Projects.Where( i => SolutionUtils.GetProjectType( i ) == SolutionProjectType.VISUAL_C_SHARP ) )
-            {
-                List<IPackageLibraryReference> references = new List<IPackageLibraryReference>();
-
-                string projectPath = Path.Combine( _solution.DirectoryPath, projectItem.ProjectPath );
-
-                IEnumerable<string> packageAssemblyPaths = ProjectUtils.GetPackageLibraryReferences( projectPath, _solution.DirectoryPath );
-
-                foreach ( string path in packageAssemblyPaths )
+                List<INuGetPackageAssemblyReference> projectAssemblyReferences = new List<INuGetPackageAssemblyReference>();
+                foreach( string assemblyPath in nugetAssembliesPaths )
                 {
-                    IPackageLibraryReference reference = ProjectUtils.ParseReferenceFromPath( path );
-                    if ( reference == null )
-                        continue;
+                    // Note: NuGet.Core might have the same one; have to check.
+                    INuGetPackageAssemblyReference reference = ProjectUtils.ParseReferenceFromPath( assemblyPath );
 
-                    references.Add( reference );
-
-                    IPackage package = null;
-                    if ( !_solutionPackages.TryGetValue( reference.PackageIdVersion, out package ) )
-                    {
-                        package = ProjectUtils.GetPackageFromReference( reference, _packageRoot );
-
-                        _solutionPackages.Add( reference.PackageIdVersion, package );
-
-                        List<string> packageIdVersions;
-                        if ( !_packageVersions.TryGetValue( package.Id, out packageIdVersions ) )
-                        {
-                            packageIdVersions = new List<string>();
-
-                            packageIdVersions.Add( reference.PackageIdVersion );
-
-                            _packageVersions.Add( package.Id, packageIdVersions );
-                        }
-                        else if ( !packageIdVersions.Contains( reference.PackageIdVersion ) )
-                        {
-                            packageIdVersions.Add( reference.PackageIdVersion );
-                        }
-                    }
+                    // reference is nulled if the assembly isn't a NuGet package assembly (ie. a third party DLL)
+                    if( reference != null )
+                        projectAssemblyReferences.Add( reference );
                 }
 
-                _projectReferences.Add( projectItem, references );
+                assemblyReferences.Add( projectItem, projectAssemblyReferences );
+
+                // Check NuGet packages from package configuration
+                if( File.Exists( packagesConfigPath ) ) // No packages.config : No NuGet package for this project
+                {
+                    IEnumerable<INuGetPackageReference> packageReferences =
+                    ProjectUtils.GetReferencesFromPackageConfig( packagesConfigPath );
+
+                    foreach( INuGetPackageReference packageRef in packageReferences )
+                    {
+                        string packageIdentifier = packageRef.Id + '.' + packageRef.Version;
+
+                        IPackage package;
+                        if( !solutionPackages.TryGetValue( packageIdentifier, out package ) )
+                        {
+                            package = packageRef.GetPackageFromRepository( localRepository );
+                            solutionPackages.Add( packageIdentifier, package );
+                        }
+
+                        // Might want to link project to package directly here later
+                    }
+                }
             }
-        }
 
-        /// <summary>
-        /// Checks given solution file for any discrepancies.
-        /// </summary>
-        /// <param name="slnFilePath">Solution file to check. Must exist.</param>
-        /// <returns>SolutionChecker object, containing properties with solution references, NuGet package reference, and other discrepancies.</returns>
-        public static SolutionChecker CheckSolutionFile( string slnFilePath )
-        {
-            if ( String.IsNullOrEmpty( slnFilePath ) )
-                throw new ArgumentNullException( "slnFilePath" );
-            if ( !File.Exists( slnFilePath ) )
-                throw new ArgumentException( "File must exist", "slnFilePath" );
 
-            string packageRoot = Path.Combine( Path.GetDirectoryName( slnFilePath ), "packages" );
+            SolutionCheckResult result =
+                new SolutionCheckResult(
+                    solutionPackages.Values,
+                    supportedProjectItems,
+                    assemblyReferences.ToDictionary( x => x.Key, x => (IEnumerable<INuGetPackageAssemblyReference>)x.Value )
+                    );
 
-            Debug.Assert( Directory.Exists( packageRoot ), "Package root exists" );
-
-            ISolution s = SolutionFactory.ReadFromSolutionFile( slnFilePath );
-
-            SolutionChecker checker = new SolutionChecker( s, packageRoot );
-
-            checker.Check();
-
-            return checker;
+            return result;
         }
     }
 }

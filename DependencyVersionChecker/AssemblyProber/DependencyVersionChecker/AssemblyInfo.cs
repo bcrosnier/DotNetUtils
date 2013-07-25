@@ -8,7 +8,7 @@ namespace AssemblyProber
     /// <summary>
     /// Information about a particular .NET assembly.
     /// </summary>
-    [DebuggerDisplay( "AssemblyInfo = {FullName}" )]
+    [DebuggerDisplay( "{{FullName}}" )]
     public class AssemblyInfo : IAssemblyInfo
     {
         #region Fields

@@ -285,7 +285,7 @@ namespace AssemblyProberApp.Wpf
                     ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
                 }
 
-                AssemblyInfoXmlSerializer.WriteToXmlWriter( assemblies, w );
+                AssemblyInfoXmlSerializer.SerializeTo( assemblies, w );
             }
         }
 
@@ -295,7 +295,7 @@ namespace AssemblyProberApp.Wpf
 
             using ( XmlReader r = XmlReader.Create( fileToRead.FullName ) )
             {
-                assemblies = AssemblyInfoXmlSerializer.ReadFromXmlReader( r );
+                assemblies = AssemblyInfoXmlSerializer.DeserializeFrom( r );
             }
             _activeAssemblies = assemblies.ToList();
             LoadAssemblies( assemblies );

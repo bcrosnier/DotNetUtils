@@ -14,7 +14,7 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="assemblies">IAssemblyInfo collection to serialize</param>
         /// <returns>New XmlDocument</returns>
-        public static XmlDocument Serialize( IEnumerable<IAssemblyInfo> assemblies )
+        public static XmlDocument SerializeToDocument( this IEnumerable<IAssemblyInfo> assemblies )
         {
             XmlDocument doc = new XmlDocument();
             XmlNode docNode = doc.CreateXmlDeclaration( "1.0", "UTF-8", null );
@@ -112,7 +112,7 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="doc">XmlDocument to read</param>
         /// <returns>Collection of new IAssemblyInfo</returns>
-        public static IEnumerable<IAssemblyInfo> Deserialize( XmlDocument doc )
+        public static IEnumerable<IAssemblyInfo> DeserializeFromDocument( XmlDocument doc )
         {
             Dictionary<string, AssemblyInfo> assemblies = new Dictionary<string, AssemblyInfo>();
 
@@ -177,7 +177,7 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="assemblies">IAssemblyInfo collection to serialize</param>
         /// <param name="w">XmlWriter to use</param>
-        public static void WriteToXmlWriter( IEnumerable<IAssemblyInfo> assemblies, XmlWriter w )
+        public static void SerializeTo( this IEnumerable<IAssemblyInfo> assemblies, XmlWriter w )
         {
             w.WriteStartDocument( true );
             w.WriteStartElement( "Assemblies" );
@@ -273,7 +273,7 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="r">XmlReader to use</param>
         /// <returns>New collection of IAssemblyInfo</returns>
-        public static IEnumerable<IAssemblyInfo> ReadFromXmlReader( XmlReader r )
+        public static IEnumerable<IAssemblyInfo> DeserializeFrom( XmlReader r )
         {
             // Assemblies read by the reader.
             Dictionary<string, AssemblyInfo> assemblies = new Dictionary<string, AssemblyInfo>();

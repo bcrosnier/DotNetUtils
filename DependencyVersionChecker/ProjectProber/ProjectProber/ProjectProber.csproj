@@ -33,7 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
@@ -46,13 +45,18 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Impl\PackageLibraryReference.cs" />
+    <Compile Include="Impl\NuGetPackageReference.cs" />
+    <Compile Include="Impl\NuGetPackageAssemblyReference.cs" />
+    <Compile Include="Impl\ProjectReference.cs" />
     <Compile Include="Impl\Solution.cs" />
     <Compile Include="Impl\SolutionProjectItem.cs" />
-    <Compile Include="Interfaces\IPackageLibraryReference.cs" />
+    <Compile Include="Interfaces\INuGetPackageReference.cs" />
+    <Compile Include="Interfaces\INuGetPackageAssemblyReference.cs" />
+    <Compile Include="Interfaces\IProjectReference.cs" />
     <Compile Include="Interfaces\ISolution.cs" />
     <Compile Include="Interfaces\ISolutionProjectItem.cs" />
     <Compile Include="ProjectUtils.cs" />
+    <Compile Include="SerializationExtensions\SolutionCheckResultExtensions.cs" />
     <Compile Include="SolutionChecker.cs" />
     <Compile Include="SolutionCheckResult.cs" />
     <Compile Include="SolutionFactory.cs" />

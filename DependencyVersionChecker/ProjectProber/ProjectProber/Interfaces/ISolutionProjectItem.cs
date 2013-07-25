@@ -9,7 +9,7 @@ namespace ProjectProber.Interfaces
     {
         /// <summary>
         /// Guid of the project type (VB, C#, etc.).
-        /// See also: <see cref="ProjectProber.SolutionUtils.GetProjectType"/>
+        /// See also: <see cref="ProjectProber.SolutionUtils.GetItemType"/>
         /// </summary>
         /// <seealso cref="ProjectProber.SolutionProjectType"/>
         Guid ProjectTypeGuid { get; }

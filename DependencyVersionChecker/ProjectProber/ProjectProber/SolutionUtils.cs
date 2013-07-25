@@ -12,7 +12,7 @@ namespace ProjectProber
         /// <summary>
         /// Dictionary mapping known project type Guids to their Enum equivalent. Used by GetProjectType().
         /// </summary>
-        /// <seealso cref="ProjectProber.SolutionUtils.GetProjectType"/>
+        /// <seealso cref="ProjectProber.SolutionUtils.GetItemType"/>
         /// <seealso cref="ProjectProber.SolutionProjectType"/>
         public static readonly IReadOnlyDictionary<Guid, SolutionProjectType> ProjectTypes =
             new Dictionary<Guid, SolutionProjectType>()
@@ -26,11 +26,11 @@ namespace ProjectProber
             };
 
         /// <summary>
-        /// Gets the SolutionProjectType of a given ISolutionProjectItem, using the ProjectTypes dictionary.
+        /// Gets the SolutionProjectType of a given ISolutionProjectItem, using the ProjectTypes dictionary. Extension method.
         /// </summary>
         /// <param name="projectItem">Project item to get type of</param>
         /// <returns>Type of project item, or SolutionProjectType.UNKNOWN if it couldn't be guessed.</returns>
-        public static SolutionProjectType GetProjectType( ISolutionProjectItem projectItem )
+        public static SolutionProjectType GetItemType( this ISolutionProjectItem projectItem )
         {
             SolutionProjectType projectType = SolutionProjectType.UNKNOWN;
 

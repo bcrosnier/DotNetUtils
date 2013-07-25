@@ -1,8 +1,11 @@
-﻿using ProjectProber.Interfaces;
+﻿using System.Diagnostics;
+using System.IO;
+using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
-    internal class PackageLibraryReference : IPackageLibraryReference
+    [DebuggerDisplay( "{PackageIdVersion} ({TargetFramework}) => {AssemblyFileShortName}" )]
+    internal class NuGetPackageAssemblyReference : INuGetPackageAssemblyReference
     {
         #region IPackageLibraryReference Members
 
@@ -12,11 +15,13 @@ namespace ProjectProber.Impl
 
         public string AssemblyFileName { get; private set; }
 
+        public string AssemblyFileShortName { get { return Path.GetFileName( AssemblyFileName ); } }
+
         public string FullPath { get; private set; }
 
         #endregion IPackageLibraryReference Members
 
-        internal PackageLibraryReference( string packageIdVersion, string targetFramework, string assemblyFilename, string fullPath )
+        internal NuGetPackageAssemblyReference( string packageIdVersion, string targetFramework, string assemblyFilename, string fullPath )
         {
             PackageIdVersion = packageIdVersion;
             TargetFramework = targetFramework;

@@ -3,7 +3,7 @@
     /// <summary>
     /// Type of a solution project, eg. a C# project, a VB project, a solution folder, etc.
     /// </summary>
-    /// <seealso cref="ProjectProber.SolutionUtils.GetProjectType"/>
+    /// <seealso cref="ProjectProber.SolutionUtils.GetItemType"/>
     /// <seealso cref="ProjectProber.SolutionUtils.ProjectTypes"/>
     public enum SolutionProjectType
     {

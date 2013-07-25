@@ -20,9 +20,9 @@ namespace AssemblyProber.Tests
 
             AssemblyCheckTests.TestAssembliesInfo( assemblies );
 
-            XmlDocument serialized = AssemblyInfoXmlSerializer.Serialize( assemblies );
+            XmlDocument serialized = AssemblyInfoXmlSerializer.SerializeToDocument( assemblies );
 
-            assemblies2 = AssemblyInfoXmlSerializer.Deserialize( serialized ).ToList();
+            assemblies2 = AssemblyInfoXmlSerializer.DeserializeFromDocument( serialized ).ToList();
 
             CollectionAssert.IsNotEmpty( assemblies2, "Deserialized collection is not empty" );
 
@@ -44,7 +44,7 @@ namespace AssemblyProber.Tests
             {
                 using ( XmlWriter w = XmlWriter.Create( ms ) )
                 {
-                    AssemblyInfoXmlSerializer.WriteToXmlWriter( assemblies, w );
+                    AssemblyInfoXmlSerializer.SerializeTo( assemblies, w );
                 }
 
                 ms.Seek( 0, System.IO.SeekOrigin.Begin );
@@ -52,7 +52,7 @@ namespace AssemblyProber.Tests
                 XmlDocument d = new XmlDocument();
                 d.Load( ms );
 
-                assemblies2 = AssemblyInfoXmlSerializer.Deserialize( d ).ToList();
+                assemblies2 = AssemblyInfoXmlSerializer.DeserializeFromDocument( d ).ToList();
             }
 
             CollectionAssert.IsNotEmpty( assemblies2, "Deserialized collection is not empty" );
@@ -71,7 +71,7 @@ namespace AssemblyProber.Tests
 
             AssemblyCheckTests.TestAssembliesInfo( assemblies );
 
-            XmlDocument serialized = AssemblyInfoXmlSerializer.Serialize( assemblies );
+            XmlDocument serialized = AssemblyInfoXmlSerializer.SerializeToDocument( assemblies );
 
             XmlWriterSettings ws = new XmlWriterSettings();
             ws.NewLineHandling = NewLineHandling.None;
@@ -96,7 +96,7 @@ namespace AssemblyProber.Tests
 
                 using ( XmlReader r = XmlReader.Create( ms, rs ) )
                 {
-                    assemblies2 = AssemblyInfoXmlSerializer.ReadFromXmlReader( r ).ToList();
+                    assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom( r ).ToList();
                 }
             }
 
@@ -125,7 +125,7 @@ namespace AssemblyProber.Tests
             {
                 using ( XmlWriter xw = XmlWriter.Create( ms, ws ) )
                 {
-                    AssemblyInfoXmlSerializer.WriteToXmlWriter( assemblies, xw );
+                    AssemblyInfoXmlSerializer.SerializeTo( assemblies, xw );
                 }
 
                 ms.Seek( 0, System.IO.SeekOrigin.Begin );
@@ -138,7 +138,7 @@ namespace AssemblyProber.Tests
 
                 using ( XmlReader r = XmlReader.Create( ms, rs ) )
                 {
-                    assemblies2 = AssemblyInfoXmlSerializer.ReadFromXmlReader( r ).ToList();
+                    assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom( r ).ToList();
                 }
             }
 

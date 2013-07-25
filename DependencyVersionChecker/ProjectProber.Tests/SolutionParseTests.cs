@@ -28,10 +28,10 @@ namespace ProjectProber.Tests
             ISolution solution = GetTestSolution();
 
             var cSharpProjects = solution.Projects
-                .Where( s => SolutionUtils.GetProjectType( s ) == SolutionProjectType.VISUAL_C_SHARP );
+                .Where( s => s.GetItemType() == SolutionProjectType.VISUAL_C_SHARP );
 
             var solutionFolders = solution.Projects
-                .Where( s => SolutionUtils.GetProjectType( s ) == SolutionProjectType.PROJECT_FOLDER );
+                .Where( s => s.GetItemType() == SolutionProjectType.PROJECT_FOLDER );
 
             CollectionAssert.IsNotEmpty( cSharpProjects, "C# projects were found" );
             CollectionAssert.IsNotEmpty( solutionFolders, "Solution folders were found" );
@@ -43,7 +43,7 @@ namespace ProjectProber.Tests
             ISolution solution = GetTestSolution();
 
             var cSharpProjects = solution.Projects
-                .Where( s => SolutionUtils.GetProjectType( s ) == SolutionProjectType.VISUAL_C_SHARP );
+                .Where( s => s.GetItemType() == SolutionProjectType.VISUAL_C_SHARP );
 
             foreach ( var project in cSharpProjects )
             {
