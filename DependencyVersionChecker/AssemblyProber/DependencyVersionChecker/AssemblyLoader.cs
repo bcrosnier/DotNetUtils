@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CK.Core;
 using Mono.Cecil;
 
@@ -22,7 +23,7 @@ namespace AssemblyProber
 
         private readonly BorderChecker _borderChecker;
 
-        private readonly DefaultActivityLogger _logger;
+        private readonly IActivityLogger _logger;
 
         /// <summary>
         /// Delegate to use when checking whether to recurse into a new assembly reference.
@@ -48,11 +49,11 @@ namespace AssemblyProber
 
             string token = BitConverter.ToString( newReference.Name.PublicKeyToken ).Replace( "-", string.Empty ).ToLowerInvariant();
 
-            if ( microsoftTokens.Contains( token ) )
+            if( microsoftTokens.Contains( token ) )
             {
                 return "Microsoft";
             }
-            if ( newReference.MainModule.FullyQualifiedName.ToLowerInvariant().StartsWith( Environment.GetFolderPath( Environment.SpecialFolder.Windows ).ToLowerInvariant() ) )
+            if( newReference.MainModule.FullyQualifiedName.ToLowerInvariant().StartsWith( Environment.GetFolderPath( Environment.SpecialFolder.Windows ).ToLowerInvariant() ) )
             {
                 return "Windows/GAC";
             }
@@ -66,23 +67,17 @@ namespace AssemblyProber
         /// <summary>
         /// Utility class for describing an assembly, and its dependencies, using the specified borderChecker to determine whether it should recurse on given references.
         /// <param name="borderChecker">Delegate which determines whether it should recurse on given references. Will recurse it it returns null.</param>
-        /// <param name="parentLogger">Parent IActivityLogger to hook on.</param>
+        /// <param name="logger">Parent IActivityLogger to hook on.</param>
         /// </summary>
-        public AssemblyLoader( IActivityLogger parentLogger, BorderChecker borderChecker )
+        public AssemblyLoader( IActivityLogger logger, BorderChecker borderChecker )
         {
+            if( logger == null )
+                logger = DefaultActivityLogger.Empty;
+
             _borderChecker = borderChecker;
             _assemblyIndex = new Dictionary<string, AssemblyInfo>();
 
-            _logger = new DefaultActivityLogger( true );
-            _logger.AutoTags = ActivityLogger.RegisteredTags.FindOrCreate( "AssemblyLoader" );
-            if ( parentLogger != null )
-            {
-                _logger.Output.BridgeTo( parentLogger );
-            }
-            else
-            {
-                _logger.Tap.Register( new ActivityLoggerConsoleSink() );
-            }
+            _logger = logger;
         }
 
         /// <summary>
@@ -100,10 +95,10 @@ namespace AssemblyProber
 
         /// <summary>
         /// Utility class for describing an assembly, and its dependencies, without recursing on system and/or Microsoft DLLs.
-        /// <param name="parentLogger">Parent IActivityLogger to hook on.</param>
+        /// <param name="logger">Parent IActivityLogger to hook on.</param>
         /// </summary>
-        public AssemblyLoader( IActivityLogger parentLogger )
-            : this( parentLogger, DefaultBorderChecker ) { }
+        public AssemblyLoader( IActivityLogger logger )
+            : this( logger, DefaultBorderChecker ) { }
 
         #endregion Constructors
 
@@ -137,17 +132,61 @@ namespace AssemblyProber
 
             IAssemblyInfo assembly;
 
-            foreach ( FileInfo f in fileList )
+            foreach( FileInfo f in fileList )
             {
                 assembly = LoadFromFile( f );
 
                 foundAssemblies.Add( assembly );
             }
 
-            if ( recurse )
-                foreach ( DirectoryInfo d in assemblyDirectory.GetDirectories() ) LoadFromDirectory( d, recurse );
+            if( recurse )
+                foreach( DirectoryInfo d in assemblyDirectory.GetDirectories() ) LoadFromDirectory( d, recurse );
 
             return foundAssemblies;
+        }
+
+        /// <summary>
+        /// Describe an assembly, and its dependencies recursively.
+        /// </summary>
+        /// <param name="assemblyFilePath">Assembly file path to load</param>
+        /// <returns>Assembly information</returns>
+        public IAssemblyInfo LoadFromFile( string assemblyFilePath )
+        {
+            return LoadFromFile( new FileInfo( assemblyFilePath ) );
+        }
+
+        /// <summary>
+        /// Describe an assembly, and its dependencies recursively.
+        /// </summary>
+        /// <param name="assemblyFile">Assembly file to load</param>
+        /// <returns>Assembly information</returns>
+        public IAssemblyInfo LoadFromFile( Stream fileStream )
+        {
+            AssemblyInfo outputInfo;
+            try
+            {
+                // Load from stream using Mono.Cecil
+                ModuleDefinition moduleInfo;
+
+                moduleInfo = ModuleDefinition.ReadModule( fileStream );
+
+                if( !_assemblyIndex.TryGetValue( moduleInfo.Assembly.Name.FullName, out outputInfo ) )
+                {
+                    _logger.Trace( "Found new assembly: {0}", moduleInfo.Assembly.Name.FullName );
+                    outputInfo = CreateAssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
+                }
+                else
+                {
+                    _logger.Trace( "Found known assembly: {0}", moduleInfo.Assembly.Name.FullName );
+                }
+                LoadAssembly( moduleInfo, outputInfo );
+            }
+            catch( Exception ex )
+            {
+                _logger.Error( ex, "Failed to read module" );
+                outputInfo = new AssemblyInfo( ex );
+            }
+            return outputInfo;
         }
 
         /// <summary>
@@ -159,7 +198,7 @@ namespace AssemblyProber
         {
             _logger.Info( "Loading file: {0}", assemblyFile.FullName );
             AssemblyInfo outputInfo;
-            if ( _assemblyIndex.TryGetValue( assemblyFile.FullName, out outputInfo ) )
+            if( _assemblyIndex.TryGetValue( assemblyFile.FullName, out outputInfo ) )
             {
                 _logger.Trace( "File was already cached" );
                 return outputInfo;
@@ -169,12 +208,12 @@ namespace AssemblyProber
             {
                 // Load from DLL using Mono.Cecil
                 ModuleDefinition moduleInfo;
-                using ( var s = assemblyFile.OpenRead() )
+                using( var s = assemblyFile.OpenRead() )
                 {
                     moduleInfo = ModuleDefinition.ReadModule( s );
                 }
 
-                if ( !_assemblyIndex.TryGetValue( moduleInfo.Assembly.Name.FullName, out outputInfo ) )
+                if( !_assemblyIndex.TryGetValue( moduleInfo.Assembly.Name.FullName, out outputInfo ) )
                 {
                     _logger.Trace( "Found new assembly: {0}", moduleInfo.Assembly.Name.FullName );
                     outputInfo = CreateAssemblyInfoFromAssemblyNameReference( moduleInfo.Assembly.Name );
@@ -188,10 +227,10 @@ namespace AssemblyProber
                 _assemblyIndex.Add( assemblyFile.FullName, outputInfo );
                 LoadAssembly( moduleInfo, outputInfo );
             }
-            catch ( Exception ex )
+            catch( Exception ex )
             {
                 _logger.Error( ex, "Failed to read module" );
-                if ( outputInfo == null )
+                if( outputInfo == null )
                 {
                     outputInfo = new AssemblyInfo() { FullName = assemblyFile.FullName };
                     _assemblyIndex.Add( assemblyFile.FullName, outputInfo );
@@ -226,7 +265,7 @@ namespace AssemblyProber
                 outputInfo.Copyright = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyCopyrightAttribute" );
                 outputInfo.Trademark = GetCustomAttributeString( moduleInfo.Assembly, @"System.Reflection.AssemblyTrademarkAttribute" );
                 outputInfo.BorderName = _borderChecker != null ? _borderChecker( moduleInfo.Assembly ) : null;
-                if ( outputInfo.BorderName == null )
+                if( outputInfo.BorderName == null )
                 {
                     ResolveReferences( moduleInfo, outputInfo );
                 }
@@ -235,7 +274,7 @@ namespace AssemblyProber
                     _logger.Trace( "Border: {0} - Skipping reference resolution.", outputInfo.BorderName );
                 }
             }
-            catch ( Exception ex )
+            catch( Exception ex )
             {
                 _logger.Error( ex, "Failed to resolve references" );
                 outputInfo.Error = ex;
@@ -250,29 +289,29 @@ namespace AssemblyProber
             _logger.OpenGroup( LogLevel.Trace, "References of: {0}", outputInfo.FullName );
 
             // Recursively load references.
-            foreach ( var referenceAssemblyName in moduleInfo.AssemblyReferences )
+            foreach( var referenceAssemblyName in moduleInfo.AssemblyReferences )
             {
                 _logger.Trace( "Resolving reference: {0}", referenceAssemblyName.FullName );
                 referenceAssemblyInfo = null;
                 resolvedAssembly = null;
 
-                if ( !_assemblyIndex.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
+                if( !_assemblyIndex.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
                 {
                     // Resolve assembly.
                     try
                     {
                         resolvedAssembly = moduleInfo.AssemblyResolver.Resolve( referenceAssemblyName.FullName );
                     }
-                    catch ( Exception ex )
+                    catch( Exception ex )
                     {
                         _logger.Error( ex, "Failed to resolve assembly" );
                         // Can't resolve assembly, but we can still have data from its name reference.
                         referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
                         referenceAssemblyInfo.Error = ex;
                     }
-                    if ( referenceAssemblyInfo == null )
+                    if( referenceAssemblyInfo == null )
                     {
-                        if ( !_assemblyIndex.TryGetValue( resolvedAssembly.MainModule.FullyQualifiedName, out referenceAssemblyInfo ) )
+                        if( !_assemblyIndex.TryGetValue( resolvedAssembly.MainModule.FullyQualifiedName, out referenceAssemblyInfo ) )
                         {
                             referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
                             _assemblyIndex.Add( resolvedAssembly.MainModule.FullyQualifiedName, referenceAssemblyInfo );
@@ -283,6 +322,7 @@ namespace AssemblyProber
                         else
                         {
                             _logger.Warn( "Uncached assembly name: {0} tried to load cached file: {1}", referenceAssemblyName.FullName, resolvedAssembly.MainModule.FullyQualifiedName );
+                            _assemblyIndex.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
                         }
                     }
                 }
@@ -338,7 +378,7 @@ namespace AssemblyProber
                 .Select( attribute => attribute.ConstructorArguments )
                 .FirstOrDefault();
 
-            if ( customAttributeConstructorArguments != null )
+            if( customAttributeConstructorArguments != null )
             {
                 string attributeValue = customAttributeConstructorArguments
                     .FirstOrDefault()
@@ -353,5 +393,67 @@ namespace AssemblyProber
         }
 
         #endregion Private static methods
+
+        #region Public static methods
+
+        /// <summary>
+        /// Generate an AssemblyInfo object from a simple qualified name.
+        /// </summary>
+        /// <param name="assemblyQualifiedName"></param>
+        /// <returns></returns>
+        public static IAssemblyInfo ParseAssemblyInfoFromString( string assemblyQualifiedName )
+        {
+            // Example: nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL
+            string pattern = @"^(.+), Version=([0-9.]+), Culture=([a-zA-Z0-9-_.]+), PublicKeyToken=(null|[a-fA-F0-9]{16})";
+
+            Match m = Regex.Match( assemblyQualifiedName, pattern );
+
+            if( m.Success )
+            {
+                string name = m.Groups[1].Value;
+                Version version = Version.Parse( m.Groups[2].Value );
+                string culture = m.Groups[3].Value;
+                byte[] publicKeyToken;
+
+                if( m.Groups[4].Value != "null" )
+                    publicKeyToken = StringUtils.HexStringToByteArray( m.Groups[4].Value );
+                else
+                    publicKeyToken = new byte[0];
+
+                string fullName = GetFullNameOf( name, version, culture, publicKeyToken );
+
+                if( culture.ToLowerInvariant() == "neutral" )
+                    culture = String.Empty;
+
+                IAssemblyInfo info = new AssemblyInfo()
+                {
+                    SimpleName = name,
+                    Version = version,
+                    Culture = culture,
+                    PublicKeyToken = publicKeyToken,
+                    FullName = fullName
+                };
+
+                return info;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static string GetFullNameOf( string name, Version version, string culture, byte[] publicKeyToken )
+        {
+            string versionString = version.ToString();
+
+            if( culture.ToLowerInvariant() == "" )
+                culture = "neutral";
+
+            string publicKeyTokenString = publicKeyToken.Length == 0 ? "null" : StringUtils.ByteArrayToHexString( publicKeyToken );
+
+            return String.Format( "{0}, Version={1}, Culture={2}, PublicKeyToken={3}", name, versionString, culture, publicKeyTokenString );
+        }
+
+        #endregion
     }
 }

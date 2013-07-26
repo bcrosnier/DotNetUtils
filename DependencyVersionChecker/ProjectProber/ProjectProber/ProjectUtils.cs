@@ -18,14 +18,6 @@ namespace ProjectProber
     public static class ProjectUtils
     {
         /// <summary>
-        /// Pattern to detect package assembly references. Used to create NuGetPackageAssemblyReferences.
-        /// 1: Full package identifier (eg. CK.Core.1.0.0)
-        /// 2: [optional] Target Framework (eg. net45)
-        /// 3: Assembly file name (eg. CK.Core.dll)
-        /// </summary>
-        private static readonly string PACKAGE_PATH_PATTERN = @"\\packages\\([^\\]+)\\lib\\(?:([^\\]+)\\)?([^\\]+)$";
-
-        /// <summary>
         /// Gets HintPath of all references in a project file having one.
         /// </summary>
         /// <param name="projectPath">Project file to use</param>
@@ -42,30 +34,6 @@ namespace ProjectProber
         }
 
         /// <summary>
-        /// Parse a NuGet package assembly reference from its path to the project
-        /// </summary>
-        /// <param name="path">Path string to parse</param>
-        /// <returns>New assembly reference</returns>
-        public static INuGetPackageAssemblyReference ParseReferenceFromPath( string path )
-        {
-            Match m = Regex.Match( path, PACKAGE_PATH_PATTERN );
-            if ( m.Success )
-            {
-                string packageIdentifier = m.Groups[1].Value;
-                string targetFramework = m.Groups[2].Value;
-                string assemblyFilename = m.Groups[3].Value;
-
-                NuGetPackageAssemblyReference libRef = new NuGetPackageAssemblyReference( packageIdentifier, targetFramework, assemblyFilename, path );
-
-                return libRef;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
         /// Find and open a particular NuGet package using a package reference
         /// </summary>
         /// <param name="packageReference">Package reference to use</param>
@@ -76,17 +44,6 @@ namespace ProjectProber
             string packageIdentifier = packageReference.Id + '.' + packageReference.Version;
 
             return GetPackageFromReference( packageIdentifier, packageRoot );
-        }
-
-        /// <summary>
-        /// Find and open a particular NuGet package using a package assembly reference
-        /// </summary>
-        /// <param name="packageReference">Package assembly reference to use</param>
-        /// <param name="packageRoot">Root of the NuGet package directory, which contains all NuGet packages</param>
-        /// <returns>Opened NuGet package information</returns>
-        public static NuGet.IPackage GetPackageFromReference( INuGetPackageAssemblyReference packageReference, string packageRoot )
-        {
-            return GetPackageFromReference( packageReference.PackageIdVersion, packageRoot );
         }
         
         /// <summary>

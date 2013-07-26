@@ -39,7 +39,7 @@ namespace SolutionChecker
                 string solutionName = Path.GetFileNameWithoutExtension( path );
                 string outputXmlFilename = solutionName + ".SolutionCheckResult.xml";
 
-                SolutionCheckResult result = ProjectProber.SolutionChecker.CheckSolutionFile( path );
+                SolutionCheckResult result = ProjectProber.SolutionChecker.CheckSolutionFile( path, _logger );
 
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.Indent = true;

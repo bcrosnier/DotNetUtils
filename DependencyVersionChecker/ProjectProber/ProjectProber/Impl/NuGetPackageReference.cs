@@ -45,5 +45,17 @@ namespace ProjectProber.Impl
             Version = version;
             TargetFramework = targetFramework;
         }
+
+        /// <summary>
+        /// Describes the NuGet package reference.
+        /// </summary>
+        /// <returns>Reference description</returns>
+        public override string ToString()
+        {
+            if( TargetFramework != null )
+                return String.Format( "{0}, version {1}, targeting {2}", Id, Version, TargetFramework.ToString() );
+            else
+                return String.Format( "{0}, version {1}", Id, Version );
+        }
     }
 }

@@ -84,6 +84,30 @@ namespace AssemblyProber.Tests
             AssemblyCheckTests.TestAssemblyInfo( info );
         }
 
+        [Test]
+        public void CheckLoadByName()
+        {
+            DirectoryInfo testDir = new DirectoryInfo( AppDomain.CurrentDomain.BaseDirectory );
+            Assert.That( testDir.Exists );
+
+            IEnumerable<FileInfo> fileList = AssemblyVersionChecker.ListAssembliesFromDirectory( testDir, false );
+
+            IAssemblyLoader l = new AssemblyLoader( AssemblyLoader.DefaultBorderChecker );
+
+            foreach( FileInfo f in fileList )
+            {
+                IAssemblyInfo a = l.LoadFromFile( f );
+                IAssemblyInfo b = AssemblyLoader.ParseAssemblyInfoFromString( a.FullName );
+
+                Assert.That( a.SimpleName == b.SimpleName , "Name is equivalent" );
+                Assert.That( a.Version == b.Version, "Version is equivalent" );
+                Assert.That( a.Culture == b.Culture, "Culture is equivalent" );
+                Assert.That( a.FullName == b.FullName, "FullName is equivalent" );
+                CollectionAssert.AreEqual( a.PublicKeyToken, b.PublicKeyToken );
+            }
+
+        }
+
         private bool IsAssemblyLoaded( string assemblyFullName )
         {
             foreach ( Assembly a in AppDomain.CurrentDomain.GetAssemblies() )

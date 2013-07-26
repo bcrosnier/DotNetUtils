@@ -8,12 +8,12 @@ using ProjectProber.Interfaces;
 namespace ProjectProber
 {
     /// <summary>
-    /// Static utility helper to generate ISolutiob objects from solution files.
+    /// Static utility helper to generate ISolution objects from solution files.
     /// </summary>
     public static class SolutionFactory
     {
         /// <summary>
-        /// Regex pattern. In match order: Project type Guid, Name, Path, and project Guid.
+        /// Regex pattern for project discovery. In match order: Project type Guid, Name, Path, and project Guid.
         /// </summary>
         /// <example>
         /// Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCrosnier.Utils.Net", "BCrosnier.Utils.Net\BCrosnier.Utils.Net.csproj", "{B0435029-68B7-439A-8896-8D41BC963551}"
@@ -37,7 +37,9 @@ namespace ProjectProber
 
             List<ISolutionProjectItem> projectItems = ParseItemsFromSolutionFile( filePath );
 
-            Solution solution = new Solution() { ProjectItems = projectItems, DirectoryPath = Path.GetDirectoryName( filePath ) };
+            string solutionName = Path.GetFileNameWithoutExtension( filePath );
+
+            Solution solution = new Solution() { ProjectItems = projectItems, FilePath = filePath, Name = solutionName };
 
             return solution;
         }

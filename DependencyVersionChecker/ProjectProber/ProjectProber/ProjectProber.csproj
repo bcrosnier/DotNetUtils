@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CK.Core">
+      <HintPath>..\..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
@@ -46,15 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl\NuGetPackageReference.cs" />
-    <Compile Include="Impl\NuGetPackageAssemblyReference.cs" />
     <Compile Include="Impl\ProjectReference.cs" />
     <Compile Include="Impl\Solution.cs" />
     <Compile Include="Impl\SolutionProjectItem.cs" />
     <Compile Include="Interfaces\INuGetPackageReference.cs" />
-    <Compile Include="Interfaces\INuGetPackageAssemblyReference.cs" />
     <Compile Include="Interfaces\IProjectReference.cs" />
     <Compile Include="Interfaces\ISolution.cs" />
     <Compile Include="Interfaces\ISolutionProjectItem.cs" />
+    <Compile Include="NuGetPackageUtils.cs" />
     <Compile Include="ProjectUtils.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -85,6 +87,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj">
+      <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>
+      <Name>AssemblyProber %28AssemblyProber\AssemblyProber%29</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

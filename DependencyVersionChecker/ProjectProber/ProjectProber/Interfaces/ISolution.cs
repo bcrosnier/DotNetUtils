@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace ProjectProber.Interfaces
 {
@@ -16,5 +17,15 @@ namespace ProjectProber.Interfaces
         /// Solution directory.
         /// </summary>
         string DirectoryPath { get; }
+
+        /// <summary>
+        /// Solution file path.
+        /// </summary>
+        string FilePath { get; }
+
+        /// <summary>
+        /// Solution name.
+        /// </summary>
+        string Name { get; }
     }
 }

@@ -24,15 +24,7 @@ namespace ProjectProber.Tests
             Assert.That( File.Exists( filename ), "Found project file" );
 
             //IEnumerable<ProjectItem> items = ProjectUtils.LoadProjectReferencesFromFile( filename );
-
-            IEnumerable<string> hintPaths = ProjectUtils.GetPackageAssemblyReferencePaths( filename );
-
-            List<INuGetPackageAssemblyReference> refs = new List<INuGetPackageAssemblyReference>();
-            foreach( string hintPath in hintPaths )
-            {
-                INuGetPackageAssemblyReference libRef = ProjectUtils.ParseReferenceFromPath( hintPath );
-                refs.Add( libRef );
-            }
+            IEnumerable<IProjectReference> refs = ProjectUtils.GetReferencesFromProjectFile( filename );
 
             CollectionAssert.IsNotEmpty( refs );
             CollectionAssert.AllItemsAreNotNull( refs );
@@ -42,34 +34,39 @@ namespace ProjectProber.Tests
         [Test]
         public void GetAllPackageReferencesInSolution()
         {
-            List<INuGetPackageAssemblyReference> refs = new List<INuGetPackageAssemblyReference>();
             List<NuGet.IPackage> packages = new List<NuGet.IPackage>();
 
             ISolution s = SolutionParseTests.GetTestSolution();
 
             string packageRoot = Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, @"packages" );
 
+            LocalPackageRepository repository = new LocalPackageRepository( packageRoot );
+
             Assert.That( Directory.Exists( packageRoot ), "NuGet package root exists" );
 
             foreach( ISolutionProjectItem projectItem in s.Projects.Where( pi => pi.GetItemType() == SolutionProjectType.VISUAL_C_SHARP ) )
             {
                 string filename = Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, projectItem.ProjectPath );
-
                 Assert.That( File.Exists( filename ), "Found project file at {0}", filename );
 
-                IEnumerable<string> hintPaths = ProjectUtils.GetPackageAssemblyReferencePaths( filename );
+                string path = Path.Combine( Path.GetDirectoryName(filename), "packages.config" );
 
-                foreach( string hintPath in hintPaths )
+                if( File.Exists( path ) )
                 {
-                    INuGetPackageAssemblyReference libRef = ProjectUtils.ParseReferenceFromPath( hintPath );
-                    refs.Add( libRef );
-                    var package = ProjectUtils.GetPackageFromReference( libRef, packageRoot );
-                    packages.Add( package );
+                    IEnumerable<INuGetPackageReference> packageRefs = ProjectUtils.GetReferencesFromPackageConfig( path );
+
+                    CollectionAssert.IsNotEmpty( packageRefs );
+                    CollectionAssert.AllItemsAreNotNull( packageRefs );
+                    CollectionAssert.AllItemsAreUnique( packageRefs );
+
+                    foreach( var packageRef in packageRefs )
+                    {
+                        var package = repository.FindPackage( packageRef.Id, SemanticVersion.Parse( packageRef.Version ), true, true );
+                        packages.Add( package );
+                    }
                 }
             }
 
-            CollectionAssert.IsNotEmpty( refs );
-            CollectionAssert.AllItemsAreNotNull( refs );
             CollectionAssert.IsNotEmpty( packages );
             CollectionAssert.AllItemsAreNotNull( packages );
         }

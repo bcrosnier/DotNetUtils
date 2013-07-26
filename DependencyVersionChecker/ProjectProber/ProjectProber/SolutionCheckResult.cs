@@ -2,6 +2,7 @@
 using NuGet;
 using ProjectProber.Interfaces;
 using System.Linq;
+using System;
 
 namespace ProjectProber
 {
@@ -30,7 +31,7 @@ namespace ProjectProber
         /// </summary>
         /// <remarks>
         /// </remarks>
-        public IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageAssemblyReference>> ProjectAssemblyReferences
+        public IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<IProjectReference>> ProjectAssemblyReferences
         {
             get;
             private set;
@@ -62,22 +63,9 @@ namespace ProjectProber
             private set;
         }
 
-        /// <summary>
-        /// Get a list of project referencing the given full package identifier (PackageId.PackageVersion)
-        /// </summary>
-        /// <param name="packageIdVersion">Package identifier to search, in the format "PackageId.PackageVersion", eg. CK.Core.2.8.14</param>
-        /// <returns></returns>
-        public IEnumerable<ISolutionProjectItem> GetProjectsReferencing( string packageIdVersion )
-        {
-            return
-                ProjectAssemblyReferences
-                .Where( x => x.Value.Any( y => y.PackageIdVersion == packageIdVersion ) )
-                .Select( x => x.Key );
-        }
-
         internal SolutionCheckResult( string solutionPath, IEnumerable<IPackage> scannedPackages, IEnumerable<ISolutionProjectItem> projects,
-            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageAssemblyReference>> assemblyReferences,
-            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> packageReferences)
+            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<IProjectReference>> assemblyReferences,
+            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> packageReferences )
         {
             SolutionPath = solutionPath;
             NuGetPackages = scannedPackages;
@@ -85,9 +73,7 @@ namespace ProjectProber
             ProjectAssemblyReferences = assemblyReferences;
             ProjectNugetReferences = packageReferences;
 
-            // Here, we search any discrepancies.
-            // Look for multiple versions of each NuGet package.
-
+            // Looks for multiple versions of each NuGet package.
             Dictionary<string, List<IPackage>> packagesPerId = new Dictionary<string, List<IPackage>>();
 
             foreach( IPackage package in NuGetPackages )
@@ -105,7 +91,7 @@ namespace ProjectProber
 
             PackagesWithMultipleVersions = packagesPerId
                 .Where( x => x.Value.Count > 1 )
-                .ToDictionary( x => x.Key, x => (IEnumerable<IPackage>) x.Value );
+                .ToDictionary( x => x.Key, x => (IEnumerable<IPackage>)x.Value );
         }
     }
 }
