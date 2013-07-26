@@ -61,7 +61,7 @@ namespace AssemblyProber.Tests
             Assert.That( dependencyAssembly, Is.Not.Null, "Dependency assembly was loaded" );
 
             CollectionAssert.Contains(
-                executingAssembly.Dependencies,
+                executingAssembly.Dependencies.Values,
                 dependencyAssembly,
                 "Dependency is in executing assembly dependency list"
                 );

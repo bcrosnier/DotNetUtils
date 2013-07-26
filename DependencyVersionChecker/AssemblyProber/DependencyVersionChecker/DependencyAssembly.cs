@@ -61,7 +61,7 @@ namespace AssemblyProber
 
         internal void Add( IAssemblyInfo sourceAssembly, IAssemblyInfo requestedAssembly )
         {
-            Debug.Assert( sourceAssembly.Dependencies.Contains( requestedAssembly ), "requestedAssembly is a dependency of sourceAssembly" );
+            Debug.Assert( sourceAssembly.Dependencies.Values.Contains( requestedAssembly ), "requestedAssembly is a dependency of sourceAssembly" );
             Debug.Assert( requestedAssembly.SimpleName == AssemblyName, "requestedAssembly has correct name" );
 
             if ( DependencyLinks.Keys.Contains( sourceAssembly ) || DependencyLinks.Values.Contains( requestedAssembly ) )

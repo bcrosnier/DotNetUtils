@@ -145,10 +145,10 @@ namespace ProjectProber
 
                                 if( PathUtility.IsSubdirectory( packageRoot, absoluteHintPath ) )
                                 {
-                                    logger.Trace( "NuGet assembly found: {0}", assemblyRef.AssemblyName );
+                                    logger.Trace( "Assembly found in NuGet package directory: {0}", assemblyRef.AssemblyName );
                                     if( !File.Exists( absoluteHintPath ) )
                                     {
-                                        logger.Error( "Couldn't load assembly from its HintPath: {0}", assemblyRef.HintPath );
+                                        logger.Error( "Couldn't find this assembly from its HintPath: {0}", assemblyRef.HintPath );
                                     }
                                     else
                                     {

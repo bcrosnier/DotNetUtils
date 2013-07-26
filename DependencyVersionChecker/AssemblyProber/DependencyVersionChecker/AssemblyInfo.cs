@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using System.Xml.Serialization;
 
@@ -22,7 +23,7 @@ namespace AssemblyProber
         /// This assembly's dependencies (as Assemblies from the assembly's references).
         /// </summary>
         [XmlElement( ElementName = "References" )]
-        private readonly List<AssemblyInfo> _internalDependencies;
+        private readonly Dictionary<string, AssemblyInfo> _internalDependencies;
 
         #endregion Fields
 
@@ -132,11 +133,11 @@ namespace AssemblyProber
         /// Assemblies this one has references to.
         /// </summary>
         [XmlIgnore()]
-        public IEnumerable<IAssemblyInfo> Dependencies
+        public IReadOnlyDictionary<string, IAssemblyInfo> Dependencies
         {
             get
             {
-                return _internalDependencies.AsReadOnly();
+                return _internalDependencies.ToDictionary( x => x.Key, x => (IAssemblyInfo) x.Value );
             }
         }
 
@@ -144,7 +145,7 @@ namespace AssemblyProber
         /// Dependencies (as Assemblies from the assembly's references).
         /// </summary>
         [XmlIgnore()]
-        internal List<AssemblyInfo> InternalDependencies
+        internal Dictionary<string, AssemblyInfo> InternalDependencies
         {
             get { return _internalDependencies; }
         }
@@ -167,7 +168,7 @@ namespace AssemblyProber
         /// </summary>
         internal AssemblyInfo()
         {
-            _internalDependencies = new List<AssemblyInfo>();
+            _internalDependencies = new Dictionary<string, AssemblyInfo>();
             _paths = new List<string>();
         }
 

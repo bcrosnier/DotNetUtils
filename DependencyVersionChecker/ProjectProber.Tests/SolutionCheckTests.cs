@@ -22,7 +22,7 @@ namespace ProjectProber.Tests
 
             SolutionCheckResult r = SolutionChecker.CheckSolutionFile( SolutionParseTests.TEST_SLN_FILE_PATH );
 
-            r = SolutionChecker.CheckSolutionFile( @"D:\Benjamin\Development\CSharp\INVENIETIS-PRIVATE\papv\PAPV.sln", _logger );
+            //r = SolutionChecker.CheckSolutionFile( @"D:\Benjamin\Development\CSharp\INVENIETIS-PRIVATE\papv\PAPV.sln", _logger );
 
             Assert.That( r, Is.Not.Null );
 

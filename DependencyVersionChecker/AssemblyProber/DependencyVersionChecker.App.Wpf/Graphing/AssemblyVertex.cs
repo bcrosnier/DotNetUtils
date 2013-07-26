@@ -35,7 +35,7 @@ namespace AssemblyProberApp.Wpf.Graphing
         {
             get
             {
-                return Assembly.Dependencies.Where( x => x.BorderName == null );
+                return Assembly.Dependencies.Values.Where( x => x.BorderName == null );
             }
         }
 
@@ -43,7 +43,7 @@ namespace AssemblyProberApp.Wpf.Graphing
         {
             get
             {
-                return Assembly.Dependencies.Where( x => x.BorderName != null );
+                return Assembly.Dependencies.Values.Where( x => x.BorderName != null );
             }
         }
 

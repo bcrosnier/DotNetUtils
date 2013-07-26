@@ -82,8 +82,9 @@ namespace AssemblyProberApp.Wpf
 
             _displayName = assembly.FullName;
 
-            foreach ( IAssemblyInfo dep in assembly.Dependencies )
+            foreach ( var pair in assembly.Dependencies )
             {
+                IAssemblyInfo dep = pair.Value;
                 _children.Add( new AssemblyInfoViewModel( dep ) );
             }
         }

@@ -45,14 +45,14 @@ namespace AssemblyProber
             // "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
             // "mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
 
-            string[] microsoftTokens = new string[] { "b77a5c561934e089", "31bf3856ad364e35", "b03f5f7f11d50a3a", "7cec85d7bea7798e" };
+            //string[] microsoftTokens = new string[] { "b77a5c561934e089", "31bf3856ad364e35", "b03f5f7f11d50a3a", "7cec85d7bea7798e" };
 
             string token = BitConverter.ToString( newReference.Name.PublicKeyToken ).Replace( "-", string.Empty ).ToLowerInvariant();
 
-            if( microsoftTokens.Contains( token ) )
-            {
-                return "Microsoft";
-            }
+            //if( microsoftTokens.Contains( token ) )
+            //{
+            //    return "Microsoft";
+            //}
             if( newReference.MainModule.FullyQualifiedName.ToLowerInvariant().StartsWith( Environment.GetFolderPath( Environment.SpecialFolder.Windows ).ToLowerInvariant() ) )
             {
                 return "Windows/GAC";
@@ -158,7 +158,7 @@ namespace AssemblyProber
         /// <summary>
         /// Describe an assembly, and its dependencies recursively.
         /// </summary>
-        /// <param name="assemblyFile">Assembly file to load</param>
+        /// <param name="fileStream">Assembly file to load</param>
         /// <returns>Assembly information</returns>
         public IAssemblyInfo LoadFromFile( Stream fileStream )
         {
@@ -254,6 +254,7 @@ namespace AssemblyProber
 
         private void LoadAssembly( ModuleDefinition moduleInfo, AssemblyInfo outputInfo )
         {
+            _logger.Trace( "Loading assembly: {0}", moduleInfo.Assembly.FullName );
             try
             {
                 // Most custom attributes are optional.
@@ -313,7 +314,7 @@ namespace AssemblyProber
                     {
                         if( !_assemblyIndex.TryGetValue( resolvedAssembly.MainModule.FullyQualifiedName, out referenceAssemblyInfo ) )
                         {
-                            referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
+                            referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( resolvedAssembly.Name );
                             _assemblyIndex.Add( resolvedAssembly.MainModule.FullyQualifiedName, referenceAssemblyInfo );
                             referenceAssemblyInfo.Paths.Add( resolvedAssembly.MainModule.FullyQualifiedName );
                             _logger.Trace( "Resolved in: {0}", resolvedAssembly.MainModule.FullyQualifiedName );
@@ -331,7 +332,7 @@ namespace AssemblyProber
                     _logger.Trace( "Reference was already cached." );
                 }
                 Debug.Assert( referenceAssemblyInfo != null );
-                outputInfo.InternalDependencies.Add( referenceAssemblyInfo );
+                outputInfo.InternalDependencies.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
             }
 
             _logger.CloseGroup();

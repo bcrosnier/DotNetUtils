@@ -95,7 +95,7 @@ namespace AssemblyProber
         /// <summary>
         /// Assemblies this one has references to.
         /// </summary>
-        IEnumerable<IAssemblyInfo> Dependencies { get; }
+        IReadOnlyDictionary<string, IAssemblyInfo> Dependencies { get; }
 
         /// <summary>
         /// Name of the border, if this assembly acted as one.

@@ -278,11 +278,11 @@ namespace AssemblyProberApp.Wpf
         {
             using ( XmlWriter w = XmlWriter.Create( fileToWrite.FullName ) )
             {
-                List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
+                List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>();
 
                 foreach ( var assembly in this._drawnAssemblies )
                 {
-                    ListReferencedAssemblies( (AssemblyInfo)assembly, assemblies );
+                    ListReferencedAssemblies( assembly, assemblies );
                 }
 
                 AssemblyInfoXmlSerializer.SerializeTo( assemblies, w );
@@ -313,8 +313,9 @@ namespace AssemblyProberApp.Wpf
 
             Graph.AddVertex( v );
 
-            foreach ( IAssemblyInfo dep in assembly.Dependencies )
+            foreach ( var pair in assembly.Dependencies )
             {
+                IAssemblyInfo dep = pair.Value;
                 if ( !_isSystemAssembliesEnabled && dep.BorderName != null )
                     continue;
 
@@ -342,20 +343,22 @@ namespace AssemblyProberApp.Wpf
             RaisePropertyChanged( "Graph" );
         }
 
-        private static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly )
+        private static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly )
         {
-            return ListReferencedAssemblies( assembly, new List<AssemblyInfo>() );
+            return ListReferencedAssemblies( assembly, new List<IAssemblyInfo>() );
         }
 
-        private static IList<AssemblyInfo> ListReferencedAssemblies( AssemblyInfo assembly, IList<AssemblyInfo> existingAssemblies )
+        private static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly, IList<IAssemblyInfo> existingAssemblies )
         {
             if ( existingAssemblies.Contains( assembly ) )
                 return existingAssemblies;
 
             existingAssemblies.Add( assembly );
 
-            foreach ( AssemblyInfo dep in assembly.Dependencies )
+            foreach ( var pair in assembly.Dependencies )
             {
+                IAssemblyInfo dep = pair.Value;
+
                 ListReferencedAssemblies( dep, existingAssemblies );
             }
 

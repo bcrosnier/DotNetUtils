@@ -151,8 +151,9 @@ namespace AssemblyProber
 
         private static List<DependencyAssembly> GetAssemblyDependencies( IAssemblyInfo info, List<DependencyAssembly> existingDependencies )
         {
-            foreach ( IAssemblyInfo dep in info.Dependencies )
+            foreach ( var pair in info.Dependencies )
             {
+                IAssemblyInfo dep = pair.Value;
                 if ( dep.BorderName != null )
                     continue; // Ignore bordering dependencies
 

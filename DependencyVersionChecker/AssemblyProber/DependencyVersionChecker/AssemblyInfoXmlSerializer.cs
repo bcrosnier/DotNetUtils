@@ -22,7 +22,7 @@ namespace AssemblyProber
 
             XmlNode assembliesNode = doc.CreateElement( "Assemblies" );
 
-            foreach ( IAssemblyInfo a in assemblies )
+            foreach( IAssemblyInfo a in assemblies )
             {
                 assembliesNode.AppendChild( GetAssemblyNode( a, doc ) );
             }
@@ -87,7 +87,7 @@ namespace AssemblyProber
             assemblyNode.AppendChild( publicKeyToken );
 
             XmlElement paths = doc.CreateElement( "Paths" );
-            foreach ( string p in a.Paths )
+            foreach( string p in a.Paths )
             {
                 XmlElement path = doc.CreateElement( "Path" );
                 path.AppendChild( doc.CreateTextNode( p ) );
@@ -96,10 +96,13 @@ namespace AssemblyProber
             assemblyNode.AppendChild( paths );
 
             XmlElement dependencies = doc.CreateElement( "Dependencies" );
-            foreach ( IAssemblyInfo d in a.Dependencies )
+            foreach( var pair in a.Dependencies )
             {
                 XmlElement reference = doc.CreateElement( "Reference" );
-                reference.AppendChild( doc.CreateTextNode( d.FullName ) );
+
+                reference.SetAttribute( "As", pair.Key );
+
+                reference.AppendChild( doc.CreateTextNode( pair.Value.FullName ) );
                 dependencies.AppendChild( reference );
             }
             assemblyNode.AppendChild( dependencies );
@@ -116,19 +119,21 @@ namespace AssemblyProber
         {
             Dictionary<string, AssemblyInfo> assemblies = new Dictionary<string, AssemblyInfo>();
 
-            foreach ( XmlNode n in doc.DocumentElement )
+            foreach( XmlNode n in doc.DocumentElement )
             {
                 AssemblyInfo a = GetInfoFromNode( n );
                 assemblies.Add( a.FullName, a );
             }
 
-            foreach ( XmlNode n in doc.DocumentElement )
+            foreach( XmlNode n in doc.DocumentElement )
             {
                 AssemblyInfo a = assemblies[n["FullName"].FirstChild.Value];
-                foreach ( XmlNode r in n["Dependencies"] )
+
+                foreach( XmlNode r in n["Dependencies"] )
                 {
                     AssemblyInfo d = assemblies[r.FirstChild.Value];
-                    a.InternalDependencies.Add( d );
+                    string asReference = r.Attributes["As"].Value;
+                    a.InternalDependencies.Add( asReference, d );
                 }
             }
 
@@ -156,7 +161,7 @@ namespace AssemblyProber
 
             a.PublicKeyToken = n["PublicKeyToken"].FirstChild == null ? new byte[0] : StringUtils.HexStringToByteArray( n["PublicKeyToken"].FirstChild.Value );
 
-            if ( n["BorderName"].FirstChild == null || String.IsNullOrEmpty( n["BorderName"].FirstChild.Value ) )
+            if( n["BorderName"].FirstChild == null || String.IsNullOrEmpty( n["BorderName"].FirstChild.Value ) )
             {
                 a.BorderName = null;
             }
@@ -165,7 +170,7 @@ namespace AssemblyProber
                 a.BorderName = n["BorderName"].FirstChild.Value;
             }
 
-            foreach ( XmlNode p in n["Paths"] )
+            foreach( XmlNode p in n["Paths"] )
             {
                 a.Paths.Add( p.FirstChild.Value );
             }
@@ -182,7 +187,7 @@ namespace AssemblyProber
             w.WriteStartDocument( true );
             w.WriteStartElement( "Assemblies" );
 
-            foreach ( IAssemblyInfo a in assemblies )
+            foreach( IAssemblyInfo a in assemblies )
             {
                 WriteAssemblyInfo( a, w );
             }
@@ -248,7 +253,7 @@ namespace AssemblyProber
             w.WriteEndElement();
 
             w.WriteStartElement( "Paths" );
-            foreach ( var p in a.Paths )
+            foreach( var p in a.Paths )
             {
                 w.WriteStartElement( "Path" );
                 w.WriteValue( p );
@@ -257,9 +262,17 @@ namespace AssemblyProber
             w.WriteEndElement();
 
             w.WriteStartElement( "Dependencies" );
-            foreach ( IAssemblyInfo d in a.Dependencies )
+            foreach( var pair in a.Dependencies )
             {
+                IAssemblyInfo d = pair.Value;
+                string asReference = pair.Key;
+
                 w.WriteStartElement( "Reference" );
+
+                w.WriteStartAttribute( "As" );
+                w.WriteValue( asReference );
+                w.WriteEndAttribute();
+
                 w.WriteValue( d.FullName );
                 w.WriteEndElement();
             }
@@ -279,11 +292,11 @@ namespace AssemblyProber
             Dictionary<string, AssemblyInfo> assemblies = new Dictionary<string, AssemblyInfo>();
 
             // Assembly names which still need resolution, with the assemblies that need it.
-            Dictionary<string, List<AssemblyInfo>> pendingResolution = new Dictionary<string, List<AssemblyInfo>>();
+            Dictionary<string, Dictionary<AssemblyInfo, string>> pendingResolution = new Dictionary<string, Dictionary<AssemblyInfo, string>>();
 
-            while ( r.Read() )
+            while( r.Read() )
             {
-                if ( r.IsStartElement() && r.Name == "AssemblyInfo" )
+                if( r.IsStartElement() && r.Name == "AssemblyInfo" )
                 {
                     ReadAssembly( r.ReadSubtree(), assemblies, pendingResolution );
                 }
@@ -292,7 +305,7 @@ namespace AssemblyProber
             return assemblies.Values;
         }
 
-        private static void ReadAssembly( XmlReader r, Dictionary<string, AssemblyInfo> assemblies, Dictionary<string, List<AssemblyInfo>> pendingResolution )
+        private static void ReadAssembly( XmlReader r, Dictionary<string, AssemblyInfo> assemblies, Dictionary<string, Dictionary<AssemblyInfo, string>> pendingResolution )
         {
             AssemblyInfo a = new AssemblyInfo();
 
@@ -308,26 +321,31 @@ namespace AssemblyProber
             a.BorderName = null;
             a.PublicKeyToken = new byte[0];
 
-            while ( r.Read() )
+            while( r.Read() )
             {
-                if ( r.IsStartElement() && !r.IsEmptyElement )
+                if( r.IsStartElement() && !r.IsEmptyElement )
                 {
-                    switch ( r.Name )
+                    switch( r.Name )
                     {
                         case "FullName":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
+                                if( r.NodeType == XmlNodeType.Attribute && r.Name == "As" )
+                                {
+                                }
                                 a.FullName = r.Value;
 
                                 assemblies.Add( a.FullName, a );
 
-                                List<AssemblyInfo> assembliesReferencingThis;
-                                if ( pendingResolution.TryGetValue( a.FullName, out assembliesReferencingThis ) )
+                                Dictionary<AssemblyInfo, string> assembliesReferencingThis;
+                                if( pendingResolution.TryGetValue( a.FullName, out assembliesReferencingThis ) )
                                 {
                                     // There are assemblies pending this one
-                                    foreach ( AssemblyInfo parent in assembliesReferencingThis )
+                                    foreach( var pair in assembliesReferencingThis )
                                     {
-                                        parent.InternalDependencies.Add( a );
+                                        AssemblyInfo parent = pair.Key;
+                                        string asRef = pair.Value;
+                                        parent.InternalDependencies.Add( asRef, a );
                                     }
 
                                     // Now that they're fixed, we can remove the pending references
@@ -337,82 +355,82 @@ namespace AssemblyProber
                             break;
 
                         case "SimpleName":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.SimpleName = r.Value;
                             }
                             break;
 
                         case "Version":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 Version v;
-                                if ( Version.TryParse( r.Value, out v ) )
+                                if( Version.TryParse( r.Value, out v ) )
                                     a.Version = v;
                             }
                             break;
 
                         case "Culture":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.Culture = r.Value;
                             }
                             break;
 
                         case "FileVersion":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.FileVersion = r.Value;
                             }
                             break;
 
                         case "InformationalVersion":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.InformationalVersion = r.Value;
                             }
                             break;
 
                         case "Description":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.Description = r.Value.Replace( "\n", "\r\n" );
                             }
                             break;
 
                         case "Company":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.Company = r.Value;
                             }
                             break;
 
                         case "Product":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.Product = r.Value;
                             }
                             break;
 
                         case "Trademark":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.Trademark = r.Value;
                             }
                             break;
 
                         case "Copyright":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.Copyright = r.Value.Replace( "\n", "\r\n" );
                             }
                             break;
 
                         case "BorderName":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 string value = r.Value;
-                                if ( String.IsNullOrEmpty( value ) )
+                                if( String.IsNullOrEmpty( value ) )
                                     a.BorderName = null;
                                 else
                                     a.BorderName = value;
@@ -420,23 +438,23 @@ namespace AssemblyProber
                             break;
 
                         case "PublicKeyToken":
-                            if ( r.Read() )
+                            if( r.Read() )
                             {
                                 a.PublicKeyToken = StringUtils.HexStringToByteArray( r.Value );
                             }
                             break;
 
                         case "Paths":
-                            while ( r.Read() )
+                            while( r.Read() )
                             {
-                                if ( r.IsStartElement() && r.Name == "Path" )
+                                if( r.IsStartElement() && r.Name == "Path" )
                                 {
-                                    if ( r.Read() )
+                                    if( r.Read() )
                                     {
                                         a.Paths.Add( r.Value );
                                     }
                                 }
-                                else if ( r.NodeType == XmlNodeType.EndElement && r.Name == "Paths" )
+                                else if( r.NodeType == XmlNodeType.EndElement && r.Name == "Paths" )
                                 {
                                     break;
                                 }
@@ -444,34 +462,36 @@ namespace AssemblyProber
                             break;
 
                         case "Dependencies":
-                            while ( r.Read() )
+                            while( r.Read() )
                             {
-                                if ( r.IsStartElement() && r.Name == "Reference" )
+                                if( r.IsStartElement() && r.Name == "Reference" )
                                 {
-                                    if ( r.Read() )
+                                    string referenceName = r.GetAttribute( "As" );
+                                    if( r.Read() )
                                     {
-                                        string assemblyFullName = r.Value;
+                                        string targetAssemblyName = r.Value;
                                         AssemblyInfo d;
-                                        if ( assemblies.TryGetValue( assemblyFullName, out d ) )
+                                        if( assemblies.TryGetValue( targetAssemblyName, out d ) )
                                         {
                                             // Already resolved
-                                            a.InternalDependencies.Add( d );
+                                            a.InternalDependencies.Add( referenceName, d );
                                         }
                                         else
                                         {
                                             // Not resolved yet
-                                            List<AssemblyInfo> pendingResolutionList;
-                                            if ( !pendingResolution.TryGetValue( assemblyFullName, out pendingResolutionList ) )
+                                            Dictionary<AssemblyInfo, string> thisPendingResolution;
+
+                                            if( !pendingResolution.TryGetValue( targetAssemblyName, out thisPendingResolution ) )
                                             {
-                                                pendingResolutionList = new List<AssemblyInfo>();
-                                                pendingResolution.Add( assemblyFullName, pendingResolutionList );
+                                                thisPendingResolution = new Dictionary<AssemblyInfo, string>();
+                                                pendingResolution.Add( targetAssemblyName, thisPendingResolution );
                                             }
 
-                                            pendingResolutionList.Add( a );
+                                            thisPendingResolution.Add( a, referenceName );
                                         }
                                     }
                                 }
-                                else if ( r.NodeType == XmlNodeType.EndElement && r.Name == "Dependencies" )
+                                else if( r.NodeType == XmlNodeType.EndElement && r.Name == "Dependencies" )
                                 {
                                     break;
                                 }
@@ -479,7 +499,7 @@ namespace AssemblyProber
                             break;
                     }
                 }
-                else if ( r.NodeType == XmlNodeType.EndElement && r.Name == "AssemblyInfo" )
+                else if( r.NodeType == XmlNodeType.EndElement && r.Name == "AssemblyInfo" )
                 {
                     return;
                 }

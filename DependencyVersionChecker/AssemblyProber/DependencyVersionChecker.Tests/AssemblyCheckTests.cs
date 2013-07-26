@@ -58,8 +58,9 @@ namespace AssemblyProber.Tests
             if ( !existingAssemblies.Contains( assembly ) )
                 existingAssemblies.Add( assembly );
 
-            foreach ( IAssemblyInfo dep in assembly.Dependencies )
+            foreach ( var pair in assembly.Dependencies )
             {
+                IAssemblyInfo dep = pair.Value;
                 ListReferencedAssemblies( dep, existingAssemblies );
             }
 
@@ -134,14 +135,18 @@ namespace AssemblyProber.Tests
 
                 Assert.That( a.Dependencies.Count() == b.Dependencies.Count() );
 
-                foreach ( var d in a.Dependencies )
+                foreach ( var pair in a.Dependencies )
                 {
+                    string asReference = pair.Key;
+                    IAssemblyInfo d = pair.Value;
+
                     Assert.That( b.Dependencies
-                        .Where( d2 => d2.FullName == d.FullName )
+                        .Where( d2 => d2.Key == pair.Key )
                         .Count() == 1 );
 
                     IAssemblyInfo e = b.Dependencies
-                        .Where( d2 => d2.FullName == d.FullName )
+                        .Where( d2 => d2.Key == pair.Key )
+                        .Select( x => x.Value )
                         .First();
 
                     TestAssemblyEquivalence( d, e );
