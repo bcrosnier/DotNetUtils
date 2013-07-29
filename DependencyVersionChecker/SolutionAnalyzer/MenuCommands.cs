@@ -44,7 +44,27 @@ namespace BCrosnier.SolutionAnalyzer
                            0,
                            ref clsid,
                            "SolutionAnalyzer",
-                           string.Format( CultureInfo.CurrentCulture, "A solution must be opened in order to work." ),
+                           string.Format( CultureInfo.CurrentCulture, "Open or create and build a solution first." ),
+                           string.Empty,
+                           0,
+                           OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                           OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+                           OLEMSGICON.OLEMSGICON_CRITICAL,
+                           0,        // false
+                           out result ) );
+
+                return;
+            }
+            else if( DTE2.Solution.SolutionBuild.BuildState != vsBuildState.vsBuildStateDone )
+            {
+                IVsUIShell uiShell = (IVsUIShell)Package.GetGlobalService( typeof( SVsUIShell ) );
+                Guid clsid = Guid.Empty;
+                int result;
+                Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure( uiShell.ShowMessageBox(
+                           0,
+                           ref clsid,
+                           "Solution assembly analyzer",
+                           string.Format( CultureInfo.CurrentCulture, "Build solution first." ),
                            string.Empty,
                            0,
                            OLEMSGBUTTON.OLEMSGBUTTON_OK,
@@ -62,6 +82,7 @@ namespace BCrosnier.SolutionAnalyzer
             // 1. Clean the solution
             // 2. Build with the selected config
             // 3. Open the program on the solution directory
+            // Right now, assume the solution is already built.
             //DTE2.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
             //DTE2.Events.BuildEvents.OnBuildProjConfigDone += BuildEvents_OnBuildProjConfigDone;
             //DTE2.Solution.SolutionBuild.Clean();

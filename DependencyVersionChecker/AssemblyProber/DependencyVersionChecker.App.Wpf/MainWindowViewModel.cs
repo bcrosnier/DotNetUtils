@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using System.Xml;
 using AssemblyProber;
 using AssemblyProberApp.Wpf.Graphing;
@@ -36,6 +39,7 @@ namespace AssemblyProberApp.Wpf
         private List<AssemblyVertex> _drawnVertices;
         private List<AssemblyEdge> _drawnEdges;
 
+        private string _statusBarText;
         private string _layoutAlgorithmType;
         private List<String> _layoutAlgorithmTypes = new List<string>();
 
@@ -51,7 +55,7 @@ namespace AssemblyProberApp.Wpf
             }
             private set
             {
-                if ( value != _assemblyViewModels )
+                if( value != _assemblyViewModels )
                 {
                     _assemblyViewModels = value;
                     RaisePropertyChanged();
@@ -68,7 +72,7 @@ namespace AssemblyProberApp.Wpf
 
             private set
             {
-                if ( this._logItems != value )
+                if( this._logItems != value )
                 {
                     this._logItems = value;
                     RaisePropertyChanged();
@@ -85,7 +89,7 @@ namespace AssemblyProberApp.Wpf
 
             private set
             {
-                if ( this._graph != value )
+                if( this._graph != value )
                 {
                     this._graph = value;
                     RaisePropertyChanged();
@@ -103,9 +107,22 @@ namespace AssemblyProberApp.Wpf
             get { return _layoutAlgorithmType; }
             set
             {
-                if ( _layoutAlgorithmTypes.Contains( value ) )
+                if( _layoutAlgorithmTypes.Contains( value ) )
                 {
                     _layoutAlgorithmType = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public string StatusBarText
+        {
+            get { return _statusBarText; }
+            set
+            {
+                if( value != _statusBarText )
+                {
+                    _statusBarText = value;
                     RaisePropertyChanged();
                 }
             }
@@ -119,7 +136,7 @@ namespace AssemblyProberApp.Wpf
             }
             set
             {
-                if ( value != _isSystemAssembliesEnabled )
+                if( value != _isSystemAssembliesEnabled )
                 {
                     _isSystemAssembliesEnabled = value;
                     LoadAssemblies( _activeAssemblies );
@@ -134,7 +151,7 @@ namespace AssemblyProberApp.Wpf
 
         public MainWindowViewModel( IActivityLogger parentLogger, AssemblyVersionChecker checker, string openAtPath )
         {
-            if ( checker == null )
+            if( checker == null )
             {
                 throw new ArgumentNullException( "checker" );
             }
@@ -157,6 +174,8 @@ namespace AssemblyProberApp.Wpf
 
             //Pick a default Layout Algorithm Type
             LayoutAlgorithmType = "ISOM";
+
+            StatusBarText = @"Ready.";
 
             var logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
             parentLogger.Output.RegisterClient( logClient );
@@ -189,17 +208,24 @@ namespace AssemblyProberApp.Wpf
         public void ChangeAssemblyDirectory( DirectoryInfo dir )
         {
             _logger.Info( "Loading directory: {0}", dir.FullName );
-            if ( dir.Exists )
+            StatusBarText = String.Format( "Loading directory: {0}", dir.FullName );
+            if( dir.Exists )
             {
                 _assemblyDirectory = dir;
 
                 _checker.Reset();
                 _checker.AddDirectory( dir, true );
 
-                AssemblyCheckResult r = _checker.Check();
-                _activeAssemblies = r.Assemblies.ToList();
-
-                LoadAssemblies( _activeAssemblies, r.VersionConflicts );
+                Task.Factory.StartNew( () =>
+                {
+                    AssemblyCheckResult r = _checker.Check();
+                    InvokeOnAppThread( () =>
+                    {
+                        _activeAssemblies = r.Assemblies.ToList();
+                        LoadAssemblies( _activeAssemblies, r.VersionConflicts );
+                        StatusBarText = String.Format( "{0} found in directory", _activeAssemblies.Count );
+                    } );
+                } );
             }
             else
             {
@@ -210,16 +236,24 @@ namespace AssemblyProberApp.Wpf
         public void ChangeAssemblyFile( FileInfo file )
         {
             _logger.Info( "Loading file: {0}", file.FullName );
-            if ( file.Exists )
+            StatusBarText = String.Format( "Loading file: {0}", file.FullName );
+            if( file.Exists )
             {
                 _assemblyDirectory = null;
 
                 _checker.Reset();
                 _checker.AddFile( file );
-                AssemblyCheckResult r = _checker.Check();
-                _activeAssemblies = r.Assemblies.ToList();
 
-                LoadAssemblies( _activeAssemblies, r.VersionConflicts );
+                Task.Factory.StartNew( () =>
+                {
+                    AssemblyCheckResult r = _checker.Check();
+                    InvokeOnAppThread( () =>
+                    {
+                        _activeAssemblies = r.Assemblies.ToList();
+                        LoadAssemblies( _activeAssemblies, r.VersionConflicts );
+                        StatusBarText = String.Format( "{0} found in directory", _activeAssemblies.Count );
+                    } );
+                } );
             }
             else
             {
@@ -234,18 +268,18 @@ namespace AssemblyProberApp.Wpf
 
         public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> conflicts )
         {
-            if ( !_isSystemAssembliesEnabled )
+            if( !_isSystemAssembliesEnabled )
             {
                 assemblies = assemblies.Where( x => x.BorderName == null );
             }
 
-            if ( conflicts == null )
+            if( conflicts == null )
             {
                 conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList( assemblies );
             }
 
             AssemblyViewModels.Clear();
-            foreach ( var assembly in assemblies )
+            foreach( var assembly in assemblies )
             {
                 _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
                 AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
@@ -256,13 +290,13 @@ namespace AssemblyProberApp.Wpf
             _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
 
             int i = 0;
-            foreach ( var dep in conflicts )
+            foreach( var dep in conflicts )
             {
                 i++;
                 _logger.Warn( "Found a version mismatch about dependency: {0}", dep.AssemblyName );
-                using ( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
+                using( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
                 {
-                    foreach ( var pair in dep.DependencyLinks )
+                    foreach( var pair in dep.DependencyLinks )
                     {
                         _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.FullName );
                         Graph.MarkAssembly( pair.Value );
@@ -270,7 +304,7 @@ namespace AssemblyProberApp.Wpf
                 }
             }
 
-            if ( i == 0 )
+            if( i == 0 )
             {
                 _logger.Info( "No version mismatch found." );
             }
@@ -282,11 +316,11 @@ namespace AssemblyProberApp.Wpf
 
         public void SaveXmlFile( FileInfo fileToWrite )
         {
-            using ( XmlWriter w = XmlWriter.Create( fileToWrite.FullName ) )
+            using( XmlWriter w = XmlWriter.Create( fileToWrite.FullName ) )
             {
                 List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>();
 
-                foreach ( var assembly in this._drawnAssemblies )
+                foreach( var assembly in this._drawnAssemblies )
                 {
                     ListReferencedAssemblies( assembly, assemblies );
                 }
@@ -299,7 +333,7 @@ namespace AssemblyProberApp.Wpf
         {
             IEnumerable<IAssemblyInfo> assemblies;
 
-            using ( XmlReader r = XmlReader.Create( fileToRead.FullName ) )
+            using( XmlReader r = XmlReader.Create( fileToRead.FullName ) )
             {
                 assemblies = AssemblyInfoXmlSerializer.DeserializeFrom( r );
             }
@@ -309,7 +343,7 @@ namespace AssemblyProberApp.Wpf
 
         private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
         {
-            if ( _drawnAssemblies.Contains( assembly ) )
+            if( _drawnAssemblies.Contains( assembly ) )
                 return _drawnVertices.Where( x => x.Assembly == assembly ).First();
 
             AssemblyVertex v = new AssemblyVertex( assembly );
@@ -319,10 +353,10 @@ namespace AssemblyProberApp.Wpf
 
             Graph.AddVertex( v );
 
-            foreach ( var pair in assembly.Dependencies )
+            foreach( var pair in assembly.Dependencies )
             {
                 IAssemblyInfo dep = pair.Value;
-                if ( !_isSystemAssembliesEnabled && dep.BorderName != null )
+                if( !_isSystemAssembliesEnabled && dep.BorderName != null )
                     continue;
 
                 AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
@@ -341,7 +375,7 @@ namespace AssemblyProberApp.Wpf
             _drawnEdges = new List<AssemblyEdge>();
             _drawnVertices = new List<AssemblyVertex>();
 
-            foreach ( IAssemblyInfo assembly in assemblies )
+            foreach( IAssemblyInfo assembly in assemblies )
             {
                 PrepareVertexFromAssembly( assembly );
             }
@@ -356,12 +390,12 @@ namespace AssemblyProberApp.Wpf
 
         private static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly, IList<IAssemblyInfo> existingAssemblies )
         {
-            if ( existingAssemblies.Contains( assembly ) )
+            if( existingAssemblies.Contains( assembly ) )
                 return existingAssemblies;
 
             existingAssemblies.Add( assembly );
 
-            foreach ( var pair in assembly.Dependencies )
+            foreach( var pair in assembly.Dependencies )
             {
                 IAssemblyInfo dep = pair.Value;
 
@@ -377,11 +411,27 @@ namespace AssemblyProberApp.Wpf
 
         #endregion Event handler methods
 
+        #region Private static methods
+
+        private static void InvokeOnAppThread( Action action )
+        {
+            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
+            if( dispatchObject == null || dispatchObject.CheckAccess() )
+            {
+                action();
+            }
+            else
+            {
+                dispatchObject.BeginInvoke( action );
+            }
+        }
+        #endregion
+
         #region Command methods
 
         public void ExecuteChangeAssemblyFolder( object parameter )
         {
-            if ( !( parameter is DirectoryInfo ) )
+            if( !(parameter is DirectoryInfo) )
             {
                 throw new ArgumentException( "Parameter must be a DirectoryInfo", "parameter" );
             }

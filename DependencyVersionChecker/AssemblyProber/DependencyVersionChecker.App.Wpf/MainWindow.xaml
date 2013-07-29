@@ -24,6 +24,12 @@
                           Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.ToggleSystemAssembliesCommand }" Header="Show system assemblies" />
             </MenuItem>
         </Menu>
+        
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusBarText}" />
+            </StatusBarItem>
+        </StatusBar>
 
         <!-- Main panel -->
         <Grid HorizontalAlignment="Stretch" Width="Auto">
@@ -87,6 +93,7 @@
             <GridSplitter Grid.Row="0" Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
             <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
         </Grid>
+
     </DockPanel>
     <Window.Resources>
         <!-- Vertex data -->
