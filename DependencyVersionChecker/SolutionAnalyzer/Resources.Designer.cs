@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BCrosnier.SolutionCheckerPackage {
+namespace BCrosnier.SolutionAnalyzer {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace BCrosnier.SolutionCheckerPackage {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BCrosnier.SolutionCheckerPackage.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BCrosnier.SolutionAnalyzer.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,22 +60,5 @@ namespace BCrosnier.SolutionCheckerPackage {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Can not create tool window..
-        /// </summary>
-        internal static string CanNotCreateWindow {
-            get {
-                return ResourceManager.GetString("CanNotCreateWindow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to My Tool Window.
-        /// </summary>
-        internal static string ToolWindowTitle {
-            get {
-                return ResourceManager.GetString("ToolWindowTitle", resourceCulture);
-            }
-        }
     }
 }

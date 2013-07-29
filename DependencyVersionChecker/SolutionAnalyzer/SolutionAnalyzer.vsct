@@ -25,7 +25,7 @@
 
   <!--The Commands section is where we the commands, menus and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidSolutionCheckerPackagePkg">
+  <Commands package="guidSolutionAnalyzerPkg">
     <!-- Inside this section we have different sub-sections: one for the menus, another  
     for the menu groups, one for the buttons (the actual commands), one for the combos 
     and the last one for the bitmaps used. Each element is identified by a command id that  
@@ -41,7 +41,7 @@
          must be a menu. -->
     <Groups>
 
-      <Group guid="guidSolutionCheckerPackageCmdSet" id="MyMenuGroup" priority="0x0600">
+      <Group guid="guidSolutionAnalyzerCmdSet" id="MyMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
       </Group>
       
@@ -61,22 +61,14 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
 
-      <Button guid="guidSolutionCheckerPackageCmdSet" id="verifySolutionCommand" priority="0x0100" type="Button">
-        <Parent guid="guidSolutionCheckerPackageCmdSet" id="MyMenuGroup" />
+      <Button guid="guidSolutionAnalyzerCmdSet" id="cmdidAnalyzeSolutionAssemblies" priority="0x0100" type="Button">
+        <Parent guid="guidSolutionAnalyzerCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Verify solution</ButtonText>
+          <ButtonText>Analyze solution assemblies</ButtonText>
         </Strings>
       </Button>
 
-
-      <Button guid="guidSolutionCheckerPackageCmdSet" id="solutionVerifierWindow" priority="0x0100" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <Icon guid="guidImages" id="bmpPic2" />
-        <Strings>
-          <ButtonText>Solution verifier</ButtonText>
-        </Strings>
-      </Button>
 
 
     </Buttons>
@@ -100,19 +92,18 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidSolutionCheckerPackagePkg" value="{c8e60d50-8b5d-4538-a6eb-0161197032fb}" />
+    <GuidSymbol name="guidSolutionAnalyzerPkg" value="{b757fef3-6dbc-4722-b990-94424ca533f6}" />
     
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidSolutionCheckerPackageCmdSet" value="{5b45292d-edb2-402c-8754-a9dafdfa3323}">
+    <GuidSymbol name="guidSolutionAnalyzerCmdSet" value="{e7914ec6-29d4-4ab2-9d43-88e873b97e56}">
 
       <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="verifySolutionCommand" value="0x0100" />
-      <IDSymbol name="solutionVerifierWindow" value="0x0101" />
+      <IDSymbol name="cmdidAnalyzeSolutionAssemblies" value="0x0100" />
     </GuidSymbol>
     
     
     
-    <GuidSymbol name="guidImages" value="{58933b20-e355-4e59-b0e5-7a45e6bdd545}" >
+    <GuidSymbol name="guidImages" value="{ae498e0a-7f00-4faf-871d-378f63d02674}" >
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />

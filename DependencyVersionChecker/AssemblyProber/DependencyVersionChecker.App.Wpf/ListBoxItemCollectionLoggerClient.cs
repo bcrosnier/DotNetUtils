@@ -125,7 +125,7 @@ namespace AssemblyProberApp.Wpf
             //{
             //    AddString( "Group open: " + group.GroupText );
             //}
-
+            AddString( "=> " + group.GroupText );
             this._currentPadding.Left += OFFSET_VALUE;
 
             if ( group.Exception != null )
@@ -154,7 +154,7 @@ namespace AssemblyProberApp.Wpf
             }
             else
             {
-                dispatchObject.Invoke( action );
+                dispatchObject.BeginInvoke( action );
             }
         }
 

@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="c8e60d50-8b5d-4538-a6eb-0161197032fb" Version="1.0" Language="en-US" Publisher="B. Crosnier" />
-    <DisplayName>SolutionCheckerPackage</DisplayName>
-    <Description>Utilities to verify solutions and prevent any version discrepancies in .NET assemblies, and C# projects.</Description>
+    <Identity Id="b757fef3-6dbc-4722-b990-94424ca533f6" Version="1.0" Language="en-US" Publisher="B. Crosnier" />
+    <DisplayName>SolutionAnalyzer</DisplayName>
+    <Description>Utilities to analyze and ensure consistency within assembly and package versions inside a solution.</Description>
   </Metadata>
   <Installation InstalledByMsi="false">
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="11.0" />

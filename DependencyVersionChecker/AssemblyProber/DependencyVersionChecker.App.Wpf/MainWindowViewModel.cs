@@ -22,7 +22,7 @@ namespace AssemblyProberApp.Wpf
         private AssemblyVersionChecker _checker;
         private ObservableCollection<AssemblyInfoViewModel> _assemblyViewModels;
         private DirectoryInfo _assemblyDirectory;
-        private IDefaultActivityLogger _logger;
+        private IActivityLogger _logger;
         private ObservableCollection<ListBoxItem> _logItems;
         private bool _isSystemAssembliesEnabled;
 
@@ -132,15 +132,14 @@ namespace AssemblyProberApp.Wpf
 
         #region Constructor/initialization
 
-        public MainWindowViewModel( IActivityLogger parentLogger, AssemblyVersionChecker checker )
+        public MainWindowViewModel( IActivityLogger parentLogger, AssemblyVersionChecker checker, string openAtPath )
         {
             if ( checker == null )
             {
                 throw new ArgumentNullException( "checker" );
             }
 
-            _logger = new DefaultActivityLogger();
-            _logger.Output.BridgeTo( parentLogger );
+            _logger = parentLogger;
             _logItems = new ObservableCollection<ListBoxItem>();
 
             _graph = new AssemblyGraph( true );
@@ -167,7 +166,14 @@ namespace AssemblyProberApp.Wpf
             _assemblyViewModels = new ObservableCollection<AssemblyInfoViewModel>();
             PrepareCommands();
 
-            ChangeAssemblyDirectory( new DirectoryInfo( Environment.CurrentDirectory ) );
+            if( openAtPath != null )
+            {
+                ChangeAssemblyDirectory( new DirectoryInfo( openAtPath ) );
+            }
+            else
+            {
+                ChangeAssemblyDirectory( new DirectoryInfo( Environment.CurrentDirectory ) );
+            }
         }
 
         public void PrepareCommands()
