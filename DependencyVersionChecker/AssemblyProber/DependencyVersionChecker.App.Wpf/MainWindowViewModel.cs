@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -21,6 +20,10 @@ namespace AssemblyProberApp.Wpf
         private readonly int MAX_LOG_ENTRIES = 1000; // Maximum number of log entries in the collection
 
         #region Members
+
+        public event EventHandler LogFlushRequested;
+
+        public event EventHandler<AssemblyVertexEventArgs> VertexHighlightRequested;
 
         private AssemblyVersionChecker _checker;
         private ObservableCollection<AssemblyInfoViewModel> _assemblyViewModels;
@@ -177,8 +180,8 @@ namespace AssemblyProberApp.Wpf
 
             StatusBarText = @"Ready.";
 
-            var logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
-            parentLogger.Output.RegisterClient( logClient );
+            //var logClient = new ListBoxItemCollectionLoggerClient( _logItems, MAX_LOG_ENTRIES );
+            //parentLogger.Output.RegisterClient( logClient );
 
             _checker = checker;
 
@@ -203,7 +206,7 @@ namespace AssemblyProberApp.Wpf
 
         #endregion Constructor/initialization
 
-        #region Methods
+        #region Public Methods
 
         public void ChangeAssemblyDirectory( DirectoryInfo dir )
         {
@@ -222,7 +225,7 @@ namespace AssemblyProberApp.Wpf
                     InvokeOnAppThread( () =>
                     {
                         _activeAssemblies = r.Assemblies.ToList();
-                        LoadAssemblies( _activeAssemblies, r.VersionConflicts );
+                        LoadAssemblies( _activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches );
                         StatusBarText = String.Format( "{0} found in directory", _activeAssemblies.Count );
                     } );
                 } );
@@ -250,7 +253,7 @@ namespace AssemblyProberApp.Wpf
                     InvokeOnAppThread( () =>
                     {
                         _activeAssemblies = r.Assemblies.ToList();
-                        LoadAssemblies( _activeAssemblies, r.VersionConflicts );
+                        LoadAssemblies( _activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches );
                         StatusBarText = String.Format( "{0} found in directory", _activeAssemblies.Count );
                     } );
                 } );
@@ -263,10 +266,10 @@ namespace AssemblyProberApp.Wpf
 
         public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies )
         {
-            LoadAssemblies( assemblies, null );
+            LoadAssemblies( assemblies, null, null );
         }
 
-        public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> conflicts )
+        public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<AssemblyReferenceName> conflicts, IEnumerable<AssemblyReference> refMismatches )
         {
             if( !_isSystemAssembliesEnabled )
             {
@@ -278,8 +281,13 @@ namespace AssemblyProberApp.Wpf
                 conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList( assemblies );
             }
 
+            if( refMismatches == null )
+            {
+                refMismatches = AssemblyVersionChecker.GetReferenceMismatches( assemblies );
+            }
+
             AssemblyViewModels.Clear();
-            foreach( var assembly in assemblies )
+            foreach( var assembly in assemblies.OrderBy( x => x.FullName ) )
             {
                 _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
                 AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
@@ -289,29 +297,46 @@ namespace AssemblyProberApp.Wpf
 
             _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
 
-            int i = 0;
+            int count = conflicts.Count();
             foreach( var dep in conflicts )
             {
-                i++;
                 _logger.Warn( "Found a version mismatch about dependency: {0}", dep.AssemblyName );
                 using( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
                 {
-                    foreach( var pair in dep.DependencyLinks )
+                    foreach( var pair in dep.ReferenceLinks )
                     {
                         _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.FullName );
                         Graph.MarkAssembly( pair.Value );
+                        Graph.AddAssemblyMessage( pair.Value, String.Format( "There is a duplicate {0} with a different version.", pair.Value.SimpleName ) );
                     }
                 }
             }
 
-            if( i == 0 )
+            if( count == 0 )
             {
                 _logger.Info( "No version mismatch found." );
             }
             else
             {
-                _logger.Warn( "{0} version mismatches found.", i );
+                _logger.Warn( "{0} version mismatches found.", count );
             }
+
+            foreach( var refMismatch in refMismatches )
+            {
+                _logger.Warn( "Reference mismatch: [{0} {1}] references [{2} {3}], but [{4} {5}] was resolved.",
+                    refMismatch.Parent.SimpleName, refMismatch.Parent.Version.ToString(),
+                    refMismatch.ReferenceNameAssemblyObject.SimpleName, refMismatch.ReferenceNameAssemblyObject.Version.ToString(),
+                    refMismatch.ReferencedAssembly.SimpleName, refMismatch.ReferencedAssembly.Version.ToString() );
+
+                Graph.MarkAssembly( refMismatch.ReferencedAssembly );
+                Graph.AddAssemblyMessage( refMismatch.ReferencedAssembly,
+                    String.Format( "Referenced as version {0} by [{1} {2}].",
+                    refMismatch.ReferenceNameAssemblyObject.Version.ToString(),
+                    refMismatch.Parent.SimpleName, refMismatch.Parent.Version.ToString()
+                    ) );
+            }
+
+            RaiseLogFlushRequested();
         }
 
         public void SaveXmlFile( FileInfo fileToWrite )
@@ -341,6 +366,26 @@ namespace AssemblyProberApp.Wpf
             LoadAssemblies( assemblies );
         }
 
+        #endregion Public Methods
+
+        #region Private methods
+
+        private void RaiseLogFlushRequested()
+        {
+            if( LogFlushRequested != null )
+            {
+                LogFlushRequested( this, null );
+            }
+        }
+
+        private void RaiseVertexHighlightRequested( AssemblyVertex vertex )
+        {
+            if( VertexHighlightRequested != null )
+            {
+                VertexHighlightRequested( this, new AssemblyVertexEventArgs( vertex ) );
+            }
+        }
+
         private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
         {
             if( _drawnAssemblies.Contains( assembly ) )
@@ -361,6 +406,8 @@ namespace AssemblyProberApp.Wpf
 
                 AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
                 AssemblyEdge depEdge = new AssemblyEdge( v, vDep );
+
+                vDep.AddReferencedBy( v.Assembly );
                 _drawnEdges.Add( depEdge );
                 Graph.AddEdge( depEdge );
             }
@@ -368,7 +415,7 @@ namespace AssemblyProberApp.Wpf
             return v;
         }
 
-        public void PrepareGraph( IEnumerable<IAssemblyInfo> assemblies )
+        private void PrepareGraph( IEnumerable<IAssemblyInfo> assemblies )
         {
             Graph = new AssemblyGraph( true );
             _drawnAssemblies = new List<IAssemblyInfo>();
@@ -381,6 +428,27 @@ namespace AssemblyProberApp.Wpf
             }
 
             RaisePropertyChanged( "Graph" );
+        }
+
+        #endregion Private methods
+
+        #region Event handler methods
+
+        #endregion Event handler methods
+
+        #region Private static methods
+
+        private static void InvokeOnAppThread( Action action )
+        {
+            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
+            if( dispatchObject == null || dispatchObject.CheckAccess() )
+            {
+                action();
+            }
+            else
+            {
+                dispatchObject.BeginInvoke( action );
+            }
         }
 
         private static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly )
@@ -405,27 +473,7 @@ namespace AssemblyProberApp.Wpf
             return existingAssemblies;
         }
 
-        #endregion Methods
-
-        #region Event handler methods
-
-        #endregion Event handler methods
-
-        #region Private static methods
-
-        private static void InvokeOnAppThread( Action action )
-        {
-            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if( dispatchObject == null || dispatchObject.CheckAccess() )
-            {
-                action();
-            }
-            else
-            {
-                dispatchObject.BeginInvoke( action );
-            }
-        }
-        #endregion
+        #endregion Private static methods
 
         #region Command methods
 
@@ -446,5 +494,10 @@ namespace AssemblyProberApp.Wpf
         }
 
         #endregion Command methods
+
+        internal AssemblyVertex GetVertexFromAssembly( IAssemblyInfo assembly )
+        {
+            return _drawnVertices.Where( x => x.Assembly == assembly ).FirstOrDefault();
+        }
     }
 }

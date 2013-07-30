@@ -8,7 +8,7 @@ namespace AssemblyProber
     public class AssemblyCheckResult
     {
         /// <summary>
-        /// Assemblies that were read.
+        /// All assemblies that were listed.
         /// </summary>
         public IEnumerable<IAssemblyInfo> Assemblies
         {
@@ -17,18 +17,27 @@ namespace AssemblyProber
         }
 
         /// <summary>
-        /// Dependencies found between assemblies.
+        /// All assembly references
         /// </summary>
-        public IEnumerable<DependencyAssembly> Dependencies
+        public IEnumerable<AssemblyReferenceName> Dependencies
         {
             get;
             private set;
         }
 
         /// <summary>
-        /// Found version discrepancies.
+        /// Found version discrepancies for a single assembly name.
         /// </summary>
-        public IEnumerable<DependencyAssembly> VersionConflicts
+        public IEnumerable<AssemblyReferenceName> VersionConflicts
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Found version discrepancies for a single assembly reference.
+        /// </summary>
+        public IEnumerable<AssemblyReference> ReferenceVersionMismatches
         {
             get;
             private set;
@@ -40,11 +49,16 @@ namespace AssemblyProber
         /// <param name="assemblies">Assemblies that were read</param>
         /// <param name="dependencies">Dependencies found between assemblies</param>
         /// <param name="versionConflicts">Found version discrepancies</param>
-        internal AssemblyCheckResult( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<DependencyAssembly> dependencies, IEnumerable<DependencyAssembly> versionConflicts )
+        internal AssemblyCheckResult( IEnumerable<IAssemblyInfo> assemblies,
+            IEnumerable<AssemblyReferenceName> dependencies,
+            IEnumerable<AssemblyReferenceName> versionConflicts,
+            IEnumerable<AssemblyReference> referenceVersionMismatches
+            )
         {
             Assemblies = assemblies;
             Dependencies = dependencies;
             VersionConflicts = versionConflicts;
+            ReferenceVersionMismatches = referenceVersionMismatches;
         }
     }
 }

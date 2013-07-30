@@ -287,55 +287,75 @@ namespace AssemblyProber
             AssemblyInfo referenceAssemblyInfo;
             AssemblyDefinition resolvedAssembly;
 
-            _logger.OpenGroup( LogLevel.Trace, "References of: {0}", outputInfo.FullName );
-
-            // Recursively load references.
-            foreach( var referenceAssemblyName in moduleInfo.AssemblyReferences )
+            using( _logger.OpenGroup( LogLevel.Trace, "References of: {0}", outputInfo.FullName ) )
             {
-                _logger.Trace( "Resolving reference: {0}", referenceAssemblyName.FullName );
-                referenceAssemblyInfo = null;
-                resolvedAssembly = null;
 
-                if( !_assemblyIndex.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
+                // Recursively load references.
+                foreach( var referenceAssemblyName in moduleInfo.AssemblyReferences )
                 {
-                    // Resolve assembly.
-                    try
+                    _logger.Trace( "Resolving reference: {0}", referenceAssemblyName.FullName );
+                    referenceAssemblyInfo = null;
+                    resolvedAssembly = null;
+
+                    // Check for REFERENCE NAME (the name referenced by the parent asssembly)
+                    if( !_assemblyIndex.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
                     {
-                        resolvedAssembly = moduleInfo.AssemblyResolver.Resolve( referenceAssemblyName.FullName );
-                    }
-                    catch( Exception ex )
-                    {
-                        _logger.Error( ex, "Failed to resolve assembly" );
-                        // Can't resolve assembly, but we can still have data from its name reference.
-                        referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
-                        referenceAssemblyInfo.Error = ex;
-                    }
-                    if( referenceAssemblyInfo == null )
-                    {
-                        if( !_assemblyIndex.TryGetValue( resolvedAssembly.MainModule.FullyQualifiedName, out referenceAssemblyInfo ) )
+                        // Resolve assembly.
+                        try
                         {
-                            referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( resolvedAssembly.Name );
-                            _assemblyIndex.Add( resolvedAssembly.MainModule.FullyQualifiedName, referenceAssemblyInfo );
-                            referenceAssemblyInfo.Paths.Add( resolvedAssembly.MainModule.FullyQualifiedName );
-                            _logger.Trace( "Resolved in: {0}", resolvedAssembly.MainModule.FullyQualifiedName );
-                            LoadAssembly( resolvedAssembly.MainModule, referenceAssemblyInfo );
+                            resolvedAssembly = moduleInfo.AssemblyResolver.Resolve( referenceAssemblyName.FullName );
                         }
-                        else
+                        catch( Exception ex )
                         {
-                            _logger.Warn( "Uncached assembly name: {0} tried to load cached file: {1}", referenceAssemblyName.FullName, resolvedAssembly.MainModule.FullyQualifiedName );
-                            _assemblyIndex.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
+                            _logger.Error( ex, "Failed to resolve assembly" );
+                            // Can't resolve assembly, but we can still have data from its name reference.
+                            referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( referenceAssemblyName );
+                            referenceAssemblyInfo.Error = ex;
+                        }
+                        if( referenceAssemblyInfo == null )
+                        {
+                            // Check for FILE NAME (the file name of the resolved assembly)
+                            if( !_assemblyIndex.TryGetValue( resolvedAssembly.MainModule.FullyQualifiedName, out referenceAssemblyInfo ) )
+                            {
+                                _logger.Trace( "Resolved in: {0}", resolvedAssembly.MainModule.FullyQualifiedName );
+
+                                // Check for RESOLVED ASSEMBLY NAME (the actual name of the assembly,
+                                // which may or may not be the same as the reference because of rebinding
+                                if( !_assemblyIndex.TryGetValue( resolvedAssembly.Name.FullName, out referenceAssemblyInfo ) )
+                                {
+                                    referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( resolvedAssembly.Name );
+                                }
+                                //referenceAssemblyInfo = CreateAssemblyInfoFromAssemblyNameReference( resolvedAssembly.Name );
+
+                                _logger.Trace( "Adding to cache: {0} as {1}", resolvedAssembly.MainModule.FullyQualifiedName, referenceAssemblyInfo.FullName );
+                                _assemblyIndex.Add( resolvedAssembly.MainModule.FullyQualifiedName, referenceAssemblyInfo );
+
+                                referenceAssemblyInfo.Paths.Add( resolvedAssembly.MainModule.FullyQualifiedName );
+
+                                LoadAssembly( resolvedAssembly.MainModule, referenceAssemblyInfo );
+                            }
+                            else
+                            {
+                                _logger.Warn( "Uncached assembly name: {0} tried to load cached file: {1}", referenceAssemblyName.FullName, resolvedAssembly.MainModule.FullyQualifiedName );
+                                _assemblyIndex.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
+                            }
                         }
                     }
+                    else
+                    {
+                        _logger.Trace( "{0} was already cached.", referenceAssemblyName.FullName );
+                    }
+                    Debug.Assert( referenceAssemblyInfo != null );
+                    //if( outputInfo.InternalDependencies.TryGetValue( referenceAssemblyName.FullName, out referenceAssemblyInfo ) )
+                    //{
+                    //    _logger.Warn( "Reference {0} was already added to {1}", referenceAssemblyName.FullName, outputInfo.SimpleName );
+                    //}
+                    //else
+                    //{
+                        outputInfo.InternalDependencies.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
+                    //}
                 }
-                else
-                {
-                    _logger.Trace( "Reference was already cached." );
-                }
-                Debug.Assert( referenceAssemblyInfo != null );
-                outputInfo.InternalDependencies.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
             }
-
-            _logger.CloseGroup();
         }
 
         /// <summary>
@@ -357,6 +377,7 @@ namespace AssemblyProber
                 Culture = assemblyNameRef.Culture,
                 PublicKeyToken = assemblyNameRef.PublicKeyToken
             };
+            _logger.Trace( "Adding to cache: {0}", assemblyNameRef.FullName );
             _assemblyIndex.Add( assemblyNameRef.FullName, outputInfo );
             return outputInfo;
         }

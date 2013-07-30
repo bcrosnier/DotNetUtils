@@ -14,6 +14,14 @@ namespace AssemblyProberApp.Wpf
         private string _displayName;
         private IList<AssemblyInfoViewModel> _children;
 
+        public IAssemblyInfo AssemblyInfo
+        {
+            get
+            {
+                return _assembly;
+            }
+        }
+
         public bool IsSelected
         {
             get

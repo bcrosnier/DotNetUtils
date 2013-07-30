@@ -8,7 +8,7 @@ namespace AssemblyProber
     /// Class representing a dependency about a certain assembly simple name.
     /// </summary>
     [DebuggerDisplay( "AssemblyInfo = {AssemblyName} ({DependencyLinks.Count})" )]
-    public class DependencyAssembly
+    public class AssemblyReferenceName
     {
         /// <summary>
         /// Assembly simple name.
@@ -19,7 +19,7 @@ namespace AssemblyProber
         /// Key: Parent
         /// Value: Dependency
         /// </summary>
-        public IDictionary<IAssemblyInfo, IAssemblyInfo> DependencyLinks { get; private set; }
+        public IDictionary<IAssemblyInfo, IAssemblyInfo> ReferenceLinks { get; private set; }
 
         /// <summary>
         /// Returns true is this dependency name was requested using multiple FullNames.
@@ -31,7 +31,7 @@ namespace AssemblyProber
                 bool hasConflict = false;
                 string fullName = null;
 
-                foreach ( var link in DependencyLinks )
+                foreach ( var link in ReferenceLinks )
                 {
                     if ( fullName != null && link.Value.FullName != fullName )
                         hasConflict = true;
@@ -49,14 +49,14 @@ namespace AssemblyProber
         {
             get
             {
-                return DependencyLinks.Count;
+                return ReferenceLinks.Count;
             }
         }
 
-        internal DependencyAssembly( string requestedAssemblyShortName )
+        internal AssemblyReferenceName( string requestedAssemblyShortName )
         {
             AssemblyName = requestedAssemblyShortName;
-            DependencyLinks = new Dictionary<IAssemblyInfo, IAssemblyInfo>();
+            ReferenceLinks = new Dictionary<IAssemblyInfo, IAssemblyInfo>();
         }
 
         internal void Add( IAssemblyInfo sourceAssembly, IAssemblyInfo requestedAssembly )
@@ -64,13 +64,13 @@ namespace AssemblyProber
             Debug.Assert( sourceAssembly.Dependencies.Values.Contains( requestedAssembly ), "requestedAssembly is a dependency of sourceAssembly" );
             Debug.Assert( requestedAssembly.SimpleName == AssemblyName, "requestedAssembly has correct name" );
 
-            if ( DependencyLinks.Keys.Contains( sourceAssembly ) || DependencyLinks.Values.Contains( requestedAssembly ) )
+            if ( ReferenceLinks.Keys.Contains( sourceAssembly ) || ReferenceLinks.Values.Contains( requestedAssembly ) )
             {
                 //throw new InvalidOperationException( "Cannot add the same assembly twice" );
                 return;
             }
 
-            DependencyLinks.Add( sourceAssembly, requestedAssembly );
+            ReferenceLinks.Add( sourceAssembly, requestedAssembly );
         }
     }
 }

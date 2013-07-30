@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
         xmlns:local="clr-namespace:AssemblyProberApp.Wpf.Graphing"
-        xmlns:zoom="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
+        xmlns:local2="clr-namespace:AssemblyProberApp.Wpf"
+        xmlns:wpfext="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
         Title="Assembly reference tree" Height="768" Width="1024"
         WindowState="Maximized">
     <DockPanel LastChildFill="True">
@@ -35,8 +36,8 @@
         <Grid HorizontalAlignment="Stretch" Width="Auto">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*" />
-                <RowDefinition Height="3px" />
-                <RowDefinition Height="1*" />
+                <!--<RowDefinition Height="3px" />-->
+                <!--<RowDefinition Height="1*" />-->
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
@@ -46,7 +47,9 @@
             <!-- Tree viewer -->
             <TreeView
                 Grid.Row="0" Grid.Column="0"
-                ItemsSource="{Binding AssemblyViewModels}">
+                ItemsSource="{Binding AssemblyViewModels}"
+                TreeViewItem.Selected="TreeView_Selected"
+                >
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -68,7 +71,7 @@
             </TreeView>
 
             <!-- Graph viewer -->
-            <zoom:ZoomControl
+            <wpfext:ZoomControl
                 Grid.Row="0" Grid.Column="2"
                 Zoom="0.2"
                 ZoomBoxOpacity="0.5" Background="#ff656565">
@@ -77,21 +80,24 @@
                     Graph="{Binding Path=Graph}"
                     LayoutAlgorithmType="{Binding Path=LayoutAlgorithmType, Mode=OneWay}"
                     OverlapRemovalAlgorithmType="FSA"
-                    HighlightAlgorithmType="Simple" />
-            </zoom:ZoomControl>
+                    graphsharp:GraphElementBehaviour.HighlightTrigger="True"
+                    HighlightAlgorithmType="Simple">
+                </local:AssemblyGraphLayout>
+            </wpfext:ZoomControl>
 
             <!-- Log viewer -->
-            <DockPanel
+            <!--<DockPanel
                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                 x:Name="LogPanel">
 
                 <ListBox x:Name="LogListBox" ItemsSource="{Binding LogData}" VirtualizingPanel.ScrollUnit="Pixel"
-                         FontFamily="Consolas, DejaVu Sans Mono, Terminus, System" FontSize="10pt" />
-            </DockPanel>
+                         FontFamily="Consolas, DejaVu Sans Mono, Terminus, System" FontSize="10pt"
+                         IsSynchronizedWithCurrentItem="True" local2:SelectorExtenders.IsAutoscroll="True" />
+            </DockPanel>-->
 
             <!-- Splitters -->
             <GridSplitter Grid.Row="0" Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
-            <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+            <!--<GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />-->
         </Grid>
 
     </DockPanel>
@@ -99,11 +105,17 @@
         <!-- Vertex data -->
         <DataTemplate x:Key="assemblyVertexTemplate" DataType="{x:Type local:AssemblyVertex}">
             <StackPanel Orientation="Vertical" Margin="5">
-                <TextBlock Text="{Binding Path=Assembly.SimpleName, Mode=OneWay}" Foreground="White" FontSize="12pt" FontWeight="Bold" />
-                <TextBlock Text="{Binding Path=AssemblyDetails, Mode=OneWay}" Foreground="White" FontSize="8pt"
+                <TextBlock x:Name="AssemblyName" Text="{Binding Path=Assembly.SimpleName, Mode=OneWay}" Foreground="White" FontSize="12pt" FontWeight="Bold" />
+                <TextBlock x:Name="AssemblyDetails" Text="{Binding Path=AssemblyDetails, Mode=OneWay}" Foreground="White" FontSize="8pt"
                            HorizontalAlignment="Left" MaxWidth="250"
                            TextWrapping="Wrap" />
             </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=IsHighlighted, Mode=OneWay}" Value="true">
+                    <Setter TargetName="AssemblyName" Property="Foreground" Value="Black" />
+                    <Setter TargetName="AssemblyDetails" Property="Foreground" Value="Black" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
         <!-- Vertex style -->
@@ -140,6 +152,13 @@
                             <DataTrigger Binding="{Binding Path=IsMarked, Mode=OneWay}" Value="true">
                                 <Setter TargetName="VertexBorder" Property="Background" Value="#FFBF2B00" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=IsHighlighted, Mode=OneWay}" Value="true">
+                                <Setter TargetName="VertexBorder" Property="Background" Value="LightYellow" />
+                            </DataTrigger>
+                            <!--<DataTrigger Binding="{Binding Path=IsHighlighted, Mode=OneWay}" Value="false">
+                                <Setter TargetName="VertexBorder" Property="BorderBrush" Value="White" />
+                                <Setter TargetName="VertexBorder" Property="Background" Value="Black" />
+                            </DataTrigger>-->
                             <DataTrigger Binding="{Binding Path=HasDependencies, Mode=OneWay}" Value="true">
                                 <Setter TargetName="VertexBorder" Property="BorderBrush" Value="Red" />
                             </DataTrigger>

@@ -25,8 +25,19 @@ namespace AssemblyProberApp.Wpf.Graphing
                 .Where( x => x.Assembly == assembly )
                 .FirstOrDefault();
 
-            if ( vertex != null )
+            if( vertex != null )
                 vertex.IsMarked = true;
+        }
+
+        public void AddAssemblyMessage( IAssemblyInfo assembly, string message )
+        {
+            AssemblyVertex vertex =
+                this.Vertices
+                .Where( x => x.Assembly == assembly )
+                .FirstOrDefault();
+
+            if( vertex != null )
+                vertex.AddMessage( message );
         }
     }
 

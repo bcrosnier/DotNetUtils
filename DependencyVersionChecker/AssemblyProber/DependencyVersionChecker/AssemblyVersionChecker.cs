@@ -103,7 +103,7 @@ namespace AssemblyProber
         public AssemblyCheckResult Check()
         {
             List<IAssemblyInfo> assemblies;
-            List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
+            List<AssemblyReferenceName> dependencies = new List<AssemblyReferenceName>();
 
             foreach ( var f in _filesToCheck )
             {
@@ -114,7 +114,9 @@ namespace AssemblyProber
 
             var conflicts = GetConflictsFromAssemblyList( assemblies );
 
-            AssemblyCheckResult result = new AssemblyCheckResult( assemblies, dependencies, conflicts );
+            var refMismatches = GetReferenceMismatches( assemblies );
+
+            AssemblyCheckResult result = new AssemblyCheckResult( assemblies, dependencies, conflicts, refMismatches );
 
             return result;
         }
@@ -124,9 +126,9 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="assemblies">Collection of assemblies to check</param>
         /// <returns>Collection of dependencies with discrepancies</returns>
-        public static IEnumerable<DependencyAssembly> GetConflictsFromAssemblyList( IEnumerable<IAssemblyInfo> assemblies )
+        public static IEnumerable<AssemblyReferenceName> GetConflictsFromAssemblyList( IEnumerable<IAssemblyInfo> assemblies )
         {
-            List<DependencyAssembly> dependencies = new List<DependencyAssembly>();
+            List<AssemblyReferenceName> dependencies = new List<AssemblyReferenceName>();
             foreach ( var assembly in assemblies )
             {
                 if ( assembly != null )
@@ -136,7 +138,7 @@ namespace AssemblyProber
             // Only get dependencies with multiple links
             var conflicts =
                 dependencies
-                .Where( x => x.DependencyLinks.Count >= 2 )
+                .Where( x => x.ReferenceLinks.Count >= 2 )
                 .Where( x => x.HasConflict )
                 .Select( x => x )
                 .ToList();
@@ -144,35 +146,101 @@ namespace AssemblyProber
             return conflicts;
         }
 
-        private static List<DependencyAssembly> GetAssemblyDependencies( IAssemblyInfo info )
+        public static IEnumerable<AssemblyReference> GetReferenceMismatches( IEnumerable<IAssemblyInfo> assemblies )
         {
-            return GetAssemblyDependencies( info, new List<DependencyAssembly>() );
+            List<AssemblyReference> references = new List<AssemblyReference>();
+            List<IAssemblyInfo> parsedAssemblies = new List<IAssemblyInfo>();
+            foreach( var assembly in assemblies )
+            {
+                if( assembly != null )
+                    references = GetAssemblyReferences( assembly, references, parsedAssemblies );
+            }
+
+            var conflicts = references.Where( x => x.HasVersionMismatch );
+
+            return conflicts;
         }
 
-        private static List<DependencyAssembly> GetAssemblyDependencies( IAssemblyInfo info, List<DependencyAssembly> existingDependencies )
+        private static List<AssemblyReferenceName> GetAssemblyDependencies( IAssemblyInfo info )
         {
-            foreach ( var pair in info.Dependencies )
+            return GetAssemblyDependencies( info, new List<AssemblyReferenceName>() );
+        }
+
+        private static List<AssemblyReferenceName> GetAssemblyDependencies( IAssemblyInfo info, List<AssemblyReferenceName> existingDependencies )
+        {
+            foreach( var pair in info.Dependencies )
             {
                 IAssemblyInfo dep = pair.Value;
-                if ( dep.BorderName != null )
+                if( dep.BorderName != null )
                     continue; // Ignore bordering dependencies
 
-                DependencyAssembly dependencyItem = existingDependencies
+                AssemblyReferenceName dependencyItem = existingDependencies
                     .Where( x => x.AssemblyName == dep.SimpleName )
                     .FirstOrDefault();
 
-                if ( dependencyItem == null )
+                if( dependencyItem == null )
                 {
-                    dependencyItem = new DependencyAssembly( dep.SimpleName );
+                    dependencyItem = new AssemblyReferenceName( dep.SimpleName );
                     existingDependencies.Add( dependencyItem );
                 }
-                if ( !dependencyItem.DependencyLinks.Keys.Contains( info ) )
+                if( !dependencyItem.ReferenceLinks.Keys.Contains( info ) )
                     dependencyItem.Add( info, dep );
 
                 GetAssemblyDependencies( dep, existingDependencies );
             }
 
             return existingDependencies;
+        }
+
+        private static List<AssemblyReference> GetAssemblyReferences( IAssemblyInfo info )
+        {
+            return GetAssemblyReferences( info, new List<AssemblyReference>(), new List<IAssemblyInfo>() );
+        }
+
+        private static List<AssemblyReference> GetAssemblyReferences( IAssemblyInfo info, List<AssemblyReference> existingReferences, List<IAssemblyInfo> parsedAssemblies )
+        {
+            if( parsedAssemblies.Contains( info ) )
+                return existingReferences;
+            else
+                parsedAssemblies.Add( info );
+
+            foreach( var pair in info.Dependencies )
+            {
+                IAssemblyInfo dep = pair.Value;
+                string referenceName = pair.Key;
+
+                if( dep.BorderName != null )
+                    continue; // Ignore bordering dependencies
+
+                AssemblyReference referenceItem = new AssemblyReference( info, referenceName, dep );
+                existingReferences.Add( referenceItem );
+
+                GetAssemblyReferences( dep, existingReferences, parsedAssemblies );
+            }
+            return existingReferences;
+        }
+    }
+
+    public class AssemblyReference
+    {
+        public IAssemblyInfo Parent { get; private set; }
+        public string ReferenceName { get; private set; }
+        public IAssemblyInfo ReferenceNameAssemblyObject { get; private set; }
+        public IAssemblyInfo ReferencedAssembly { get; private set; }
+        public bool HasVersionMismatch { get; private set; }
+
+        internal AssemblyReference( IAssemblyInfo parent, string referenceName, IAssemblyInfo child )
+        {
+            Parent = parent;
+            ReferenceName = referenceName;
+            ReferencedAssembly = child;
+
+            ReferenceNameAssemblyObject = AssemblyLoader.ParseAssemblyInfoFromString( ReferenceName );
+
+            if( ReferenceNameAssemblyObject.Version != ReferencedAssembly.Version )
+                HasVersionMismatch = true;
+            else
+                HasVersionMismatch = false;
         }
     }
 }

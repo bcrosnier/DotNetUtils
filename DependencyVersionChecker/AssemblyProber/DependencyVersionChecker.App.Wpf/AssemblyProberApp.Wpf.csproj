@@ -40,6 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -114,12 +115,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AssemblyInfoViewModel.cs" />
+    <Compile Include="AssemblyVertexEventArgs.cs" />
     <Compile Include="Graphing\AssemblyEdge.cs" />
     <Compile Include="Graphing\AssemblyGraph.cs" />
     <Compile Include="Graphing\AssemblyVertex.cs" />
     <Compile Include="ListBoxItemCollectionLoggerClient.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="RelayCommand.cs" />
+    <Compile Include="SelectorExtenders.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

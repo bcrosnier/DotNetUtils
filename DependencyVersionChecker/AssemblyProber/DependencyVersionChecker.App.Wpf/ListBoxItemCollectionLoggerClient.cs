@@ -18,6 +18,8 @@ namespace AssemblyProberApp.Wpf
         private Collection<ListBoxItem> _outputCollection;
         private Thickness _currentPadding = new Thickness( 0, 0, 0, 0 );
 
+        private static readonly object _paddingLock = new object();
+
         public static readonly int OFFSET_VALUE = 20;
         public static readonly Brush FATAL_COLOR = Brushes.DarkRed;
         public static readonly Brush ERROR_COLOR = Brushes.Red;
@@ -32,7 +34,7 @@ namespace AssemblyProberApp.Wpf
         /// <param name="maxLogEntries">Maximum number of entries</param>
         public ListBoxItemCollectionLoggerClient( Collection<ListBoxItem> targetCollection, int maxLogEntries )
         {
-            if ( targetCollection == null ) throw new ArgumentNullException( "Output TextWriter must exist." );
+            if( targetCollection == null ) throw new ArgumentNullException( "Output TextWriter must exist." );
             _outputCollection = targetCollection;
             _maxLogEntries = maxLogEntries;
         }
@@ -41,7 +43,7 @@ namespace AssemblyProberApp.Wpf
         {
             InvokeOnAppThread( () =>
             {
-                if ( _outputCollection.Count >= _maxLogEntries )
+                if( _outputCollection.Count >= _maxLogEntries )
                 {
                     _outputCollection.RemoveAt( 0 );
                 }
@@ -58,7 +60,7 @@ namespace AssemblyProberApp.Wpf
 
         private static Brush GetColorFromLevel( LogLevel level )
         {
-            switch ( level )
+            switch( level )
             {
                 case LogLevel.Fatal:
                     return FATAL_COLOR;
@@ -87,12 +89,14 @@ namespace AssemblyProberApp.Wpf
 
         public void OnFilterChanged( LogLevelFilter current, LogLevelFilter newValue )
         {
-            AddString( "Filter level changed to: " + newValue );
+            //lock( _paddingLock )
+            //{
+            //    AddString( "Filter level changed to: " + newValue );
+            //}
         }
 
         public void OnGroupClosed( IActivityLogGroup group, ICKReadOnlyList<ActivityLogGroupConclusion> conclusions )
         {
-            this._currentPadding.Left -= OFFSET_VALUE;
             //AddString( "Group closed: " + group.GroupText );
             //if( conclusions != null )
             //{
@@ -105,6 +109,10 @@ namespace AssemblyProberApp.Wpf
 
         public void OnGroupClosing( IActivityLogGroup group, ref List<ActivityLogGroupConclusion> conclusions )
         {
+            lock( _paddingLock )
+            {
+                this._currentPadding.Left -= OFFSET_VALUE;
+            }
             //AddString( "Group closing: " + group.GroupText );
             //if( conclusions != null )
             //{
@@ -117,50 +125,56 @@ namespace AssemblyProberApp.Wpf
 
         public void OnOpenGroup( IActivityLogGroup group )
         {
-            //if( group.IsGroupTextTheExceptionMessage )
-            //{
-            //    AddString( "Exception group: " + group.GroupText );
-            //}
-            //else
-            //{
-            //    AddString( "Group open: " + group.GroupText );
-            //}
-            AddString( "=> " + group.GroupText );
-            this._currentPadding.Left += OFFSET_VALUE;
-
-            if ( group.Exception != null )
+            lock( _paddingLock )
             {
-                AddString( group.Exception.ToString(), ERROR_COLOR );
+                this._currentPadding.Left += OFFSET_VALUE;
+                //if( group.IsGroupTextTheExceptionMessage )
+                //{
+                //    AddString( "Exception group: " + group.GroupText );
+                //}
+                //else
+                //{
+                //    AddString( "Group open: " + group.GroupText );
+                //}
+                AddString( String.Format("[{0}] => {1}", group.GroupLevel.ToString(), group.GroupText) );
+
+                if( group.Exception != null )
+                {
+                    AddString( group.Exception.ToString(), ERROR_COLOR );
+                }
             }
         }
 
         public void OnUnfilteredLog( CKTrait tags, LogLevel level, string text, DateTime logTimeUtc )
         {
-            string message = String.Format( "[{0}] {1}: [{2}] {3}",
-                logTimeUtc.ToLocalTime().ToString( "HH:mm:ss.fff" ),
-                DescribeTraits( tags.AtomicTraits ),
-                level.ToString(),
-                text
-                );
-            AddString( message, GetColorFromLevel( level ) );
+            lock( _paddingLock )
+            {
+                string message = String.Format( "[{0}] {1}: [{2}] {3}",
+                    logTimeUtc.ToLocalTime().ToString( "HH:mm:ss.fff" ),
+                    DescribeTraits( tags.AtomicTraits ),
+                    level.ToString(),
+                    text
+                    );
+                AddString( message, GetColorFromLevel( level ) );
+            }
         }
 
         private static void InvokeOnAppThread( Action action )
         {
             Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if ( dispatchObject == null || dispatchObject.CheckAccess() )
+            if( dispatchObject == null || dispatchObject.CheckAccess() )
             {
                 action();
             }
             else
             {
-                dispatchObject.BeginInvoke( action );
+                dispatchObject.Invoke( action );
             }
         }
 
         private static string DescribeTraits( IEnumerable<CKTrait> traits )
         {
-            if ( traits == null )
+            if( traits == null )
                 return String.Empty;
 
             return String.Join( " ", traits );

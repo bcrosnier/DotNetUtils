@@ -2,8 +2,10 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using AssemblyProber;
+using AssemblyProberApp.Wpf.Graphing;
 using CK.Core;
 
 namespace AssemblyProberApp.Wpf
@@ -16,12 +18,15 @@ namespace AssemblyProberApp.Wpf
         private MainWindowViewModel _viewModel;
         private string _lastLoadedFolder = Environment.CurrentDirectory;
 
+        private FileStream _logFileStream;
+        private TextWriter _logTextWriter;
+        private IActivityLogger _logger;
+
+        private Graphing.AssemblyVertex highlightedVertex = null;
 
         public MainWindow()
             : this( new DefaultActivityLogger(), null )
         {
-
-            
         }
 
         public MainWindow( IActivityLogger logger, string directoryPath )
@@ -33,29 +38,68 @@ namespace AssemblyProberApp.Wpf
                 directoryPath = args[1];
             }
 
+            if( logger is IDefaultActivityLogger )
+            {
+                _logFileStream = new FileStream( @"AssemblyProberApp.log", FileMode.Create, FileAccess.Write, FileShare.Read, 8192, false );
+                _logTextWriter = new StreamWriter( _logFileStream );
+                ActivityLoggerTextWriterSink sink = new ActivityLoggerTextWriterSink( _logTextWriter );
+
+                ((IDefaultActivityLogger)logger).Tap.Register( sink );
+            }
+
             IAssemblyLoader l = new AssemblyLoader( logger );
 
             AssemblyVersionChecker checker = new AssemblyVersionChecker( l );
+
             _viewModel = new MainWindowViewModel( logger, checker, directoryPath );
+            _viewModel.LogFlushRequested += ( s, e ) => { FlushLog(); };
+            _viewModel.VertexHighlightRequested += ( s, e ) => { HighlightVertex( e.Vertex ); };
+            FlushLog();
+
             this.DataContext = _viewModel;
             InitializeComponent();
 
-            ((INotifyCollectionChanged)LogListBox.Items).CollectionChanged += LogListBox_CollectionChanged;
+            //((INotifyCollectionChanged)LogListBox.Items).CollectionChanged += LogListBox_CollectionChanged;
 
-            LogListBox.ScrollIntoView( LogListBox.Items.GetItemAt( LogListBox.Items.Count - 1 ) );
+            //LogListBox.ScrollIntoView( LogListBox.Items.GetItemAt( LogListBox.Items.Count - 1 ) );
         }
 
-        private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        public void HighlightVertex( Graphing.AssemblyVertex vertex )
         {
-            if( e.Action == NotifyCollectionChangedAction.Add )
+            if( highlightedVertex != null )
             {
-                if( e.NewItems.Count > 0 )
-                {
-                    object lastItem = e.NewItems[e.NewItems.Count - 1];
-                    LogListBox.ScrollIntoView( lastItem );
-                }
+                highlightedVertex.IsHighlighted = false;
+                this.graphLayout.RemoveHighlightFromVertex( highlightedVertex );
+            }
+            highlightedVertex = vertex;
+            if( vertex != null )
+            {
+                vertex.IsHighlighted = true;
+                this.graphLayout.HighlightVertex( vertex, "None" );
             }
         }
+
+        public void FlushLog()
+        {
+            if( _logTextWriter != null && _logFileStream != null )
+            {
+                _logTextWriter.Flush();
+                _logFileStream.Flush();
+            }
+        }
+
+        //private void LogListBox_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        //{
+        //    if( e.Action == NotifyCollectionChangedAction.Add )
+        //    {
+        //        //if( e.NewItems.Count > 0 )
+        //        //{
+        //        //    object lastItem = e.NewItems[e.NewItems.Count - 1];
+        //        //    LogListBox.ScrollIntoView( lastItem );
+        //        //}
+        //        LogListBox.ScrollIntoView( LogListBox.Items[LogListBox.Items.Count-1] );
+        //    }
+        //}
 
         private void LoadAssemblyDirectory_Click( object sender, RoutedEventArgs e )
         {
@@ -115,6 +159,16 @@ namespace AssemblyProberApp.Wpf
         {
             System.Windows.Controls.MenuItem clickedItem = (System.Windows.Controls.MenuItem)e.OriginalSource;
             _viewModel.LayoutAlgorithmType = clickedItem.Header.ToString();
+        }
+
+        private void TreeView_Selected( object sender, RoutedEventArgs e )
+        {
+            TreeViewItem selectedItem = (TreeViewItem)e.OriginalSource;
+            AssemblyInfoViewModel assemblyViewModel = (AssemblyInfoViewModel)selectedItem.Header;
+            IAssemblyInfo assembly = assemblyViewModel.AssemblyInfo;
+
+            AssemblyVertex vertex = _viewModel.GetVertexFromAssembly( assembly );
+            HighlightVertex( vertex );
         }
     }
 }
