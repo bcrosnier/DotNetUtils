@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ProjectProber.Impl;
+using ProjectProber.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using ProjectProber.Impl;
-using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
@@ -28,16 +28,16 @@ namespace ProjectProber
         /// </summary>
         /// <param name="filePath">Path of the solution file. Must exist.</param>
         /// <returns>ISolution object</returns>
-        public static ISolution ReadFromSolutionFile( string filePath )
+        public static ISolution ReadFromSolutionFile(string filePath)
         {
-            if ( String.IsNullOrEmpty( filePath ) )
-                throw new ArgumentNullException( "filePath" );
-            if ( !File.Exists( filePath ) )
-                throw new ArgumentException( "File must exist", "filePath" );
+            if (String.IsNullOrEmpty(filePath))
+                throw new ArgumentNullException("filePath");
+            if (!File.Exists(filePath))
+                throw new ArgumentException("File must exist", "filePath");
 
-            List<ISolutionProjectItem> projectItems = ParseItemsFromSolutionFile( filePath );
+            List<ISolutionProjectItem> projectItems = ParseItemsFromSolutionFile(filePath);
 
-            string solutionName = Path.GetFileNameWithoutExtension( filePath );
+            string solutionName = Path.GetFileNameWithoutExtension(filePath);
 
             Solution solution = new Solution() { ProjectItems = projectItems, FilePath = filePath, Name = solutionName };
 
@@ -49,48 +49,48 @@ namespace ProjectProber
         /// </summary>
         /// <param name="directoryPath">Path of the solution directory containing .sln files. Must exist.</param>
         /// <returns>ISolution objects</returns>
-        public static IEnumerable<ISolution> ReadSolutionsFromDirectory( string directoryPath )
+        public static IEnumerable<ISolution> ReadSolutionsFromDirectory(string directoryPath)
         {
-            if ( String.IsNullOrEmpty( directoryPath ) )
-                throw new ArgumentNullException( "directoryPath" );
-            if ( !Directory.Exists( directoryPath ) )
-                throw new ArgumentException( "Directory must exist", "directoryPath" );
+            if (String.IsNullOrEmpty(directoryPath))
+                throw new ArgumentNullException("directoryPath");
+            if (!Directory.Exists(directoryPath))
+                throw new ArgumentException("Directory must exist", "directoryPath");
 
             List<ISolution> solutions = new List<ISolution>();
 
-            DirectoryInfo dir = new DirectoryInfo( directoryPath );
+            DirectoryInfo dir = new DirectoryInfo(directoryPath);
 
-            IEnumerable<FileInfo> solutionFiles = dir.GetFiles( "*.sln", SearchOption.TopDirectoryOnly );
+            IEnumerable<FileInfo> solutionFiles = dir.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
 
-            foreach ( FileInfo solutionFile in solutionFiles )
+            foreach (FileInfo solutionFile in solutionFiles)
             {
-                ISolution s = ReadFromSolutionFile( solutionFile.FullName );
-                solutions.Add( s );
+                ISolution s = ReadFromSolutionFile(solutionFile.FullName);
+                solutions.Add(s);
             }
 
             return solutions;
         }
 
-        private static List<ISolutionProjectItem> ParseItemsFromSolutionFile( string filePath )
+        private static List<ISolutionProjectItem> ParseItemsFromSolutionFile(string filePath)
         {
             List<ISolutionProjectItem> projectItems = new List<ISolutionProjectItem>();
 
-            StreamReader reader = File.OpenText( filePath );
+            StreamReader reader = File.OpenText(filePath);
 
-            while ( !reader.EndOfStream )
+            while (!reader.EndOfStream)
             {
                 string line = reader.ReadLine();
-                Match m = Regex.Match( line, SOLUTION_PROJECT_PATTERN );
-                if ( m.Success )
+                Match m = Regex.Match(line, SOLUTION_PROJECT_PATTERN);
+                if (m.Success)
                 {
-                    Guid projectTypeGuid = Guid.Parse( m.Groups[1].Value );
+                    Guid projectTypeGuid = Guid.Parse(m.Groups[1].Value);
                     string projectName = m.Groups[2].Value;
                     string projectPath = m.Groups[3].Value;
-                    Guid projectGuid = Guid.Parse( m.Groups[4].Value );
+                    Guid projectGuid = Guid.Parse(m.Groups[4].Value);
 
-                    SolutionProjectItem item = new SolutionProjectItem( projectTypeGuid, projectGuid, projectName, projectPath );
+                    SolutionProjectItem item = new SolutionProjectItem(projectTypeGuid, projectGuid, projectName, projectPath);
 
-                    projectItems.Add( item );
+                    projectItems.Add(item);
                 }
             }
 

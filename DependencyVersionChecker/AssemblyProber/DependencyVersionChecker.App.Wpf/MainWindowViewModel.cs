@@ -1,4 +1,8 @@
-﻿using System;
+﻿using AssemblyProber;
+using CK.Core;
+using DotNetUtilitiesApp.AssemblyProber.Graphing;
+using DotNetUtilitiesApp.WpfUtils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -8,16 +12,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml;
-using AssemblyProber;
-using AssemblyProberApp.Wpf.Graphing;
-using CK.Core;
 
-namespace AssemblyProberApp.Wpf
+namespace DotNetUtilitiesApp.AssemblyProber
 {
     public class MainWindowViewModel
         : ViewModel
     {
-        private readonly int MAX_LOG_ENTRIES = 1000; // Maximum number of log entries in the collection
+        //private readonly int MAX_LOG_ENTRIES = 1000; // Maximum number of log entries in the collection
 
         #region Members
 
@@ -58,7 +59,7 @@ namespace AssemblyProberApp.Wpf
             }
             private set
             {
-                if( value != _assemblyViewModels )
+                if (value != _assemblyViewModels)
                 {
                     _assemblyViewModels = value;
                     RaisePropertyChanged();
@@ -75,7 +76,7 @@ namespace AssemblyProberApp.Wpf
 
             private set
             {
-                if( this._logItems != value )
+                if (this._logItems != value)
                 {
                     this._logItems = value;
                     RaisePropertyChanged();
@@ -92,7 +93,7 @@ namespace AssemblyProberApp.Wpf
 
             private set
             {
-                if( this._graph != value )
+                if (this._graph != value)
                 {
                     this._graph = value;
                     RaisePropertyChanged();
@@ -110,7 +111,7 @@ namespace AssemblyProberApp.Wpf
             get { return _layoutAlgorithmType; }
             set
             {
-                if( _layoutAlgorithmTypes.Contains( value ) )
+                if (_layoutAlgorithmTypes.Contains(value))
                 {
                     _layoutAlgorithmType = value;
                     RaisePropertyChanged();
@@ -123,7 +124,7 @@ namespace AssemblyProberApp.Wpf
             get { return _statusBarText; }
             set
             {
-                if( value != _statusBarText )
+                if (value != _statusBarText)
                 {
                     _statusBarText = value;
                     RaisePropertyChanged();
@@ -139,10 +140,10 @@ namespace AssemblyProberApp.Wpf
             }
             set
             {
-                if( value != _isSystemAssembliesEnabled )
+                if (value != _isSystemAssembliesEnabled)
                 {
                     _isSystemAssembliesEnabled = value;
-                    LoadAssemblies( _activeAssemblies );
+                    LoadAssemblies(_activeAssemblies);
                     RaisePropertyChanged();
                 }
             }
@@ -152,28 +153,28 @@ namespace AssemblyProberApp.Wpf
 
         #region Constructor/initialization
 
-        public MainWindowViewModel( IActivityLogger parentLogger, AssemblyVersionChecker checker, string openAtPath )
+        public MainWindowViewModel(IActivityLogger parentLogger, AssemblyVersionChecker checker, string openAtPath)
         {
-            if( checker == null )
+            if (checker == null)
             {
-                throw new ArgumentNullException( "checker" );
+                throw new ArgumentNullException("checker");
             }
 
             _logger = parentLogger;
             _logItems = new ObservableCollection<ListBoxItem>();
 
-            _graph = new AssemblyGraph( true );
+            _graph = new AssemblyGraph(true);
 
             //Add Layout Algorithm Types
-            _layoutAlgorithmTypes.Add( "BoundedFR" );
-            _layoutAlgorithmTypes.Add( "Circular" );
-            _layoutAlgorithmTypes.Add( "CompoundFDP" );
-            _layoutAlgorithmTypes.Add( "EfficientSugiyama" );
-            _layoutAlgorithmTypes.Add( "FR" );
-            _layoutAlgorithmTypes.Add( "ISOM" );
-            _layoutAlgorithmTypes.Add( "KK" );
-            _layoutAlgorithmTypes.Add( "LinLog" );
-            _layoutAlgorithmTypes.Add( "Tree" );
+            _layoutAlgorithmTypes.Add("BoundedFR");
+            _layoutAlgorithmTypes.Add("Circular");
+            _layoutAlgorithmTypes.Add("CompoundFDP");
+            _layoutAlgorithmTypes.Add("EfficientSugiyama");
+            _layoutAlgorithmTypes.Add("FR");
+            _layoutAlgorithmTypes.Add("ISOM");
+            _layoutAlgorithmTypes.Add("KK");
+            _layoutAlgorithmTypes.Add("LinLog");
+            _layoutAlgorithmTypes.Add("Tree");
 
             //Pick a default Layout Algorithm Type
             LayoutAlgorithmType = "ISOM";
@@ -188,182 +189,182 @@ namespace AssemblyProberApp.Wpf
             _assemblyViewModels = new ObservableCollection<AssemblyInfoViewModel>();
             PrepareCommands();
 
-            if( openAtPath != null )
+            if (openAtPath != null)
             {
-                ChangeAssemblyDirectory( new DirectoryInfo( openAtPath ) );
+                ChangeAssemblyDirectory(new DirectoryInfo(openAtPath));
             }
             else
             {
-                ChangeAssemblyDirectory( new DirectoryInfo( Environment.CurrentDirectory ) );
+                ChangeAssemblyDirectory(new DirectoryInfo(Environment.CurrentDirectory));
             }
         }
 
         public void PrepareCommands()
         {
-            ChangeAssemblyFolderCommand = new RelayCommand( ExecuteChangeAssemblyFolder );
-            ToggleSystemAssembliesCommand = new RelayCommand( ExecuteToggleSystemAssemblies );
+            ChangeAssemblyFolderCommand = new RelayCommand(ExecuteChangeAssemblyFolder);
+            ToggleSystemAssembliesCommand = new RelayCommand(ExecuteToggleSystemAssemblies);
         }
 
         #endregion Constructor/initialization
 
         #region Public Methods
 
-        public void ChangeAssemblyDirectory( DirectoryInfo dir )
+        public void ChangeAssemblyDirectory(DirectoryInfo dir)
         {
-            _logger.Info( "Loading directory: {0}", dir.FullName );
-            StatusBarText = String.Format( "Loading directory: {0}", dir.FullName );
-            if( dir.Exists )
+            _logger.Info("Loading directory: {0}", dir.FullName);
+            StatusBarText = String.Format("Loading directory: {0}", dir.FullName);
+            if (dir.Exists)
             {
                 _assemblyDirectory = dir;
 
                 _checker.Reset();
-                _checker.AddDirectory( dir, true );
+                _checker.AddDirectory(dir, true);
 
-                Task.Factory.StartNew( () =>
+                Task.Factory.StartNew(() =>
                 {
                     AssemblyCheckResult r = _checker.Check();
-                    InvokeOnAppThread( () =>
+                    InvokeOnAppThread(() =>
                     {
                         _activeAssemblies = r.Assemblies.ToList();
-                        LoadAssemblies( _activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches );
-                        StatusBarText = String.Format( "{0} found in directory", _activeAssemblies.Count );
-                    } );
-                } );
+                        LoadAssemblies(_activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches);
+                        StatusBarText = String.Format("{0} found in directory", _activeAssemblies.Count);
+                    });
+                });
             }
             else
             {
-                _logger.Error( "Directory does not exist: {0}", dir.FullName );
+                _logger.Error("Directory does not exist: {0}", dir.FullName);
             }
         }
 
-        public void ChangeAssemblyFile( FileInfo file )
+        public void ChangeAssemblyFile(FileInfo file)
         {
-            _logger.Info( "Loading file: {0}", file.FullName );
-            StatusBarText = String.Format( "Loading file: {0}", file.FullName );
-            if( file.Exists )
+            _logger.Info("Loading file: {0}", file.FullName);
+            StatusBarText = String.Format("Loading file: {0}", file.FullName);
+            if (file.Exists)
             {
                 _assemblyDirectory = null;
 
                 _checker.Reset();
-                _checker.AddFile( file );
+                _checker.AddFile(file);
 
-                Task.Factory.StartNew( () =>
+                Task.Factory.StartNew(() =>
                 {
                     AssemblyCheckResult r = _checker.Check();
-                    InvokeOnAppThread( () =>
+                    InvokeOnAppThread(() =>
                     {
                         _activeAssemblies = r.Assemblies.ToList();
-                        LoadAssemblies( _activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches );
-                        StatusBarText = String.Format( "{0} found in directory", _activeAssemblies.Count );
-                    } );
-                } );
+                        LoadAssemblies(_activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches);
+                        StatusBarText = String.Format("{0} found in directory", _activeAssemblies.Count);
+                    });
+                });
             }
             else
             {
-                _logger.Error( "File does not exist: {0}", file.FullName );
+                _logger.Error("File does not exist: {0}", file.FullName);
             }
         }
 
-        public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies )
+        public void LoadAssemblies(IEnumerable<IAssemblyInfo> assemblies)
         {
-            LoadAssemblies( assemblies, null, null );
+            LoadAssemblies(assemblies, null, null);
         }
 
-        public void LoadAssemblies( IEnumerable<IAssemblyInfo> assemblies, IEnumerable<AssemblyReferenceName> conflicts, IEnumerable<AssemblyReference> refMismatches )
+        public void LoadAssemblies(IEnumerable<IAssemblyInfo> assemblies, IEnumerable<AssemblyReferenceName> conflicts, IEnumerable<AssemblyReference> refMismatches)
         {
-            if( !_isSystemAssembliesEnabled )
+            if (!_isSystemAssembliesEnabled)
             {
-                assemblies = assemblies.Where( x => x.BorderName == null );
+                assemblies = assemblies.Where(x => x.BorderName == null);
             }
 
-            if( conflicts == null )
+            if (conflicts == null)
             {
-                conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList( assemblies );
+                conflicts = AssemblyVersionChecker.GetConflictsFromAssemblyList(assemblies);
             }
 
-            if( refMismatches == null )
+            if (refMismatches == null)
             {
-                refMismatches = AssemblyVersionChecker.GetReferenceMismatches( assemblies );
+                refMismatches = AssemblyVersionChecker.GetReferenceMismatches(assemblies);
             }
 
             AssemblyViewModels.Clear();
-            foreach( var assembly in assemblies.OrderBy( x => x.FullName ) )
+            foreach (var assembly in assemblies.OrderBy(x => x.FullName))
             {
-                _logger.Trace( "Adding assembly {0} to tree root", assembly.SimpleName );
-                AssemblyViewModels.Add( new AssemblyInfoViewModel( assembly ) );
+                _logger.Trace("Adding assembly {0} to tree root", assembly.SimpleName);
+                AssemblyViewModels.Add(new AssemblyInfoViewModel(assembly));
             }
 
-            PrepareGraph( assemblies );
+            PrepareGraph(assemblies);
 
-            _logger.Info( "Checking {0} assemblies...", AssemblyViewModels.Count );
+            _logger.Info("Checking {0} assemblies...", AssemblyViewModels.Count);
 
             int count = conflicts.Count();
-            foreach( var dep in conflicts )
+            foreach (var dep in conflicts)
             {
-                _logger.Warn( "Found a version mismatch about dependency: {0}", dep.AssemblyName );
-                using( _logger.OpenGroup( LogLevel.Warn, dep.AssemblyName ) )
+                _logger.Warn("Found a version mismatch about dependency: {0}", dep.AssemblyName);
+                using (_logger.OpenGroup(LogLevel.Warn, dep.AssemblyName))
                 {
-                    foreach( var pair in dep.ReferenceLinks )
+                    foreach (var pair in dep.ReferenceLinks)
                     {
-                        _logger.Warn( "{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.FullName );
-                        Graph.MarkAssembly( pair.Value );
-                        Graph.AddAssemblyMessage( pair.Value, String.Format( "There is a duplicate {0} with a different version.", pair.Value.SimpleName ) );
+                        _logger.Warn("{0} has a reference to: {1}", pair.Key.SimpleName, pair.Value.FullName);
+                        Graph.MarkAssembly(pair.Value);
+                        Graph.AddAssemblyMessage(pair.Value, String.Format("There is a duplicate {0} with a different version.", pair.Value.SimpleName));
                     }
                 }
             }
 
-            if( count == 0 )
+            if (count == 0)
             {
-                _logger.Info( "No version mismatch found." );
+                _logger.Info("No version mismatch found.");
             }
             else
             {
-                _logger.Warn( "{0} version mismatches found.", count );
+                _logger.Warn("{0} version mismatches found.", count);
             }
 
-            foreach( var refMismatch in refMismatches )
+            foreach (var refMismatch in refMismatches)
             {
-                _logger.Warn( "Reference mismatch: [{0} {1}] references [{2} {3}], but [{4} {5}] was resolved.",
+                _logger.Warn("Reference mismatch: [{0} {1}] references [{2} {3}], but [{4} {5}] was resolved.",
                     refMismatch.Parent.SimpleName, refMismatch.Parent.Version.ToString(),
                     refMismatch.ReferenceNameAssemblyObject.SimpleName, refMismatch.ReferenceNameAssemblyObject.Version.ToString(),
-                    refMismatch.ReferencedAssembly.SimpleName, refMismatch.ReferencedAssembly.Version.ToString() );
+                    refMismatch.ReferencedAssembly.SimpleName, refMismatch.ReferencedAssembly.Version.ToString());
 
-                Graph.MarkAssembly( refMismatch.ReferencedAssembly );
-                Graph.AddAssemblyMessage( refMismatch.ReferencedAssembly,
-                    String.Format( "Referenced as version {0} by [{1} {2}].",
+                Graph.MarkAssembly(refMismatch.ReferencedAssembly);
+                Graph.AddAssemblyMessage(refMismatch.ReferencedAssembly,
+                    String.Format("Referenced as version {0} by [{1} {2}].",
                     refMismatch.ReferenceNameAssemblyObject.Version.ToString(),
                     refMismatch.Parent.SimpleName, refMismatch.Parent.Version.ToString()
-                    ) );
+                    ));
             }
 
             RaiseLogFlushRequested();
         }
 
-        public void SaveXmlFile( FileInfo fileToWrite )
+        public void SaveXmlFile(FileInfo fileToWrite)
         {
-            using( XmlWriter w = XmlWriter.Create( fileToWrite.FullName ) )
+            using (XmlWriter w = XmlWriter.Create(fileToWrite.FullName))
             {
                 List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>();
 
-                foreach( var assembly in this._drawnAssemblies )
+                foreach (var assembly in this._drawnAssemblies)
                 {
-                    ListReferencedAssemblies( assembly, assemblies );
+                    ListReferencedAssemblies(assembly, assemblies);
                 }
 
-                AssemblyInfoXmlSerializer.SerializeTo( assemblies, w );
+                AssemblyInfoXmlSerializer.SerializeTo(assemblies, w);
             }
         }
 
-        public void LoadXmlFile( FileInfo fileToRead )
+        public void LoadXmlFile(FileInfo fileToRead)
         {
             IEnumerable<IAssemblyInfo> assemblies;
 
-            using( XmlReader r = XmlReader.Create( fileToRead.FullName ) )
+            using (XmlReader r = XmlReader.Create(fileToRead.FullName))
             {
-                assemblies = AssemblyInfoXmlSerializer.DeserializeFrom( r );
+                assemblies = AssemblyInfoXmlSerializer.DeserializeFrom(r);
             }
             _activeAssemblies = assemblies.ToList();
-            LoadAssemblies( assemblies );
+            LoadAssemblies(assemblies);
         }
 
         #endregion Public Methods
@@ -372,62 +373,62 @@ namespace AssemblyProberApp.Wpf
 
         private void RaiseLogFlushRequested()
         {
-            if( LogFlushRequested != null )
+            if (LogFlushRequested != null)
             {
-                LogFlushRequested( this, null );
+                LogFlushRequested(this, null);
             }
         }
 
-        private void RaiseVertexHighlightRequested( AssemblyVertex vertex )
+        private void RaiseVertexHighlightRequested(AssemblyVertex vertex)
         {
-            if( VertexHighlightRequested != null )
+            if (VertexHighlightRequested != null)
             {
-                VertexHighlightRequested( this, new AssemblyVertexEventArgs( vertex ) );
+                VertexHighlightRequested(this, new AssemblyVertexEventArgs(vertex));
             }
         }
 
-        private AssemblyVertex PrepareVertexFromAssembly( IAssemblyInfo assembly )
+        private AssemblyVertex PrepareVertexFromAssembly(IAssemblyInfo assembly)
         {
-            if( _drawnAssemblies.Contains( assembly ) )
-                return _drawnVertices.Where( x => x.Assembly == assembly ).First();
+            if (_drawnAssemblies.Contains(assembly))
+                return _drawnVertices.Where(x => x.Assembly == assembly).First();
 
-            AssemblyVertex v = new AssemblyVertex( assembly );
+            AssemblyVertex v = new AssemblyVertex(assembly);
 
-            _drawnAssemblies.Add( assembly );
-            _drawnVertices.Add( v );
+            _drawnAssemblies.Add(assembly);
+            _drawnVertices.Add(v);
 
-            Graph.AddVertex( v );
+            Graph.AddVertex(v);
 
-            foreach( var pair in assembly.Dependencies )
+            foreach (var pair in assembly.Dependencies)
             {
                 IAssemblyInfo dep = pair.Value;
-                if( !_isSystemAssembliesEnabled && dep.BorderName != null )
+                if (!_isSystemAssembliesEnabled && dep.BorderName != null)
                     continue;
 
-                AssemblyVertex vDep = PrepareVertexFromAssembly( dep );
-                AssemblyEdge depEdge = new AssemblyEdge( v, vDep );
+                AssemblyVertex vDep = PrepareVertexFromAssembly(dep);
+                AssemblyEdge depEdge = new AssemblyEdge(v, vDep);
 
-                vDep.AddReferencedBy( v.Assembly );
-                _drawnEdges.Add( depEdge );
-                Graph.AddEdge( depEdge );
+                vDep.AddReferencedBy(v.Assembly);
+                _drawnEdges.Add(depEdge);
+                Graph.AddEdge(depEdge);
             }
 
             return v;
         }
 
-        private void PrepareGraph( IEnumerable<IAssemblyInfo> assemblies )
+        private void PrepareGraph(IEnumerable<IAssemblyInfo> assemblies)
         {
-            Graph = new AssemblyGraph( true );
+            Graph = new AssemblyGraph(true);
             _drawnAssemblies = new List<IAssemblyInfo>();
             _drawnEdges = new List<AssemblyEdge>();
             _drawnVertices = new List<AssemblyVertex>();
 
-            foreach( IAssemblyInfo assembly in assemblies )
+            foreach (IAssemblyInfo assembly in assemblies)
             {
-                PrepareVertexFromAssembly( assembly );
+                PrepareVertexFromAssembly(assembly);
             }
 
-            RaisePropertyChanged( "Graph" );
+            RaisePropertyChanged("Graph");
         }
 
         #endregion Private methods
@@ -438,36 +439,36 @@ namespace AssemblyProberApp.Wpf
 
         #region Private static methods
 
-        private static void InvokeOnAppThread( Action action )
+        private static void InvokeOnAppThread(Action action)
         {
             Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if( dispatchObject == null || dispatchObject.CheckAccess() )
+            if (dispatchObject == null || dispatchObject.CheckAccess())
             {
                 action();
             }
             else
             {
-                dispatchObject.BeginInvoke( action );
+                dispatchObject.BeginInvoke(action);
             }
         }
 
-        private static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly )
+        private static IList<IAssemblyInfo> ListReferencedAssemblies(IAssemblyInfo assembly)
         {
-            return ListReferencedAssemblies( assembly, new List<IAssemblyInfo>() );
+            return ListReferencedAssemblies(assembly, new List<IAssemblyInfo>());
         }
 
-        private static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly, IList<IAssemblyInfo> existingAssemblies )
+        private static IList<IAssemblyInfo> ListReferencedAssemblies(IAssemblyInfo assembly, IList<IAssemblyInfo> existingAssemblies)
         {
-            if( existingAssemblies.Contains( assembly ) )
+            if (existingAssemblies.Contains(assembly))
                 return existingAssemblies;
 
-            existingAssemblies.Add( assembly );
+            existingAssemblies.Add(assembly);
 
-            foreach( var pair in assembly.Dependencies )
+            foreach (var pair in assembly.Dependencies)
             {
                 IAssemblyInfo dep = pair.Value;
 
-                ListReferencedAssemblies( dep, existingAssemblies );
+                ListReferencedAssemblies(dep, existingAssemblies);
             }
 
             return existingAssemblies;
@@ -477,27 +478,27 @@ namespace AssemblyProberApp.Wpf
 
         #region Command methods
 
-        public void ExecuteChangeAssemblyFolder( object parameter )
+        public void ExecuteChangeAssemblyFolder(object parameter)
         {
-            if( !(parameter is DirectoryInfo) )
+            if (!(parameter is DirectoryInfo))
             {
-                throw new ArgumentException( "Parameter must be a DirectoryInfo", "parameter" );
+                throw new ArgumentException("Parameter must be a DirectoryInfo", "parameter");
             }
 
             DirectoryInfo dir = parameter as DirectoryInfo;
-            ChangeAssemblyDirectory( dir );
+            ChangeAssemblyDirectory(dir);
         }
 
-        public void ExecuteToggleSystemAssemblies( object parameter )
+        public void ExecuteToggleSystemAssemblies(object parameter)
         {
             IsSystemAssembliesEnabled = !IsSystemAssembliesEnabled;
         }
 
         #endregion Command methods
 
-        internal AssemblyVertex GetVertexFromAssembly( IAssemblyInfo assembly )
+        internal AssemblyVertex GetVertexFromAssembly(IAssemblyInfo assembly)
         {
-            return _drawnVertices.Where( x => x.Assembly == assembly ).FirstOrDefault();
+            return _drawnVertices.Where(x => x.Assembly == assembly).FirstOrDefault();
         }
     }
 }

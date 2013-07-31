@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProjectProber.Interfaces
+﻿namespace ProjectProber.Interfaces
 {
     /// <summary>
     /// Project reference to an assembly, through its full or simple name.

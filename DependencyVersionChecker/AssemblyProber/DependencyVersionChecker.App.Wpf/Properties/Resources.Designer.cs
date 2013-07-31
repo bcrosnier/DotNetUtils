@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AssemblyProberApp.Wpf.Properties {
+namespace DotNetUtilitiesApp.AssemblyProber.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace AssemblyProberApp.Wpf.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AssemblyProberApp.Wpf.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DotNetUtilitiesApp.AssemblyProber.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -81,7 +81,7 @@ namespace AssemblyProberApp.Wpf.Properties {
         ///
         ///Open the `File` menu, and select `Open directory`.
         ///
-        ///From the folder dialog, select the folder c [rest of string was truncated]&quot;;.
+        ///From the folder dialog, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string README {
             get {

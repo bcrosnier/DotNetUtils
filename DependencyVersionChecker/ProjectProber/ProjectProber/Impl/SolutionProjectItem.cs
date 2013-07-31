@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ProjectProber.Interfaces;
+using System;
 using System.Diagnostics;
-using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
-    [DebuggerDisplay( "{ProjectName}" )]
+    [DebuggerDisplay("{ProjectName}")]
     internal class SolutionProjectItem : ISolutionProjectItem
     {
         #region ISolutionProjectItem Members
@@ -19,7 +19,7 @@ namespace ProjectProber.Impl
 
         #endregion ISolutionProjectItem Members
 
-        internal SolutionProjectItem( Guid projectTypeGuid, Guid projectGuid, string projectName, string projectPath )
+        internal SolutionProjectItem(Guid projectTypeGuid, Guid projectGuid, string projectName, string projectPath)
         {
             ProjectGuid = projectGuid;
             ProjectName = projectName;

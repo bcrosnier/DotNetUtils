@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using AssemblyProber;
+﻿using AssemblyProber;
 using GraphSharp.Controls;
 using QuickGraph;
+using System.Linq;
 
-namespace AssemblyProberApp.Wpf.Graphing
+namespace DotNetUtilitiesApp.AssemblyProber.Graphing
 {
     public class AssemblyGraph
         : BidirectionalGraph<AssemblyVertex, AssemblyEdge>
@@ -12,32 +12,32 @@ namespace AssemblyProberApp.Wpf.Graphing
         {
         }
 
-        public AssemblyGraph( bool allowParallelEdges )
-            : base( allowParallelEdges ) { }
+        public AssemblyGraph(bool allowParallelEdges)
+            : base(allowParallelEdges) { }
 
-        public AssemblyGraph( bool allowParallelEdges, int vertexCapacity )
-            : base( allowParallelEdges, vertexCapacity ) { }
+        public AssemblyGraph(bool allowParallelEdges, int vertexCapacity)
+            : base(allowParallelEdges, vertexCapacity) { }
 
-        public void MarkAssembly( IAssemblyInfo assembly )
+        public void MarkAssembly(IAssemblyInfo assembly)
         {
             AssemblyVertex vertex =
                 this.Vertices
-                .Where( x => x.Assembly == assembly )
+                .Where(x => x.Assembly == assembly)
                 .FirstOrDefault();
 
-            if( vertex != null )
+            if (vertex != null)
                 vertex.IsMarked = true;
         }
 
-        public void AddAssemblyMessage( IAssemblyInfo assembly, string message )
+        public void AddAssemblyMessage(IAssemblyInfo assembly, string message)
         {
             AssemblyVertex vertex =
                 this.Vertices
-                .Where( x => x.Assembly == assembly )
+                .Where(x => x.Assembly == assembly)
                 .FirstOrDefault();
 
-            if( vertex != null )
-                vertex.AddMessage( message );
+            if (vertex != null)
+                vertex.AddMessage(message);
         }
     }
 

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using NUnit.Framework;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using NUnit.Framework;
 
 namespace AssemblyProber.Tests
 {
@@ -12,77 +12,79 @@ namespace AssemblyProber.Tests
         [Test]
         public void XmlDocumentSerializeDeserialize()
         {
-            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>( AssemblyCheckTests.GetReferencesFromThisAssembly() );
+            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>(AssemblyCheckTests.GetReferencesFromThisAssembly());
             List<IAssemblyInfo> assemblies2;
 
-            Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
-            Assert.That( assemblies.Count, Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
+            Assert.That(assemblies, Is.Not.Null, "Test assembly list was returned");
+            Assert.That(assemblies.Count, Is.GreaterThan(1), "Test assembly references at least 1 other assembly");
 
-            AssemblyCheckTests.TestAssembliesInfo( assemblies );
+            AssemblyCheckTests.TestAssembliesInfo(assemblies);
 
-            XmlDocument serialized = AssemblyInfoXmlSerializer.SerializeToDocument( assemblies );
+            XmlDocument serialized = AssemblyInfoXmlSerializer.SerializeToDocument(assemblies);
 
-            assemblies2 = AssemblyInfoXmlSerializer.DeserializeFromDocument( serialized ).ToList();
+            assemblies2 = AssemblyInfoXmlSerializer.DeserializeFromDocument(serialized).ToList();
 
-            CollectionAssert.IsNotEmpty( assemblies2, "Deserialized collection is not empty" );
+            CollectionAssert.IsNotEmpty(assemblies2, "Deserialized collection is not empty");
 
-            AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
+            AssemblyCheckTests.TestAssembliesEquivalence(assemblies, assemblies2);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         [Test]
         public void XmlWriterSerializeDocumentDeserialize()
         {
-            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>( AssemblyCheckTests.GetReferencesFromThisAssembly() );
+            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>(AssemblyCheckTests.GetReferencesFromThisAssembly());
             List<IAssemblyInfo> assemblies2;
 
-            Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
-            Assert.That( assemblies.Count, Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
+            Assert.That(assemblies, Is.Not.Null, "Test assembly list was returned");
+            Assert.That(assemblies.Count, Is.GreaterThan(1), "Test assembly references at least 1 other assembly");
 
-            AssemblyCheckTests.TestAssembliesInfo( assemblies );
+            AssemblyCheckTests.TestAssembliesInfo(assemblies);
 
-            using ( MemoryStream ms = new MemoryStream() )
+            using (MemoryStream ms = new MemoryStream())
             {
-                using ( XmlWriter w = XmlWriter.Create( ms ) )
+                using (XmlWriter w = XmlWriter.Create(ms))
                 {
-                    AssemblyInfoXmlSerializer.SerializeTo( assemblies, w );
+                    assemblies.SerializeTo(w);
                 }
 
-                ms.Seek( 0, System.IO.SeekOrigin.Begin );
+                ms.Seek(0, System.IO.SeekOrigin.Begin); // Rewind
 
                 XmlDocument d = new XmlDocument();
-                d.Load( ms );
+                d.Load(ms); // Disposed here?
 
-                assemblies2 = AssemblyInfoXmlSerializer.DeserializeFromDocument( d ).ToList();
+                assemblies2 = AssemblyInfoXmlSerializer.DeserializeFromDocument(d).ToList();
             }
 
-            CollectionAssert.IsNotEmpty( assemblies2, "Deserialized collection is not empty" );
+            CollectionAssert.IsNotEmpty(assemblies2, "Deserialized collection is not empty");
 
-            AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
+            AssemblyCheckTests.TestAssembliesEquivalence(assemblies, assemblies2);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         [Test]
         public void XmlDocumentSerializeReaderDeserialize()
         {
-            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>( AssemblyCheckTests.GetReferencesFromThisAssembly() );
+            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>(AssemblyCheckTests.GetReferencesFromThisAssembly());
             List<IAssemblyInfo> assemblies2;
 
-            Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
-            Assert.That( assemblies.Count, Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
+            Assert.That(assemblies, Is.Not.Null, "Test assembly list was returned");
+            Assert.That(assemblies.Count, Is.GreaterThan(1), "Test assembly references at least 1 other assembly");
 
-            AssemblyCheckTests.TestAssembliesInfo( assemblies );
+            AssemblyCheckTests.TestAssembliesInfo(assemblies);
 
-            XmlDocument serialized = AssemblyInfoXmlSerializer.SerializeToDocument( assemblies );
+            XmlDocument serialized = AssemblyInfoXmlSerializer.SerializeToDocument(assemblies);
 
             XmlWriterSettings ws = new XmlWriterSettings();
             ws.NewLineHandling = NewLineHandling.None;
 
             XmlReaderSettings rs = new XmlReaderSettings();
 
-            using ( MemoryStream ms = new MemoryStream() )
+            using (MemoryStream ms = new MemoryStream())
             {
-                using ( XmlWriter xw = XmlWriter.Create( ms, ws ) )
+                using (XmlWriter xw = XmlWriter.Create(ms, ws))
                 {
-                    serialized.WriteContentTo( xw );
+                    serialized.WriteContentTo(xw);
                 }
 
                 // Debug string
@@ -92,43 +94,44 @@ namespace AssemblyProber.Tests
                 //    string s = sr.ReadToEnd();
                 //}
 
-                ms.Seek( 0, System.IO.SeekOrigin.Begin );
+                ms.Seek(0, System.IO.SeekOrigin.Begin);
 
-                using ( XmlReader r = XmlReader.Create( ms, rs ) )
+                using (XmlReader r = XmlReader.Create(ms, rs))
                 {
-                    assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom( r ).ToList();
+                    assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom(r).ToList();
                 }
             }
 
-            CollectionAssert.IsNotEmpty( assemblies2, "Deserialized collection is not empty" );
+            CollectionAssert.IsNotEmpty(assemblies2, "Deserialized collection is not empty");
 
-            AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
+            AssemblyCheckTests.TestAssembliesEquivalence(assemblies, assemblies2);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         [Test]
         public void XmlWriterSerializeReaderDeserialize()
         {
-            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>( AssemblyCheckTests.GetReferencesFromThisAssembly() );
+            List<IAssemblyInfo> assemblies = new List<IAssemblyInfo>(AssemblyCheckTests.GetReferencesFromThisAssembly());
             List<IAssemblyInfo> assemblies2;
 
-            Assert.That( assemblies, Is.Not.Null, "Test assembly list was returned" );
-            Assert.That( assemblies.Count, Is.GreaterThan( 1 ), "Test assembly references at least 1 other assembly" );
+            Assert.That(assemblies, Is.Not.Null, "Test assembly list was returned");
+            Assert.That(assemblies.Count, Is.GreaterThan(1), "Test assembly references at least 1 other assembly");
 
-            AssemblyCheckTests.TestAssembliesInfo( assemblies );
+            AssemblyCheckTests.TestAssembliesInfo(assemblies);
 
             XmlWriterSettings ws = new XmlWriterSettings();
             ws.NewLineHandling = NewLineHandling.None;
 
             XmlReaderSettings rs = new XmlReaderSettings();
 
-            using ( MemoryStream ms = new MemoryStream() )
+            using (MemoryStream ms = new MemoryStream())
             {
-                using ( XmlWriter xw = XmlWriter.Create( ms, ws ) )
+                using (XmlWriter xw = XmlWriter.Create(ms, ws))
                 {
-                    AssemblyInfoXmlSerializer.SerializeTo( assemblies, xw );
+                    AssemblyInfoXmlSerializer.SerializeTo(assemblies, xw);
                 }
 
-                ms.Seek( 0, System.IO.SeekOrigin.Begin );
+                ms.Seek(0, System.IO.SeekOrigin.Begin);
 
                 // Debug string
                 //using( StreamReader sr = new StreamReader( ms ) )
@@ -136,15 +139,15 @@ namespace AssemblyProber.Tests
                 //    string s = sr.ReadToEnd();
                 //}
 
-                using ( XmlReader r = XmlReader.Create( ms, rs ) )
+                using (XmlReader r = XmlReader.Create(ms, rs))
                 {
-                    assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom( r ).ToList();
+                    assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom(r).ToList();
                 }
             }
 
-            CollectionAssert.IsNotEmpty( assemblies2, "Deserialized collection is not empty" );
+            CollectionAssert.IsNotEmpty(assemblies2, "Deserialized collection is not empty");
 
-            AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
+            AssemblyCheckTests.TestAssembliesEquivalence(assemblies, assemblies2);
         }
     }
 }

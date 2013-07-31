@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AssemblyProberApp.Wpf.Properties {
+namespace DotNetUtilitiesApp.AssemblyProber.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

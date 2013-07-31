@@ -6,9 +6,9 @@ namespace ProjectProber.Tests
     {
         public static IActivityLogger CreateLogger()
         {
-            IDefaultActivityLogger logger = new DefaultActivityLogger( false );
+            IDefaultActivityLogger logger = new DefaultActivityLogger(false);
 
-            logger.Tap.Register( new ActivityLoggerConsoleSink() );
+            logger.Tap.Register(new ActivityLoggerConsoleSink());
 
             return logger;
         }

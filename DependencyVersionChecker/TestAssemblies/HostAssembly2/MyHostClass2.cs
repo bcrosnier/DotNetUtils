@@ -1,6 +1,6 @@
-﻿using System;
-using DependencyAssembly;
+﻿using DependencyAssembly;
 using HostAssembly1;
+using System;
 
 namespace HostAssembly2
 {

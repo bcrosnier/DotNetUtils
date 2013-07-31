@@ -175,9 +175,9 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker.App.Wpf\AssemblyProberApp.Wpf.csproj">
+    <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker.App.Wpf\DotNetUtilitiesApp.AssemblyProber.csproj">
       <Project>{d87c110a-c76f-4f8b-a0e4-b061c112498f}</Project>
-      <Name>AssemblyProberApp.Wpf</Name>
+      <Name>DotNetUtilitiesApp.AssemblyProber</Name>
     </ProjectReference>
     <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj">
       <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>

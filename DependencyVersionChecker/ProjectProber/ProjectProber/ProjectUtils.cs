@@ -1,14 +1,13 @@
-﻿using System;
+﻿using NuGet;
+using ProjectProber.Impl;
+using ProjectProber.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using System.Text.RegularExpressions;
 using System.Xml;
-using NuGet;
-using ProjectProber.Impl;
-using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
@@ -22,13 +21,13 @@ namespace ProjectProber
         /// </summary>
         /// <param name="projectPath">Project file to use</param>
         /// <returns>Collection of assembly paths, relative to the project directory.</returns>
-        public static IEnumerable<string> GetPackageAssemblyReferencePaths( string projectPath )
+        public static IEnumerable<string> GetPackageAssemblyReferencePaths(string projectPath)
         {
-            IEnumerable<IProjectReference> references = GetReferencesFromProjectFile( projectPath );
+            IEnumerable<IProjectReference> references = GetReferencesFromProjectFile(projectPath);
 
             var hintPaths = references
-                .Where( i => i.HintPath != null )
-                .Select( i => i.HintPath );
+                .Where(i => i.HintPath != null)
+                .Select(i => i.HintPath);
 
             return hintPaths;
         }
@@ -39,26 +38,26 @@ namespace ProjectProber
         /// <param name="packageReference">Package reference to use</param>
         /// <param name="packageRoot">Root of the NuGet package directory, which contains all NuGet packages</param>
         /// <returns>Opened NuGet package information</returns>
-        public static NuGet.IPackage GetPackageFromReference( INuGetPackageReference packageReference, string packageRoot )
+        public static NuGet.IPackage GetPackageFromReference(INuGetPackageReference packageReference, string packageRoot)
         {
             string packageIdentifier = packageReference.Id + '.' + packageReference.Version;
 
-            return GetPackageFromReference( packageIdentifier, packageRoot );
+            return GetPackageFromReference(packageIdentifier, packageRoot);
         }
-        
+
         /// <summary>
         /// Find and open a particular NuGet package using a package packageIdentifier
         /// </summary>
         /// <param name="packageIdentifier">Package identifier to use</param>
         /// <param name="packageRoot">Root of the NuGet package directory, which contains all NuGet packages</param>
         /// <returns>Opened NuGet package information</returns>
-        public static NuGet.IPackage GetPackageFromReference( string packageIdentifier, string packageRoot )
+        public static NuGet.IPackage GetPackageFromReference(string packageIdentifier, string packageRoot)
         {
-            string packageFile = Path.Combine( packageRoot, packageIdentifier, packageIdentifier + ".nupkg" );
+            string packageFile = Path.Combine(packageRoot, packageIdentifier, packageIdentifier + ".nupkg");
 
-            Debug.Assert( File.Exists( packageFile ), "Package file was found" );
+            Debug.Assert(File.Exists(packageFile), "Package file was found");
 
-            NuGet.IPackage package = new NuGet.ZipPackage( packageFile );
+            NuGet.IPackage package = new NuGet.ZipPackage(packageFile);
 
             return package;
         }
@@ -68,34 +67,34 @@ namespace ProjectProber
         /// </summary>
         /// <param name="configFile">Path to the configuration file, usually packages.config</param>
         /// <returns>Collection of new INuGetPackageReferences</returns>
-        public static IEnumerable<INuGetPackageReference> GetReferencesFromPackageConfig( string configFile )
+        public static IEnumerable<INuGetPackageReference> GetReferencesFromPackageConfig(string configFile)
         {
-            if( string.IsNullOrEmpty( configFile ) )
-                throw new ArgumentNullException( configFile );
-            if( !File.Exists( configFile ) )
-                throw new ArgumentException( "File must exist", "projectFile" );
+            if (string.IsNullOrEmpty(configFile))
+                throw new ArgumentNullException(configFile);
+            if (!File.Exists(configFile))
+                throw new ArgumentException("File must exist", "projectFile");
 
             List<INuGetPackageReference> references = new List<INuGetPackageReference>();
 
             XmlDocument d = new XmlDocument();
-            d.Load( configFile );
-            XmlNodeList packageNodeList = d.SelectNodes( "/packages/package" );
+            d.Load(configFile);
+            XmlNodeList packageNodeList = d.SelectNodes("/packages/package");
 
-            foreach( XmlNode packageNode in packageNodeList )
+            foreach (XmlNode packageNode in packageNodeList)
             {
                 string id = packageNode.Attributes["id"].Value;
                 string version = packageNode.Attributes["version"].Value;
 
                 // Optional
                 FrameworkName targetFramework = null;
-                if( packageNode.Attributes["targetFramework"] != null )
+                if (packageNode.Attributes["targetFramework"] != null)
                 {
-                    targetFramework = VersionUtility.ParseFrameworkName( packageNode.Attributes["targetFramework"].Value );
+                    targetFramework = VersionUtility.ParseFrameworkName(packageNode.Attributes["targetFramework"].Value);
                 }
 
-                INuGetPackageReference reference = new NuGetPackageReference( id, version, targetFramework );
+                INuGetPackageReference reference = new NuGetPackageReference(id, version, targetFramework);
 
-                references.Add( reference );
+                references.Add(reference);
             }
 
             return references;
@@ -107,9 +106,9 @@ namespace ProjectProber
         /// <param name="reference">Package reference</param>
         /// <param name="repository">NuGet repository</param>
         /// <returns></returns>
-        public static IPackage GetPackageFromRepository( this INuGetPackageReference reference, IPackageRepository repository )
+        public static IPackage GetPackageFromRepository(this INuGetPackageReference reference, IPackageRepository repository)
         {
-            return repository.FindPackage( reference.Id, SemanticVersion.Parse( reference.Version ), true, true );
+            return repository.FindPackage(reference.Id, SemanticVersion.Parse(reference.Version), true, true);
         }
 
         /// <summary>
@@ -117,25 +116,24 @@ namespace ProjectProber
         /// </summary>
         /// <param name="projectFile">Path to the project file (.csproj)</param>
         /// <returns>Collection of new IProjectReference</returns>
-        public static IEnumerable<IProjectReference> GetReferencesFromProjectFile( string projectFile )
+        public static IEnumerable<IProjectReference> GetReferencesFromProjectFile(string projectFile)
         {
-            if( string.IsNullOrEmpty( projectFile ) )
-                throw new ArgumentNullException( projectFile );
-            if( !File.Exists( projectFile ) )
-                throw new ArgumentException( "File must exist", "projectFile" );
+            if (string.IsNullOrEmpty(projectFile))
+                throw new ArgumentNullException(projectFile);
+            if (!File.Exists(projectFile))
+                throw new ArgumentException("File must exist", "projectFile");
 
             List<IProjectReference> references = new List<IProjectReference>();
 
             XmlDocument d = new XmlDocument();
-            d.Load( projectFile );
+            d.Load(projectFile);
 
-            XmlNamespaceManager mgr = new XmlNamespaceManager( d.NameTable );
-            mgr.AddNamespace( "p", d.DocumentElement.NamespaceURI );
+            XmlNamespaceManager mgr = new XmlNamespaceManager(d.NameTable);
+            mgr.AddNamespace("p", d.DocumentElement.NamespaceURI);
 
+            XmlNodeList packageNodeList = d.SelectNodes("/p:Project/p:ItemGroup/p:Reference", mgr);
 
-            XmlNodeList packageNodeList = d.SelectNodes( "/p:Project/p:ItemGroup/p:Reference", mgr );
-
-            foreach( XmlNode packageNode in packageNodeList )
+            foreach (XmlNode packageNode in packageNodeList)
             {
                 string assemblyName = packageNode.Attributes["Include"].Value;
                 string hintPath = null;
@@ -144,25 +142,30 @@ namespace ProjectProber
                 bool specificVersion = false;
                 bool isPrivate = false;
 
-                foreach( XmlNode child in packageNode.ChildNodes )
+                foreach (XmlNode child in packageNode.ChildNodes)
                 {
-                    switch( child.Name )
+                    switch (child.Name)
                     {
                         case "HintPath":
                             hintPath = child.FirstChild.Value;
                             break;
+
                         case "Private":
                             isPrivate = child.FirstChild.Value.ToLowerInvariant() == "true";
                             break;
+
                         case "RequiredTargetFramework":
                             requiredTargetFramework = child.FirstChild.Value;
                             break;
+
                         case "SpecificVersion":
                             specificVersion = child.FirstChild.Value.ToLowerInvariant() == "true";
                             break;
+
                         case "EmbedInteropTypes":
                             embedInteropTypes = child.FirstChild.Value.ToLowerInvariant() == "true";
                             break;
+
                         default:
                             break;
                     }
@@ -178,7 +181,7 @@ namespace ProjectProber
                     SpecificVersion = specificVersion
                 };
 
-                references.Add( reference );
+                references.Add(reference);
             }
 
             return references;

@@ -11,22 +11,22 @@ namespace AssemblyProber
         /// <summary>
         /// Load an assembly from a single file.
         /// </summary>
-        IAssemblyInfo LoadFromFile( FileInfo assemblyFile );
+        IAssemblyInfo LoadFromFile(FileInfo assemblyFile);
 
         /// <summary>
         /// Load an assembly from a single file.
         /// </summary>
-        IAssemblyInfo LoadFromFile( string assemblyFilePath );
+        IAssemblyInfo LoadFromFile(string assemblyFilePath);
 
         /// <summary>
         /// Load an assembly from a single file.
         /// </summary>
-        IAssemblyInfo LoadFromFile( Stream fileStream );
+        IAssemblyInfo LoadFromFile(Stream fileStream);
 
         /// <summary>
         /// Load an assembly from an entire directory.
         /// </summary>
-        IEnumerable<IAssemblyInfo> LoadFromDirectory( DirectoryInfo assemblyDirectory, bool recurse );
+        IEnumerable<IAssemblyInfo> LoadFromDirectory(DirectoryInfo assemblyDirectory, bool recurse);
 
         /// <summary>
         /// Assemblies loaded previously.

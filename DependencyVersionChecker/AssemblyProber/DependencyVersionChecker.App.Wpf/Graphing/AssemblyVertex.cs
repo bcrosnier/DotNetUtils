@@ -1,13 +1,14 @@
-﻿using System;
+﻿using AssemblyProber;
+using DotNetUtilitiesApp.WpfUtils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using AssemblyProber;
 
-namespace AssemblyProberApp.Wpf.Graphing
+namespace DotNetUtilitiesApp.AssemblyProber.Graphing
 {
-    [DebuggerDisplay( "{Assembly.FullName}" )]
+    [DebuggerDisplay("{Assembly.FullName}")]
     public class AssemblyVertex
         : ViewModel
     {
@@ -28,7 +29,7 @@ namespace AssemblyProberApp.Wpf.Graphing
             }
             internal set
             {
-                if( value != _isMarked )
+                if (value != _isMarked)
                 {
                     _isMarked = value;
                     RaisePropertyChanged();
@@ -44,7 +45,7 @@ namespace AssemblyProberApp.Wpf.Graphing
             }
             internal set
             {
-                if( value != _isHighlighted )
+                if (value != _isHighlighted)
                 {
                     _isHighlighted = value;
                     RaisePropertyChanged();
@@ -56,7 +57,7 @@ namespace AssemblyProberApp.Wpf.Graphing
         {
             get
             {
-                return Assembly.Dependencies.Values.Where( x => x.BorderName == null );
+                return Assembly.Dependencies.Values.Where(x => x.BorderName == null);
             }
         }
 
@@ -68,21 +69,21 @@ namespace AssemblyProberApp.Wpf.Graphing
             }
         }
 
-        public void AddReferencedBy( IAssemblyInfo parent )
+        public void AddReferencedBy(IAssemblyInfo parent)
         {
-            _referencedBy.Add( parent );
+            _referencedBy.Add(parent);
         }
 
-        public void AddMessage( string message )
+        public void AddMessage(string message)
         {
-            _messages.Add( message );
+            _messages.Add(message);
         }
 
         public IEnumerable<IAssemblyInfo> BorderReferences
         {
             get
             {
-                return Assembly.Dependencies.Values.Where( x => x.BorderName != null );
+                return Assembly.Dependencies.Values.Where(x => x.BorderName != null);
             }
         }
 
@@ -100,46 +101,44 @@ namespace AssemblyProberApp.Wpf.Graphing
             {
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append( String.Format( "Version {0}\n", Assembly.Version.ToString() ) );
+                sb.Append(String.Format("Version {0}\n", Assembly.Version.ToString()));
 
-
-                if( _messages.Count > 0 )
+                if (_messages.Count > 0)
                 {
-                    sb.Append( "Notes:\n" );
-                    foreach( var message in _messages )
+                    sb.Append("Notes:\n");
+                    foreach (var message in _messages)
                     {
-                        sb.Append( String.Format( "- {0}\n", message ) );
+                        sb.Append(String.Format("- {0}\n", message));
                     }
-                    sb.Append( "\n" );
+                    sb.Append("\n");
                 }
 
-
-                if( _referencedBy.Count > 0 )
+                if (_referencedBy.Count > 0)
                 {
-                    sb.Append( "Referenced by:\n" );
-                    foreach( var parent in _referencedBy.OrderBy( x => x.SimpleName ).OrderBy( x => x.Version ) )
+                    sb.Append("Referenced by:\n");
+                    foreach (var parent in _referencedBy.OrderBy(x => x.SimpleName).OrderBy(x => x.Version))
                     {
-                        string versionReferenced = parent.Dependencies.Where( x => x.Value == Assembly ).Select( x => x.Key ).FirstOrDefault();
-                        sb.Append( String.Format( "- {0} ({1}), as: {2}\n", parent.SimpleName, parent.Version, versionReferenced ) );
+                        string versionReferenced = parent.Dependencies.Where(x => x.Value == Assembly).Select(x => x.Key).FirstOrDefault();
+                        sb.Append(String.Format("- {0} ({1}), as: {2}\n", parent.SimpleName, parent.Version, versionReferenced));
                     }
                 }
-                if( LocalReferences.Count() > 0 )
+                if (LocalReferences.Count() > 0)
                 {
-                    sb.Append( "References:\n" );
-                    foreach( var dep in LocalReferences.OrderBy( x => x.Version ).OrderBy( x => x.SimpleName ) )
+                    sb.Append("References:\n");
+                    foreach (var dep in LocalReferences.OrderBy(x => x.Version).OrderBy(x => x.SimpleName))
                     {
-                        sb.Append( String.Format( "- {0} ({1})\n", dep.SimpleName, dep.Version ) );
+                        sb.Append(String.Format("- {0} ({1})\n", dep.SimpleName, dep.Version));
                     }
                 }
-                if( BorderReferences.Count() > 0 )
+                if (BorderReferences.Count() > 0)
                 {
-                    sb.Append( "Special references:\n" );
-                    foreach( var dep in BorderReferences.OrderBy( x => x.Version ).OrderBy( x => x.SimpleName ) )
+                    sb.Append("Special references:\n");
+                    foreach (var dep in BorderReferences.OrderBy(x => x.Version).OrderBy(x => x.SimpleName))
                     {
-                        sb.Append( String.Format( "- {0} v. {1} ({2})\n", dep.SimpleName, dep.Version, dep.BorderName ) );
+                        sb.Append(String.Format("- {0} v. {1} ({2})\n", dep.SimpleName, dep.Version, dep.BorderName));
                     }
                 }
-                return sb.ToString().TrimEnd( '\n' );
+                return sb.ToString().TrimEnd('\n');
             }
         }
 
@@ -150,45 +149,45 @@ namespace AssemblyProberApp.Wpf.Graphing
                 StringBuilder sb = new StringBuilder();
                 //sb.Append( String.Format( "{0}\n", Assembly.AssemblyFullName ) );
 
-                if( !String.IsNullOrEmpty( Assembly.Description ) )
-                    sb.Append( String.Format( "{0}\n", Assembly.Description ) );
+                if (!String.IsNullOrEmpty(Assembly.Description))
+                    sb.Append(String.Format("{0}\n", Assembly.Description));
 
-                sb.Append( String.Format( "Assembly version: {0}\n", Assembly.Version ) );
+                sb.Append(String.Format("Assembly version: {0}\n", Assembly.Version));
 
-                if( !String.IsNullOrEmpty( Assembly.InformationalVersion ) )
-                    sb.Append( String.Format( "Informational version: {0}\n", Assembly.InformationalVersion ) );
+                if (!String.IsNullOrEmpty(Assembly.InformationalVersion))
+                    sb.Append(String.Format("Informational version: {0}\n", Assembly.InformationalVersion));
 
-                if( !String.IsNullOrEmpty( Assembly.FileVersion ) )
-                    sb.Append( String.Format( "File version: {0}\n", Assembly.FileVersion ) );
+                if (!String.IsNullOrEmpty(Assembly.FileVersion))
+                    sb.Append(String.Format("File version: {0}\n", Assembly.FileVersion));
 
-                if( !String.IsNullOrEmpty( Assembly.Product ) )
-                    sb.Append( String.Format( "Product: {0}\n", Assembly.Product ) );
+                if (!String.IsNullOrEmpty(Assembly.Product))
+                    sb.Append(String.Format("Product: {0}\n", Assembly.Product));
 
-                if( !String.IsNullOrEmpty( Assembly.Trademark ) )
-                    sb.Append( String.Format( "Trademark: {0}\n", Assembly.Trademark ) );
+                if (!String.IsNullOrEmpty(Assembly.Trademark))
+                    sb.Append(String.Format("Trademark: {0}\n", Assembly.Trademark));
 
-                if( !String.IsNullOrEmpty( Assembly.Company ) )
-                    sb.Append( String.Format( "By {0}\n", Assembly.Company ) );
+                if (!String.IsNullOrEmpty(Assembly.Company))
+                    sb.Append(String.Format("By {0}\n", Assembly.Company));
 
-                if( !String.IsNullOrEmpty( Assembly.Copyright ) )
-                    sb.Append( String.Format( "{0}\n", Assembly.Copyright ) );
+                if (!String.IsNullOrEmpty(Assembly.Copyright))
+                    sb.Append(String.Format("{0}\n", Assembly.Copyright));
 
-                if( Assembly.PublicKeyToken != null && Assembly.PublicKeyToken.Length > 0 )
-                    sb.Append( String.Format( "Public key token: {0}\n", StringUtils.ByteArrayToHexString( Assembly.PublicKeyToken ) ) );
+                if (Assembly.PublicKeyToken != null && Assembly.PublicKeyToken.Length > 0)
+                    sb.Append(String.Format("Public key token: {0}\n", StringUtils.ByteArrayToHexString(Assembly.PublicKeyToken)));
 
-                if( Assembly.Paths.Count > 0 )
-                    sb.Append( "Found in files:\n" );
-                foreach( string s in Assembly.Paths.OrderBy( x => x ) )
+                if (Assembly.Paths.Count > 0)
+                    sb.Append("Found in files:\n");
+                foreach (string s in Assembly.Paths.OrderBy(x => x))
                 {
-                    string path = StringUtils.MakeRelativePath( s, Environment.CurrentDirectory );
-                    sb.Append( String.Format( "- {0}\n", path ) );
+                    string path = StringUtils.MakeRelativePath(s, Environment.CurrentDirectory);
+                    sb.Append(String.Format("- {0}\n", path));
                 }
 
-                return sb.ToString().TrimEnd( '\n' );
+                return sb.ToString().TrimEnd('\n');
             }
         }
 
-        internal AssemblyVertex( IAssemblyInfo assembly )
+        internal AssemblyVertex(IAssemblyInfo assembly)
         {
             _referencedBy = new List<IAssemblyInfo>();
             _messages = new List<string>();
@@ -197,7 +196,7 @@ namespace AssemblyProberApp.Wpf.Graphing
 
         public override string ToString()
         {
-            return string.Format( "{0}", Assembly.FullName );
+            return string.Format("{0}", Assembly.FullName);
         }
     }
 }

@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ProjectProber.Interfaces;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
     /// <summary>
     /// Project reference to an assembly, through its full or simple name.
     /// </summary>
-    [DebuggerDisplay( "{AssemblyName}" )]
+    [DebuggerDisplay("{AssemblyName}")]
     internal class ProjectReference : IProjectReference
     {
         /// <summary>
@@ -44,6 +39,8 @@ namespace ProjectProber.Impl
         /// </summary>
         public bool SpecificVersion { get; internal set; }
 
-        internal ProjectReference() { }
+        internal ProjectReference()
+        {
+        }
     }
 }

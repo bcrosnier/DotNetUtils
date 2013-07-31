@@ -1,5 +1,5 @@
-﻿using System;
-using DependencyAssembly;
+﻿using DependencyAssembly;
+using System;
 
 namespace HostAssembly1
 {
@@ -7,7 +7,7 @@ namespace HostAssembly1
     {
         public MyHostClass()
         {
-            Console.WriteLine( MyDependencyClass.Choucroute() );
+            Console.WriteLine(MyDependencyClass.Choucroute());
         }
 
         public static Guid GuidFromDependencyClass()

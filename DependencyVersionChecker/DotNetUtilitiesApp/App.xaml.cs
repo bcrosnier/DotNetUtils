@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace AssemblyProber.App.Wpf
+namespace DotNetUtilitiesApp
 {
     /// <summary>
     /// Interaction logic for App.xaml

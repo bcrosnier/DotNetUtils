@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ProjectProber.Interfaces;
+using System;
 using System.Collections.Generic;
-using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
@@ -30,11 +30,11 @@ namespace ProjectProber
         /// </summary>
         /// <param name="projectItem">Project item to get type of</param>
         /// <returns>Type of project item, or SolutionProjectType.UNKNOWN if it couldn't be guessed.</returns>
-        public static SolutionProjectType GetItemType( this ISolutionProjectItem projectItem )
+        public static SolutionProjectType GetItemType(this ISolutionProjectItem projectItem)
         {
             SolutionProjectType projectType = SolutionProjectType.UNKNOWN;
 
-            ProjectTypes.TryGetValue( projectItem.ProjectTypeGuid, out projectType );
+            ProjectTypes.TryGetValue(projectItem.ProjectTypeGuid, out projectType);
 
             return projectType;
         }

@@ -7,7 +7,7 @@ namespace AssemblyProber
     /// <summary>
     /// Class representing a dependency about a certain assembly simple name.
     /// </summary>
-    [DebuggerDisplay( "AssemblyInfo = {AssemblyName} ({DependencyLinks.Count})" )]
+    [DebuggerDisplay("AssemblyInfo = {AssemblyName} ({DependencyLinks.Count})")]
     public class AssemblyReferenceName
     {
         /// <summary>
@@ -31,9 +31,9 @@ namespace AssemblyProber
                 bool hasConflict = false;
                 string fullName = null;
 
-                foreach ( var link in ReferenceLinks )
+                foreach (var link in ReferenceLinks)
                 {
-                    if ( fullName != null && link.Value.FullName != fullName )
+                    if (fullName != null && link.Value.FullName != fullName)
                         hasConflict = true;
                     fullName = link.Value.FullName;
                 }
@@ -53,24 +53,24 @@ namespace AssemblyProber
             }
         }
 
-        internal AssemblyReferenceName( string requestedAssemblyShortName )
+        internal AssemblyReferenceName(string requestedAssemblyShortName)
         {
             AssemblyName = requestedAssemblyShortName;
             ReferenceLinks = new Dictionary<IAssemblyInfo, IAssemblyInfo>();
         }
 
-        internal void Add( IAssemblyInfo sourceAssembly, IAssemblyInfo requestedAssembly )
+        internal void Add(IAssemblyInfo sourceAssembly, IAssemblyInfo requestedAssembly)
         {
-            Debug.Assert( sourceAssembly.Dependencies.Values.Contains( requestedAssembly ), "requestedAssembly is a dependency of sourceAssembly" );
-            Debug.Assert( requestedAssembly.SimpleName == AssemblyName, "requestedAssembly has correct name" );
+            Debug.Assert(sourceAssembly.Dependencies.Values.Contains(requestedAssembly), "requestedAssembly is a dependency of sourceAssembly");
+            Debug.Assert(requestedAssembly.SimpleName == AssemblyName, "requestedAssembly has correct name");
 
-            if ( ReferenceLinks.Keys.Contains( sourceAssembly ) || ReferenceLinks.Values.Contains( requestedAssembly ) )
+            if (ReferenceLinks.Keys.Contains(sourceAssembly) || ReferenceLinks.Values.Contains(requestedAssembly))
             {
                 //throw new InvalidOperationException( "Cannot add the same assembly twice" );
                 return;
             }
 
-            ReferenceLinks.Add( sourceAssembly, requestedAssembly );
+            ReferenceLinks.Add(sourceAssembly, requestedAssembly);
         }
     }
 }

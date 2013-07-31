@@ -1,8 +1,9 @@
-﻿using System;
+﻿using AssemblyProber;
+using DotNetUtilitiesApp.WpfUtils;
+using System;
 using System.Collections.Generic;
-using AssemblyProber;
 
-namespace AssemblyProberApp.Wpf
+namespace DotNetUtilitiesApp.AssemblyProber
 {
     public class AssemblyInfoViewModel
         : ViewModel
@@ -30,7 +31,7 @@ namespace AssemblyProberApp.Wpf
             }
             set
             {
-                if ( value != _isSelected )
+                if (value != _isSelected)
                 {
                     _isSelected = value;
                     RaisePropertyChanged();
@@ -46,7 +47,7 @@ namespace AssemblyProberApp.Wpf
             }
             set
             {
-                if ( value != _isExpanded )
+                if (value != _isExpanded)
                 {
                     _isExpanded = value;
                     RaisePropertyChanged();
@@ -62,7 +63,7 @@ namespace AssemblyProberApp.Wpf
             }
             private set
             {
-                if ( value != _displayName )
+                if (value != _displayName)
                 {
                     _displayName = value;
                     RaisePropertyChanged();
@@ -78,11 +79,11 @@ namespace AssemblyProberApp.Wpf
             }
         }
 
-        public AssemblyInfoViewModel( IAssemblyInfo assembly )
+        public AssemblyInfoViewModel(IAssemblyInfo assembly)
         {
-            if ( assembly == null )
+            if (assembly == null)
             {
-                throw new ArgumentNullException( "assembly" );
+                throw new ArgumentNullException("assembly");
             }
 
             _assembly = assembly;
@@ -90,10 +91,10 @@ namespace AssemblyProberApp.Wpf
 
             _displayName = assembly.FullName;
 
-            foreach ( var pair in assembly.Dependencies )
+            foreach (var pair in assembly.Dependencies)
             {
                 IAssemblyInfo dep = pair.Value;
-                _children.Add( new AssemblyInfoViewModel( dep ) );
+                _children.Add(new AssemblyInfoViewModel(dep));
             }
         }
     }

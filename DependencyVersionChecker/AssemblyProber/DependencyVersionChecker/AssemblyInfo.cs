@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace AssemblyProber
@@ -9,7 +9,7 @@ namespace AssemblyProber
     /// <summary>
     /// Information about a particular .NET assembly.
     /// </summary>
-    [DebuggerDisplay( "{FullName}" )]
+    [DebuggerDisplay("{FullName}")]
     public class AssemblyInfo : IAssemblyInfo
     {
         #region Fields
@@ -22,7 +22,7 @@ namespace AssemblyProber
         /// <summary>
         /// This assembly's dependencies (as Assemblies from the assembly's references).
         /// </summary>
-        [XmlElement( ElementName = "References" )]
+        [XmlElement(ElementName = "References")]
         private readonly Dictionary<string, AssemblyInfo> _internalDependencies;
 
         #endregion Fields
@@ -137,7 +137,7 @@ namespace AssemblyProber
         {
             get
             {
-                return _internalDependencies.ToDictionary( x => x.Key, x => (IAssemblyInfo) x.Value );
+                return _internalDependencies.ToDictionary(x => x.Key, x => (IAssemblyInfo)x.Value);
             }
         }
 
@@ -157,7 +157,7 @@ namespace AssemblyProber
         /// <summary>
         /// Initializes a new instance of the <see cref="AssemblyInfo" /> class, with an exception set.
         /// </summary>
-        internal AssemblyInfo( Exception ex )
+        internal AssemblyInfo(Exception ex)
             : this()
         {
             Error = ex;
