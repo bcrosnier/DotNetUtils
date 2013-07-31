@@ -193,10 +193,10 @@ namespace DotNetUtilitiesApp.AssemblyProber
             {
                 ChangeAssemblyDirectory(new DirectoryInfo(openAtPath));
             }
-            else
-            {
-                ChangeAssemblyDirectory(new DirectoryInfo(Environment.CurrentDirectory));
-            }
+            //else
+            //{
+            //    ChangeAssemblyDirectory(new DirectoryInfo(Environment.CurrentDirectory));
+            //}
         }
 
         public void PrepareCommands()

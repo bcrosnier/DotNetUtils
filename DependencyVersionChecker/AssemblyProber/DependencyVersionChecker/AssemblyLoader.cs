@@ -47,7 +47,7 @@ namespace AssemblyProber
 
             //string[] microsoftTokens = new string[] { "b77a5c561934e089", "31bf3856ad364e35", "b03f5f7f11d50a3a", "7cec85d7bea7798e" };
 
-            string token = BitConverter.ToString(newReference.Name.PublicKeyToken).Replace("-", string.Empty).ToLowerInvariant();
+            //string token = BitConverter.ToString(newReference.Name.PublicKeyToken).Replace("-", string.Empty).ToLowerInvariant();
 
             //if( microsoftTokens.Contains( token ) )
             //{

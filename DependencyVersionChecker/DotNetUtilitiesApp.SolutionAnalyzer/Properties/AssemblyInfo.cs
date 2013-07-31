@@ -4,16 +4,15 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-
-// General Information about an assemblyNameRef is controlled through the following
+// General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
-// associated with an assemblyNameRef.
-[assembly: AssemblyTitle("DotNetUtilitiesApp.AssemblyProber")]
-[assembly: AssemblyDescription("Assembly reference description and graphing UI control")]
+// associated with an assembly.
+[assembly: AssemblyTitle("DotNetUtilitiesApp.SolutionAnalyzer")]
+[assembly: AssemblyDescription("Solution-checking UI control")]
 [assembly: AssemblyCulture("")]
 
-// Setting ComVisible to false makes the types in this assemblyNameRef not visible
-// to COM components.  If you need to access a type in this assemblyNameRef from
+// Setting ComVisible to false makes the types in this assembly not visible 
+// to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
@@ -35,6 +34,3 @@ using System.Windows;
                                       //(used if a resource is not found in the page, 
                                       // app, or any theme specific resource dictionaries)
 )]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0cb01ebb-8112-411f-8f12-81c7379aaa63")]

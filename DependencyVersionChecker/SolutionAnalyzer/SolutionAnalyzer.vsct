@@ -65,7 +65,7 @@
         <Parent guid="guidSolutionAnalyzerCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Analyze solution assemblies</ButtonText>
+          <ButtonText>Analyze solution</ButtonText>
         </Strings>
       </Button>
 

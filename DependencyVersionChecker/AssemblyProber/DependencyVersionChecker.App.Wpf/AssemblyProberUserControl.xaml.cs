@@ -33,16 +33,10 @@ namespace DotNetUtilitiesApp.AssemblyProber
 
         public AssemblyProberUserControl(IActivityLogger logger, string directoryPath)
         {
-            string[] args = Environment.GetCommandLineArgs();
-
-            if (args.Length >= 2)
-            {
-                directoryPath = args[1];
-            }
-
             if (!DesignerProperties.GetIsInDesignMode(this) && logger is IDefaultActivityLogger)
             {
-                _logFileStream = new FileStream(@"AssemblyProberApp.log", FileMode.Create, FileAccess.Write, FileShare.Read, 8192, false);
+                string logFilePath = Path.Combine( Path.GetTempPath(), @"AssemblyProberApp.log" );
+                _logFileStream = new FileStream( logFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 8192, false );
                 _logTextWriter = new StreamWriter(_logFileStream);
                 ActivityLoggerTextWriterSink sink = new ActivityLoggerTextWriterSink(_logTextWriter);
 
@@ -62,7 +56,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             InitializeComponent();
         }
 
-        public void HighlightVertex(Graphing.AssemblyVertex vertex)
+        private void HighlightVertex(Graphing.AssemblyVertex vertex)
         {
             if (highlightedVertex != null)
             {
@@ -77,7 +71,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
         }
 
-        public void FlushLog()
+        private void FlushLog()
         {
             if (_logTextWriter != null && _logFileStream != null)
             {
@@ -170,6 +164,14 @@ namespace DotNetUtilitiesApp.AssemblyProber
                 if (_logFileStream != null)
                     _logFileStream.Close();
             }
+        }
+
+        public void LoadFolder( string folderPath )
+        {
+            DirectoryInfo dir = new DirectoryInfo( folderPath );
+            _lastLoadedFolder = folderPath;
+            Environment.CurrentDirectory = folderPath;
+            _viewModel.ChangeAssemblyFolderCommand.Execute( dir );
         }
     }
 }

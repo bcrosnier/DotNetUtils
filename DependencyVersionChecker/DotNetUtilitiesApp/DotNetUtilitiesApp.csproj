@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\App.snk</AssemblyOriginatorKeyFile>
@@ -82,6 +82,9 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -110,6 +113,10 @@
     <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker.App.Wpf\DotNetUtilitiesApp.AssemblyProber.csproj">
       <Project>{d87c110a-c76f-4f8b-a0e4-b061c112498f}</Project>
       <Name>DotNetUtilitiesApp.AssemblyProber</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetUtilitiesApp.SolutionAnalyzer\DotNetUtilitiesApp.SolutionAnalyzer.csproj">
+      <Project>{7d2eef2e-d5c2-4a9b-b15c-6603afb880ea}</Project>
+      <Name>DotNetUtilitiesApp.SolutionAnalyzer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
