@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using WPFExtensions;
 
 namespace DotNetUtilitiesApp.AssemblyProber
 {
@@ -20,6 +21,8 @@ namespace DotNetUtilitiesApp.AssemblyProber
 
         private FileStream _logFileStream;
         private TextWriter _logTextWriter;
+
+        private string wpfExtensionsDllPath = typeof(WPFExtensions.ViewModel.Commanding.CommandSink).Assembly.CodeBase;
 
         private Graphing.AssemblyVertex highlightedVertex = null;
 

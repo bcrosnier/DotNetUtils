@@ -125,13 +125,13 @@ namespace BCrosnier.SolutionAnalyzer
         private void OpenAssemblyAnalyzer()
         {
             // Get solution folder
-            string folder = Path.GetDirectoryName(DTE2.Solution.FullName);
-            string dirPath = System.IO.Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).LocalPath);
-            string assemblyAppPath = Path.Combine(dirPath, @"DotNetUtilitiesApp.exe");
+            string solutionFolder = Path.GetDirectoryName(DTE2.Solution.FullName);
 
-            if (Directory.Exists(folder) && File.Exists(assemblyAppPath))
+            string executablePath = typeof(DotNetUtilitiesApp.App).Assembly.Location;
+
+            if (Directory.Exists(solutionFolder) && File.Exists(executablePath))
             {
-                System.Diagnostics.Process.Start(assemblyAppPath, "\"" + folder + "\"");
+                System.Diagnostics.Process.Start(executablePath, "\"" + solutionFolder + "\"");
 
                 // We cannot use the below code, unfortunately: VS extensions require all references to have a strong name (ie. to be signed),
                 // and WPFExtensions doesn't have one.

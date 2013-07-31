@@ -19,7 +19,7 @@
     <RootNamespace>BCrosnier.SolutionAnalyzer</RootNamespace>
     <AssemblyName>SolutionAnalyzer</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\App.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -70,9 +70,6 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="WPFExtensions">
-      <HintPath>..\packages\WPFExtensions.1.0.0\lib\WPFExtensions.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="EnvDTE">
@@ -161,9 +158,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Key.snk" />
-  </ItemGroup>
-  <ItemGroup>
     <VSCTCompile Include="SolutionAnalyzer.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
@@ -175,13 +169,14 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker.App.Wpf\DotNetUtilitiesApp.AssemblyProber.csproj">
-      <Project>{d87c110a-c76f-4f8b-a0e4-b061c112498f}</Project>
-      <Name>DotNetUtilitiesApp.AssemblyProber</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj">
-      <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>
-      <Name>AssemblyProber %28AssemblyProber\AssemblyProber%29</Name>
+    <None Include="..\App.snk">
+      <Link>Properties\App.snk</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetUtilitiesApp\DotNetUtilitiesApp.csproj">
+      <Project>{8287bd83-7975-4b55-ac96-b1ff3133385d}</Project>
+      <Name>DotNetUtilitiesApp</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
