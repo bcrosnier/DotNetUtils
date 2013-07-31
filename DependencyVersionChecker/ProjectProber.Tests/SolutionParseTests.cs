@@ -11,6 +11,8 @@ namespace ProjectProber.Tests
     {
         public static readonly string TEST_SLN_FILE_PATH = Path.Combine("..", "..", "..", "AssemblyProber.sln");
         public static readonly string TEST_SLN_DIRECTORY_PATH = new FileInfo(TEST_SLN_FILE_PATH).DirectoryName;
+		public static readonly string TEST_CK_CORE_SLN_FILE_PATH = Path.Combine( "..", "..", "..", "..", "ck-core", "CK-Core.sln" );
+		public static readonly string TEST_CK_CORE_SLN_DIRECTORY_PATH = new FileInfo( TEST_CK_CORE_SLN_FILE_PATH ).DirectoryName;
 
         [Test]
         public void SolutionFileHasProjects()

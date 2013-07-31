@@ -186,5 +186,39 @@ namespace ProjectProber
 
             return references;
         }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="projectFile">Path to the project file (.csproj)</param>
+		/// <returns>Collection of new IProjectReference</returns>
+		public static CSProjCompileLinkInfo GetSharedAssemblyRelativeLinkFromProjectFile( string projectFile )
+		{
+			if( string.IsNullOrEmpty( projectFile ) )
+				throw new ArgumentNullException( projectFile );
+			if( !File.Exists( projectFile ) )
+				throw new ArgumentException( "File must exist", "projectFile" );
+
+			XmlDocument d = new XmlDocument();
+			d.Load( projectFile );
+
+			XmlNamespaceManager mgr = new XmlNamespaceManager( d.NameTable );
+			mgr.AddNamespace( "p", d.DocumentElement.NamespaceURI );
+
+			XmlNodeList packageNodeList = d.SelectNodes( "/p:Project/p:ItemGroup/p:Compile", mgr );
+
+			foreach( XmlNode packageNode in packageNodeList )
+			{
+				string sharedAssemblyInfoRelativePath = packageNode.Attributes["Include"].Value;
+				string link;
+				if( sharedAssemblyInfoRelativePath.Contains( "SharedAssemblyInfo.cs" ) )
+				{
+					link = packageNode.FirstChild.InnerText;
+					return new CSProjCompileLinkInfo( sharedAssemblyInfoRelativePath, link, Path.GetFileNameWithoutExtension(projectFile) );
+				}
+			}
+			return null;
+			
+		}
     }
 }
