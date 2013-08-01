@@ -17,7 +17,7 @@
             </MenuItem>
         </Menu>
         <StackPanel>
-            <ItemsControl ItemsSource="{Binding Warnings}">
+            <ItemsControl ItemsSource="{Binding Warnings, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}"
@@ -28,7 +28,7 @@
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Visibility="{Binding Path=Warnings, Converter={StaticResource ResourceKey=EmptyCollectionVisibilityConverter}, FallbackValue=Collapsed}" />
+                        <StackPanel />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>

@@ -35,6 +35,12 @@ namespace DotNetUtilitiesApp
 
                     _runningSlnPath = path;
                 }
+                else if( command.ToLowerInvariant() == "-analyzesolutionversion" )
+                {
+                    PrepareSemanticVersion( path );
+
+                    _runningSlnPath = path;
+                }
             }
         }
 

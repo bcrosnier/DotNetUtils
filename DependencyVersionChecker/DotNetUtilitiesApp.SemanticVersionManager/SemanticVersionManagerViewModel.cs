@@ -18,8 +18,6 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         private string _versionTag;
         private string _newVersion;
 
-        private ObservableCollection<string> _warningList;
-
         #endregion Fields
 
         #region Observable properties
@@ -124,10 +122,8 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         public ObservableCollection<string> Warnings
         {
-            get
-            {
-                return _warningList;
-            }
+            get;
+            private set;
         }
 
         #endregion Observable properties
@@ -136,7 +132,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         public SemanticVersionManagerViewModel()
         {
-            _warningList = new ObservableCollection<string>();
+            Warnings = new ObservableCollection<string>();
             CurrentVersion = "1.0.0";
         }
 
@@ -146,12 +142,14 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         public void LoadFromSolution( string slnPath )
         {
+            Warnings.Clear();
             AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles( slnPath );
             ShowResultWarnings( result );
 
-            if( result.SharedAssemblyInfoVersions.Count > 0 )
+            var versions = result.Versions.Where( x => x != null );
+            if( versions.Count() > 0 )
             {
-                CurrentVersion = result.SharedAssemblyInfoVersions.First().Value.ToString();
+                CurrentVersion = versions.First().ToString();
             }
         }
 
@@ -165,6 +163,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             {
                 Warnings.Add( "No SharedAssemblyInfo file was found in solution directory." );
             }
+
             if( result.MultipleRelativeLinkInCSProj )
             {
                 Warnings.Add( "More than one SharedAssemblyInfo link was found in a project file." );
@@ -183,6 +182,11 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             if( result.MultipleVersionInPropretiesAssemblyInfo )
             {
                 Warnings.Add( "More than one version was found in a project's Properties/AssemblyInfo.cs." );
+            }
+
+            if( result.Versions.Count == 0 )
+            {
+                Warnings.Add( "Couldn't find any version to use." );
             }
         }
 
