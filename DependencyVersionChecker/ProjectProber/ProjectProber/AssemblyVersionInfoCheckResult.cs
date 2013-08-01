@@ -63,7 +63,13 @@ namespace ProjectProber
 		bool _multipleRelativeLinkInCSProj = false;
 		bool _multipleVersionInPropretiesAssemblyInfo = false;
 
-		IReadOnlyList<Version> Versions { get { return _versions.AsReadOnly(); } }
+		//Todo
+		bool _haveDifferenteVersionInFile = false;
+		bool _assemblyInformationVersionNotSemanticVersionCompliant = false;
+		bool _assemblyVersionNotSemanticVersionCompliant = false;
+
+
+		public IReadOnlyList<Version> Versions { get { return _versions.AsReadOnly(); } }
 		List<Version> _versions;
 
 		internal AssemblyVersionInfoCheckResult( string solutionDirectoryPath,
