@@ -28,7 +28,7 @@ namespace BCrosnier.SolutionAnalyzer
         /// See the Initialize method to see how the menu item is associated to this function using
         /// the OleMenuCommandService service and the MenuCommand class.
         /// </summary>
-        internal void AnalyzeSolutionAssembliesCommand(object sender, EventArgs e)
+        internal void AnalyzeSolutionCommand(object sender, EventArgs e)
         {
             if (!DTE2.Solution.IsOpen)
             {
@@ -40,7 +40,7 @@ namespace BCrosnier.SolutionAnalyzer
                            0,
                            ref clsid,
                            "SolutionAnalyzer",
-                           string.Format(CultureInfo.CurrentCulture, "Open or create and build a solution first."),
+                           string.Format(CultureInfo.CurrentCulture, "Open or create a solution first."),
                            string.Empty,
                            0,
                            OLEMSGBUTTON.OLEMSGBUTTON_OK,
@@ -51,29 +51,29 @@ namespace BCrosnier.SolutionAnalyzer
 
                 return;
             }
-            else if (DTE2.Solution.SolutionBuild.BuildState != vsBuildState.vsBuildStateDone)
-            {
-                IVsUIShell uiShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
-                Guid clsid = Guid.Empty;
-                int result;
-                Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
-                           0,
-                           ref clsid,
-                           "Solution assembly analyzer",
-                           string.Format(CultureInfo.CurrentCulture, "Build solution first."),
-                           string.Empty,
-                           0,
-                           OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                           OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                           OLEMSGICON.OLEMSGICON_CRITICAL,
-                           0,        // false
-                           out result));
+            //else if (DTE2.Solution.SolutionBuild.BuildState != vsBuildState.vsBuildStateDone)
+            //{
+            //    IVsUIShell uiShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+            //    Guid clsid = Guid.Empty;
+            //    int result;
+            //    Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
+            //               0,
+            //               ref clsid,
+            //               "Solution assembly analyzer",
+            //               string.Format(CultureInfo.CurrentCulture, "Build solution first."),
+            //               string.Empty,
+            //               0,
+            //               OLEMSGBUTTON.OLEMSGBUTTON_OK,
+            //               OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+            //               OLEMSGICON.OLEMSGICON_CRITICAL,
+            //               0,        // false
+            //               out result));
 
-                return;
-            }
+            //    return;
+            //}
 
-            _logger.Trace("Command running: AnalyzeSolutionAssembliesCommand");
-            _logger.Trace(DTE2.Solution.SolutionBuild.BuildState.ToString());
+            _logger.Trace("Command running: AnalyzeSolutionCommand");
+            //_logger.Trace(DTE2.Solution.SolutionBuild.BuildState.ToString());
             // User has requested solution assembly analyzing. Three things to do:
             // 1. Clean the solution
             // 2. Build with the selected config
@@ -83,7 +83,7 @@ namespace BCrosnier.SolutionAnalyzer
             //DTE2.Events.BuildEvents.OnBuildProjConfigDone += BuildEvents_OnBuildProjConfigDone;
             //DTE2.Solution.SolutionBuild.Clean();
 
-            OpenAssemblyAnalyzer();
+            OpenSolutionAnalyzer();
         }
 
         private void BuildEvents_OnBuildProjConfigDone(string Project, string ProjectConfig, string Platform, string SolutionConfig, bool Success)
@@ -122,16 +122,17 @@ namespace BCrosnier.SolutionAnalyzer
             }
         }
 
-        private void OpenAssemblyAnalyzer()
+        private void OpenSolutionAnalyzer()
         {
             // Get solution folder
-            string folder = Path.GetDirectoryName(DTE2.Solution.FullName);
-            string dirPath = System.IO.Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).LocalPath);
-            string assemblyAppPath = Path.Combine(dirPath, @"DotNetUtilitiesApp.exe");
+            //string solutionFolder = Path.GetDirectoryName(DTE2.Solution.FullName);
 
-            if (Directory.Exists(folder) && File.Exists(assemblyAppPath))
+            string executablePath = typeof(DotNetUtilitiesApp.App).Assembly.Location;
+
+            if( File.Exists( DTE2.Solution.FullName ) && File.Exists( executablePath ) )
             {
-                System.Diagnostics.Process.Start(assemblyAppPath, "\"" + folder + "\"");
+                string parameters = "-AnalyzeSolution \"" + DTE2.Solution.FullName + "\"";
+                System.Diagnostics.Process.Start( executablePath, parameters );
 
                 // We cannot use the below code, unfortunately: VS extensions require all references to have a strong name (ie. to be signed),
                 // and WPFExtensions doesn't have one.

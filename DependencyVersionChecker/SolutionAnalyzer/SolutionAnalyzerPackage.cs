@@ -70,7 +70,7 @@ namespace BCrosnier.SolutionAnalyzer
             {
                 // Create the command for the menu item.
                 CommandID menuCommandID = new CommandID(GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionAssemblies);
-                MenuCommand menuItem = new MenuCommand(commands.AnalyzeSolutionAssembliesCommand, menuCommandID);
+                MenuCommand menuItem = new MenuCommand(commands.AnalyzeSolutionCommand, menuCommandID);
                 mcs.AddCommand(menuItem);
             }
         }

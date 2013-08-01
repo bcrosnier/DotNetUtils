@@ -6,11 +6,6 @@ using System.Runtime.InteropServices;
 // associated with an assemblyNameRef.
 [assembly: AssemblyTitle("AssemblyProber")]
 [assembly: AssemblyDescription("Assembly description and referencing utilities")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("B. Crosnier")]
-[assembly: AssemblyProduct("AssemblyProber")]
-[assembly: AssemblyCopyright("Copyright © 2013")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assemblyNameRef not visible
@@ -20,16 +15,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("0cb01ebb-8112-411f-8f12-81c7379aaa63")]
-
-// Version information for an assemblyNameRef consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers
-// by using the '*' as shown below:
-// [assemblyNameRef: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.0.*")]
-[assembly: AssemblyFileVersion("0.1.0.0")]

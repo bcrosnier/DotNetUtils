@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
-             xmlns:local="clr-namespace:DotNetUtilitiesApp.AssemblyProber.Graphing"
-             xmlns:local2="clr-namespace:DotNetUtilitiesApp.AssemblyProber"
-             xmlns:wpfext="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
+             xmlns:GraphSharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+             xmlns:Local="clr-namespace:DotNetUtilitiesApp.AssemblyProber"
+             xmlns:Graphing="clr-namespace:DotNetUtilitiesApp.AssemblyProber.Graphing"
+             xmlns:WpfExtensions="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800">
     <DockPanel LastChildFill="True">
@@ -73,19 +73,19 @@
             </TreeView>
 
             <!-- Graph viewer -->
-            <wpfext:ZoomControl
+            <WpfExtensions:ZoomControl
                 Grid.Row="0" Grid.Column="2"
                 Zoom="0.2"
                 ZoomBoxOpacity="0.5" Background="#ff656565">
 
-                <local:AssemblyGraphLayout x:Name="graphLayout" Margin="10"
+                <Graphing:AssemblyGraphLayout x:Name="graphLayout" Margin="10"
                     Graph="{Binding Path=Graph}"
                     LayoutAlgorithmType="{Binding Path=LayoutAlgorithmType, Mode=OneWay}"
                     OverlapRemovalAlgorithmType="FSA"
-                    graphsharp:GraphElementBehaviour.HighlightTrigger="True"
+                    GraphSharp:GraphElementBehaviour.HighlightTrigger="True"
                     HighlightAlgorithmType="Simple">
-                </local:AssemblyGraphLayout>
-            </wpfext:ZoomControl>
+                </Graphing:AssemblyGraphLayout>
+            </WpfExtensions:ZoomControl>
 
             <!-- Log viewer -->
             <!--<DockPanel
@@ -104,7 +104,7 @@
     </DockPanel>
     <UserControl.Resources>
         <!-- Vertex data -->
-        <DataTemplate x:Key="assemblyVertexTemplate" DataType="{x:Type local:AssemblyVertex}">
+        <DataTemplate x:Key="assemblyVertexTemplate" DataType="{x:Type Graphing:AssemblyVertex}">
             <StackPanel Orientation="Vertical" Margin="5">
                 <TextBlock x:Name="AssemblyName" Text="{Binding Path=Assembly.SimpleName, Mode=OneWay}" Foreground="White" FontSize="12pt" FontWeight="Bold" />
                 <TextBlock x:Name="AssemblyDetails" Text="{Binding Path=AssemblyDetails, Mode=OneWay}" Foreground="White" FontSize="8pt"
@@ -120,7 +120,7 @@
         </DataTemplate>
 
         <!-- Vertex style -->
-        <Style TargetType="{x:Type graphsharp:VertexControl}">
+        <Style TargetType="{x:Type GraphSharp:VertexControl}">
 
             <Style.Resources>
                 <ToolTip x:Key="VertexToolTipContent">
@@ -133,7 +133,7 @@
             <Setter Property="ToolTip" Value="{StaticResource VertexToolTipContent}" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type graphsharp:VertexControl}">
+                    <ControlTemplate TargetType="{x:Type GraphSharp:VertexControl}">
                         <Border
                             x:Name="VertexBorder"
                             BorderBrush="White"
@@ -173,7 +173,7 @@
         </Style>
 
         <!-- Edge style/tooltip -->
-        <Style TargetType="{x:Type graphsharp:EdgeControl}">
+        <Style TargetType="{x:Type GraphSharp:EdgeControl}">
             <Style.Resources>
                 <ToolTip x:Key="ToolTipContent">
                     <StackPanel>

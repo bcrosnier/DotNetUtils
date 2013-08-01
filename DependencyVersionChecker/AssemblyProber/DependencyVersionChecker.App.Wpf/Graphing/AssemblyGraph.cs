@@ -40,6 +40,4 @@ namespace DotNetUtilitiesApp.AssemblyProber.Graphing
                 vertex.AddMessage(message);
         }
     }
-
-    public class AssemblyGraphLayout : GraphLayout<AssemblyVertex, AssemblyEdge, AssemblyGraph> { }
 }

@@ -2,13 +2,19 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:assemblyProber="clr-namespace:DotNetUtilitiesApp.AssemblyProber;assembly=DotNetUtilitiesApp.AssemblyProber"
+        xmlns:solutionAnalyzer="clr-namespace:DotNetUtilitiesApp.SolutionAnalyzer;assembly=DotNetUtilitiesApp.SolutionAnalyzer"
         Title="MainWindow" Height="350" Width="525">
     <DockPanel LastChildFill="True">
 
-        <TabControl>
+        <TabControl x:Name="TabControl">
             <TabItem Header="Assembly analyzer">
                 <Grid>
-                    <assemblyProber:AssemblyProberUserControl />
+                    <assemblyProber:AssemblyProberUserControl x:Name="AssemblyProberUserControl" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Solution analyzer">
+                <Grid>
+                    <solutionAnalyzer:SolutionAnalyzerControl x:Name="SolutionAnalyzerControl" />
                 </Grid>
             </TabItem>
         </TabControl>

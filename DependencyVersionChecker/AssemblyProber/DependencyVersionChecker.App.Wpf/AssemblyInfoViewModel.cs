@@ -94,7 +94,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             foreach (var pair in assembly.Dependencies)
             {
                 IAssemblyInfo dep = pair.Value;
-                _children.Add(new AssemblyInfoViewModel(dep));
+                _children.Add(new AssemblyInfoViewModel(dep)); // TODO: Possible stack overflow on redundant dependencies
             }
         }
     }

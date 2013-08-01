@@ -132,7 +132,7 @@ namespace AssemblyProber
             foreach (var assembly in assemblies)
             {
                 if (assembly != null)
-                    dependencies = GetAssemblyDependencies(assembly, dependencies);
+                    dependencies = GetAssemblyDependencies(assembly, dependencies, 0);
             }
 
             // Only get dependencies with multiple links
@@ -168,11 +168,17 @@ namespace AssemblyProber
 
         private static List<AssemblyReferenceName> GetAssemblyDependencies(IAssemblyInfo info)
         {
-            return GetAssemblyDependencies(info, new List<AssemblyReferenceName>());
+            return GetAssemblyDependencies(info, new List<AssemblyReferenceName>(), 0);
         }
 
-        private static List<AssemblyReferenceName> GetAssemblyDependencies(IAssemblyInfo info, List<AssemblyReferenceName> existingDependencies)
+        private static List<AssemblyReferenceName> GetAssemblyDependencies(IAssemblyInfo info, List<AssemblyReferenceName> existingDependencies, int depth)
         {
+            if( existingDependencies.Any( x => x.AssemblyName == info.SimpleName ) )
+                return existingDependencies;
+
+            depth++;
+            if( depth > 100 )
+                throw new Exception( "Possible assembly recursion" ); // Here to prevent stack overflows
             foreach (var pair in info.Dependencies)
             {
                 IAssemblyInfo dep = pair.Value;
@@ -191,7 +197,7 @@ namespace AssemblyProber
                 if (!dependencyItem.ReferenceLinks.Keys.Contains(info))
                     dependencyItem.Add(info, dep);
 
-                GetAssemblyDependencies(dep, existingDependencies);
+                GetAssemblyDependencies(dep, existingDependencies, depth);
             }
 
             return existingDependencies;
