@@ -44,9 +44,9 @@ namespace ProjectProber
 		{
 			get { return _multipleSharedAssemblyInfo; }
 		}
-		public bool MultipleSharedAssemblyInfoDifferenteVersion
+		public bool MultipleAssemblyVersion
 		{
-			get { return _multipleSharedAssemblyInfoDifferenteVersion; }
+			get { return _multipleAssemblyVersion; }
 		}
 		public bool MultipleRelativeLinkInCSProj
 		{
@@ -59,7 +59,7 @@ namespace ProjectProber
 
 		bool _haveSharedAssemblyInfo = false;
 		bool _multipleSharedAssemblyInfo = false;
-		bool _multipleSharedAssemblyInfoDifferenteVersion = false;
+		bool _multipleAssemblyVersion = false;
 		bool _multipleRelativeLinkInCSProj = false;
 		bool _multipleVersionInPropretiesAssemblyInfo = false;
 
@@ -69,8 +69,8 @@ namespace ProjectProber
 		bool _assemblyVersionNotSemanticVersionCompliant = false;
 
 
-		public IReadOnlyList<Version> Versions { get { return _versions.AsReadOnly(); } }
-		List<Version> _versions;
+		public IReadOnlyList<AssemblyVersionInfo> Versions { get { return _versions.AsReadOnly(); } }
+		List<AssemblyVersionInfo> _versions;
 
 		internal AssemblyVersionInfoCheckResult( string solutionDirectoryPath,
 			List<AssemblyVersionInfo> sharedAssemblyInfoVersions,
@@ -81,27 +81,32 @@ namespace ProjectProber
 			SharedAssemblyInfoVersions = sharedAssemblyInfoVersions;
 			CsProjs = csProjs;
 			ProjectVersions = projectVersions;
-			_versions = new List<Version>();
+			_versions = new List<AssemblyVersionInfo>();
 
 			if( sharedAssemblyInfoVersions.Count > 1 )
 			{
 				_haveSharedAssemblyInfo = true;
 				_multipleSharedAssemblyInfo = true;
-
+				_versions.Add( sharedAssemblyInfoVersions.First() );
 				foreach( AssemblyVersionInfo version in sharedAssemblyInfoVersions )
 				{
-					foreach( Version versionCompare in _versions )
+					bool temp = false;
+					foreach( AssemblyVersionInfo versionCompare in _versions )
 					{
-						if( versionCompare != version.AssemblyVersion )
+						if( versionCompare == version )
 						{
-							_versions.Add( version.AssemblyVersion );
-							_multipleSharedAssemblyInfoDifferenteVersion = true;
+							temp = true;
 							break;
 						}
 					}
+					if( !temp )
+					{
+						_versions.Add( version );
+						_multipleAssemblyVersion = true;
+					}
 					if( _versions.Count == 0 )
 					{
-						_versions.Add( version.AssemblyVersion );
+						_versions.Add( version );
 					}
 				}
 			}
@@ -109,7 +114,16 @@ namespace ProjectProber
 			{
 				//pas sûr
 				_haveSharedAssemblyInfo = true;
+				if( sharedAssemblyInfoVersions.First().AssemblyInformationVersion == null )
+				{
+					_versions.Add( sharedAssemblyInfoVersions.First() );
+				}
+				else
+				{
+					_versions.Add( sharedAssemblyInfoVersions.First() );
+				}
 				IList<CSProjCompileLinkInfo> csProjCompileLinkInfoToCompare = new List<CSProjCompileLinkInfo>();
+				csProjCompileLinkInfoToCompare.Add( csProjs.First() );
 				foreach( CSProjCompileLinkInfo csProjCompileLinkInfo in csProjs )
 				{
 					foreach( CSProjCompileLinkInfo csProjCompileLinkInfoCompare in csProjCompileLinkInfoToCompare )
@@ -121,28 +135,26 @@ namespace ProjectProber
 							break;
 						}
 					}
-					if( csProjCompileLinkInfoToCompare.Count == 0 )
-					{
-						csProjCompileLinkInfoToCompare.Add( csProjCompileLinkInfo );
-					}
 				}
 			}
 			else
 			{
+				_versions.Add( projectVersions.First() );
 				foreach( AssemblyVersionInfo version in projectVersions )
 				{
-					foreach( Version versionCompare in _versions )
+					bool temp = false;
+					foreach( AssemblyVersionInfo versionCompare in _versions )
 					{
-						if( versionCompare != version.AssemblyVersion )
+						if( versionCompare == version )
 						{
-							_versions.Add( version.AssemblyVersion );
-							_multipleVersionInPropretiesAssemblyInfo = true;
+							temp = true;
 							break;
 						}
 					}
-					if( _versions.Count == 0 )
+					if( !temp )
 					{
-						_versions.Add( version.AssemblyVersion );
+						_versions.Add( version );
+						_multipleAssemblyVersion = true;
 					}
 				}
 			}

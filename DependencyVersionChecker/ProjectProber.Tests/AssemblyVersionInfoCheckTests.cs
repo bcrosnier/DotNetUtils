@@ -17,7 +17,7 @@ namespace ProjectProber.Tests
 			Assert.That( result.HaveSharedAssemblyInfo, Is.True );
 			Assert.That( result.MultipleRelativeLinkInCSProj, Is.False );
 			Assert.That( result.MultipleSharedAssemblyInfo, Is.False );
-			Assert.That( result.MultipleSharedAssemblyInfoDifferenteVersion, Is.False );
+			Assert.That( result.MultipleAssemblyVersion, Is.False );
 			Assert.That( result.MultipleVersionInPropretiesAssemblyInfo, Is.False );
 		}
 	}

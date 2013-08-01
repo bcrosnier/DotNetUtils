@@ -1,4 +1,5 @@
-﻿using CK.Package;
+﻿using CK.Core;
+using CK.Package;
 using ProjectProber.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,19 @@ namespace ProjectProber.Impl
 			_assemblyInformationVersion = assemblyInformationVersion;
 
 			_isSharedAssemblyInformation = solutionProjectItem == null;
+		}
+
+		public override bool Equals( Object obj )
+		{
+			AssemblyVersionInfo other = obj as AssemblyVersionInfo;
+			return _assemblyVersion == other._assemblyVersion 
+				&& _assemblyFileVersion == other._assemblyFileVersion 
+				&& _assemblyInformationVersion == other._assemblyInformationVersion;
+		}
+
+		public override int GetHashCode()
+		{
+			return Util.Hash.Combine( Util.Hash.Combine( Util.Hash.Combine( Util.Hash.StartValue, _assemblyVersion ), _assemblyFileVersion ), _assemblyInformationVersion ).GetHashCode();
 		}
 	}
 }
