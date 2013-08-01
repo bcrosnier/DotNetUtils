@@ -1,10 +1,9 @@
-﻿using CK.Core;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Shell;
 
 namespace BCrosnier.SolutionAnalyzer
 {
@@ -20,13 +19,13 @@ namespace BCrosnier.SolutionAnalyzer
     /// </summary>
     // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
     // a package.
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration( UseManagedResourcesOnly = true )]
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
+    [InstalledProductRegistration( "#110", "#112", "1.0", IconResourceID = 400 )]
     // This attribute is needed to let the shell know that this package exposes some menus.
-    [ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(GuidList.guidSolutionAnalyzerPkgString)]
+    [ProvideMenuResource( "Menus.ctmenu", 1 )]
+    [Guid( GuidList.guidSolutionAnalyzerPkgString )]
     public sealed class SolutionAnalyzerPackage : Package
     {
         /// <summary>
@@ -38,7 +37,7 @@ namespace BCrosnier.SolutionAnalyzer
         /// </summary>
         public SolutionAnalyzerPackage()
         {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+            Debug.WriteLine( string.Format( CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString() ) );
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -52,23 +51,17 @@ namespace BCrosnier.SolutionAnalyzer
         /// </summary>
         protected override void Initialize()
         {
-            MenuCommands commands = new MenuCommands();
-
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
+            Debug.WriteLine( string.Format( CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString() ) );
             base.Initialize();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (null != mcs)
+            OleMenuCommandService mcs = GetService( typeof( IMenuCommandService ) ) as OleMenuCommandService;
+            if( null != mcs )
             {
                 // Create the command for the menu item.
                 CommandID menuCommandID = new CommandID( GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionAssemblies );
-                MenuCommand menuItem = new MenuCommand( commands.AnalyzeSolutionCommand, menuCommandID );
+                MenuCommand menuItem = new MenuCommand( MenuCommands.AnalyzeSolutionCommand, menuCommandID );
                 mcs.AddCommand( menuItem );
-
-                CommandID menuCommandAnalyzeSolutionVersionID = new CommandID( GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionVersion );
-                MenuCommand menuItemAnalyzeSolutionVersion = new MenuCommand( commands.AnalyzeSolutionVersionCommand, menuCommandAnalyzeSolutionVersionID );
-                mcs.AddCommand( menuItemAnalyzeSolutionVersion );
             }
         }
 

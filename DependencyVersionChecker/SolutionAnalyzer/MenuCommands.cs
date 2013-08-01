@@ -1,24 +1,32 @@
-﻿using CK.Core;
+﻿using System;
+using System.Globalization;
+using System.IO;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using System;
-using System.Globalization;
-using System.IO;
 
 namespace BCrosnier.SolutionAnalyzer
 {
-    internal class MenuCommands
+    internal static class MenuCommands
     {
         // Get the development environment of VS.
-        private readonly DTE2 DTE2 = Package.GetGlobalService(typeof(DTE)) as DTE2;
+        private static readonly DTE2 DTE2 = Package.GetGlobalService( typeof( DTE ) ) as DTE2;
 
-        public MenuCommands()
+        private static readonly string UTILITIES_EXECUTABLE_PATH = typeof( DotNetUtilitiesApp.App ).Assembly.Location;
+
+        internal static void AnalyzeSolutionCommand( object sender, EventArgs e )
         {
+            if( !DTE2.Solution.IsOpen )
+            {
+                ThrowOpenSolutionMessage();
+                return;
+            }
+
+            OpenSolutionVersionAnalyzer();
         }
 
-        public void ThrowOpenSolutionMessage()
+        private static void ThrowOpenSolutionMessage()
         {
             IVsUIShell uiShell = (IVsUIShell)Package.GetGlobalService( typeof( SVsUIShell ) );
             Guid clsid = Guid.Empty;
@@ -35,61 +43,27 @@ namespace BCrosnier.SolutionAnalyzer
                        OLEMSGICON.OLEMSGICON_CRITICAL,
                        0,        // false
                        out result ) );
+
+            return;
         }
 
-        /// <summary>
-        /// Menu item command callback:
-        /// Analyze the current solution using the solution analyzer.
-        /// </summary>
-        internal void AnalyzeSolutionCommand( object sender, EventArgs e )
-        {
-            if( !DTE2.Solution.IsOpen )
-            {
-                ThrowOpenSolutionMessage();
-                return;
-            }
-            OpenSolutionAnalyzer();
-        }
-
-        /// <summary>
-        /// Menu item command callback:
-        /// Analyze the current solution version using the solution analyzer.
-        /// </summary>
-        internal void AnalyzeSolutionVersionCommand( object sender, EventArgs e )
-        {
-            if( !DTE2.Solution.IsOpen )
-            {
-                ThrowOpenSolutionMessage();
-                return;
-            }
-            OpenSolutionVersionAnalyzer();
-        }
-
-        private void OpenSolutionAnalyzer()
+        private static void OpenSolutionAnalyzer()
         {
             OpenUtilities( "-AnalyzeSolution", DTE2.Solution.FullName );
         }
 
-        private void OpenSolutionVersionAnalyzer()
+        private static void OpenSolutionVersionAnalyzer()
         {
             OpenUtilities( "-AnalyzeSolutionVersion", DTE2.Solution.FullName );
         }
 
-        private void OpenSolutionAssemblyAnalyzer()
+        private static void OpenUtilities( string command, string path )
         {
-            OpenUtilities( "-AnalyzeSolutionVersion", Path.GetDirectoryName( DTE2.Solution.FullName ) );
-        }
-
-        private void OpenUtilities( string command, string path )
-        {
-            string executablePath = typeof( DotNetUtilitiesApp.App ).Assembly.Location;
-
-            if( File.Exists( DTE2.Solution.FullName ) && File.Exists( executablePath ) )
+            if( File.Exists( UTILITIES_EXECUTABLE_PATH ) )
             {
                 string parameters = command + " \"" + path + "\"";
-                System.Diagnostics.Process.Start( executablePath, parameters );
+                System.Diagnostics.Process.Start( UTILITIES_EXECUTABLE_PATH, parameters );
             }
         }
-
     }
 }
