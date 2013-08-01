@@ -24,7 +24,7 @@ namespace ProjectProber
 		/// <summary>
 		/// Checks a SharedAssemblyInfo file and all AssemblyInfo files.
 		/// </summary>
-		/// <param name="solutionFilePath">Directory solution path</param>
+		/// <param name="solutionFilePath">Solution file path</param>
 		/// <param name="logger">Logger to use</param>
 		/// <returns>AssemblyVersionCheckResult</returns>
 		public static AssemblyVersionInfoCheckResult CheckAssemblyVersionFiles( string solutionFilePath, IActivityLogger logger )

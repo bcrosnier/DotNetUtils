@@ -209,7 +209,8 @@ namespace ProjectProber
 
 			foreach( XmlNode packageNode in packageNodeList )
 			{
-				string sharedAssemblyInfoRelativePath = packageNode.Attributes["Include"].Value;
+				//Get real path without "\.."
+				string sharedAssemblyInfoRelativePath = Path.GetFullPath( Path.Combine( Path.GetDirectoryName( projectFile ), packageNode.Attributes["Include"].Value ) );
 				string link;
 				if( sharedAssemblyInfoRelativePath.Contains( "SharedAssemblyInfo.cs" ) )
 				{
