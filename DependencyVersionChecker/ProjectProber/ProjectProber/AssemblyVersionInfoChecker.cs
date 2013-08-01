@@ -1,4 +1,5 @@
 ﻿using CK.Core;
+using ProjectProber.Impl;
 using ProjectProber.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -30,20 +31,25 @@ namespace ProjectProber
 		public static AssemblyVersionInfoCheckResult CheckAssemblyVersionFiles( string solutionFilePath, IActivityLogger logger )
 		{
 			if( String.IsNullOrEmpty( solutionFilePath ) )
-				throw new ArgumentNullException( "solutionRootPath" );
+				throw new ArgumentNullException( "solutionFilePath" );
 			if( !File.Exists( solutionFilePath ) )
-				throw new ArgumentException( "Directory don't exist", "solutionRootPath" );
+				throw new ArgumentException( "Directory don't exist", "solutionFilePath" );
 
 			string solutionDirectoryPath = Path.GetDirectoryName( solutionFilePath );
 
-			Dictionary<string, Version> sharedAssemblyInfoVersion = new Dictionary<string, Version>();
-			Dictionary<ISolutionProjectItem, CSProjCompileLinkInfo> csProj = new Dictionary<ISolutionProjectItem, CSProjCompileLinkInfo>();
-			Dictionary<ISolutionProjectItem, Version> projectVersion = new Dictionary<ISolutionProjectItem, Version>();
+			List<AssemblyVersionInfo> sharedAssemblyInfoVersion = new List<AssemblyVersionInfo>();
+			List<CSProjCompileLinkInfo> csProj = new List<CSProjCompileLinkInfo>();
+			List<AssemblyVersionInfo> projectVersion = new List<AssemblyVersionInfo>();
 
 			//cherche les SharedAssemblyInfo.cs et les lie directement à leurs versions
 			foreach( string path in Directory.GetFiles( solutionDirectoryPath, "SharedAssemblyInfo.cs", SearchOption.AllDirectories ) )
 			{
-				sharedAssemblyInfoVersion.Add( path, AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( path ));
+				AssemblyVersionInfo temp = new AssemblyVersionInfo( path,
+					null,
+					AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN ),
+					AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN ),
+					AssemblyVersionInfoParser.GetSemanticAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN ) );
+				sharedAssemblyInfoVersion.Add( temp );
 			}
 
 			ISolution solution = SolutionFactory.ReadFromSolutionFile( solutionFilePath );
@@ -52,13 +58,18 @@ namespace ProjectProber
 
 			foreach( ISolutionProjectItem project in cSharpProjects )
 			{
-				csProj.Add( project, ProjectUtils.GetSharedAssemblyRelativeLinkFromProjectFile( Path.Combine( solution.DirectoryPath, project.ProjectPath ) ) );
+				csProj.Add( ProjectUtils.GetSharedAssemblyRelativeLinkFromProjectFile( Path.Combine( solution.DirectoryPath, project.ProjectPath ) ) );
 			}
 
 			foreach( ISolutionProjectItem project in cSharpProjects )
 			{
 				string assemblyInfoPath = Path.Combine( solution.DirectoryPath, Path.GetDirectoryName( project.ProjectPath ), @"Properties\AssemblyInfo.cs" );
-				projectVersion.Add( project, AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath ) );
+				AssemblyVersionInfo temp = new AssemblyVersionInfo( assemblyInfoPath,
+					project,
+					AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN ),
+					AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN ),
+					AssemblyVersionInfoParser.GetSemanticAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN ) );
+				sharedAssemblyInfoVersion.Add( temp );
 			}
 
 

@@ -14,11 +14,15 @@ namespace ProjectProber.Tests
 		[Test]
 		public void GetAssemblyVersionFromSharedAssemblyInfoFileTest()
 		{
-			Version version = AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( Path.Combine( SolutionParseTests.TEST_CK_CORE_SLN_DIRECTORY_PATH, "SharedAssemblyInfo.cs" ) );
+			Version version = AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( 
+				Path.Combine( SolutionParseTests.TEST_CK_CORE_SLN_DIRECTORY_PATH, "SharedAssemblyInfo.cs" ), 
+				AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN );
 			
 			Assert.That( version, Is.EqualTo( new Version( "2.8.14" ) ) );
 
-			version = AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, "SharedAssemblyInfo.cs" ) );
+			version = AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( 
+				Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, "SharedAssemblyInfo.cs" ), 
+				AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN );
 
 			Assert.That( version, Is.Null );
 

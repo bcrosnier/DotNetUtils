@@ -1,4 +1,5 @@
-﻿using ProjectProber.Interfaces;
+﻿using ProjectProber.Impl;
+using ProjectProber.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,19 +18,19 @@ namespace ProjectProber
 		/// <summary>
 		/// 
 		/// </summary>
-		public IReadOnlyDictionary<string, Version> SharedAssemblyInfoVersions { get; private set; }
+		public IReadOnlyList<AssemblyVersionInfo> SharedAssemblyInfoVersions { get; private set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public IReadOnlyDictionary<ISolutionProjectItem, CSProjCompileLinkInfo> CsProjs { get; private set; }
+		public IReadOnlyList<CSProjCompileLinkInfo> CsProjs { get; private set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <remarks>
 		/// </remarks>
-		public IReadOnlyDictionary<ISolutionProjectItem, Version> ProjectVersions
+		public IReadOnlyList<AssemblyVersionInfo> ProjectVersions
 		{
 			get;
 			private set;
@@ -62,13 +63,13 @@ namespace ProjectProber
 		bool _multipleRelativeLinkInCSProj = false;
 		bool _multipleVersionInPropretiesAssemblyInfo = false;
 
-		IList<Version> Versions { get { return _versions; } }
-		IList<Version> _versions;
+		IReadOnlyList<Version> Versions { get { return _versions.AsReadOnly(); } }
+		List<Version> _versions;
 
 		internal AssemblyVersionInfoCheckResult( string solutionDirectoryPath,
-			IReadOnlyDictionary<string, Version> sharedAssemblyInfoVersions,
-			IReadOnlyDictionary<ISolutionProjectItem, CSProjCompileLinkInfo> csProjs,
-			IReadOnlyDictionary<ISolutionProjectItem, Version> projectVersions )
+			List<AssemblyVersionInfo> sharedAssemblyInfoVersions,
+			List<CSProjCompileLinkInfo> csProjs,
+			List<AssemblyVersionInfo> projectVersions )
 		{
 			SolutionDirectoryPath = solutionDirectoryPath;
 			SharedAssemblyInfoVersions = sharedAssemblyInfoVersions;
@@ -80,21 +81,21 @@ namespace ProjectProber
 			{
 				_haveSharedAssemblyInfo = true;
 				_multipleSharedAssemblyInfo = true;
-				
-				foreach( Version version in sharedAssemblyInfoVersions.Values )
+
+				foreach( AssemblyVersionInfo version in sharedAssemblyInfoVersions )
 				{
 					foreach( Version versionCompare in _versions )
 					{
-						if( versionCompare != version )
+						if( versionCompare != version.AssemblyVersion )
 						{
-							_versions.Add( version );
+							_versions.Add( version.AssemblyVersion );
 							_multipleSharedAssemblyInfoDifferenteVersion = true;
 							break;
 						}
 					}
 					if( _versions.Count == 0 )
 					{
-						_versions.Add( version );
+						_versions.Add( version.AssemblyVersion );
 					}
 				}
 			}
@@ -103,7 +104,7 @@ namespace ProjectProber
 				//pas sûr
 				_haveSharedAssemblyInfo = true;
 				IList<CSProjCompileLinkInfo> csProjCompileLinkInfoToCompare = new List<CSProjCompileLinkInfo>();
-				foreach( CSProjCompileLinkInfo csProjCompileLinkInfo in csProjs.Values )
+				foreach( CSProjCompileLinkInfo csProjCompileLinkInfo in csProjs )
 				{
 					foreach( CSProjCompileLinkInfo csProjCompileLinkInfoCompare in csProjCompileLinkInfoToCompare )
 					{
@@ -122,20 +123,20 @@ namespace ProjectProber
 			}
 			else
 			{
-				foreach( Version version in projectVersions.Values )
+				foreach( AssemblyVersionInfo version in projectVersions )
 				{
 					foreach( Version versionCompare in _versions )
 					{
-						if( versionCompare != version )
+						if( versionCompare != version.AssemblyVersion )
 						{
-							_versions.Add( version );
+							_versions.Add( version.AssemblyVersion );
 							_multipleVersionInPropretiesAssemblyInfo = true;
 							break;
 						}
 					}
 					if( _versions.Count == 0 )
 					{
-						_versions.Add( version );
+						_versions.Add( version.AssemblyVersion );
 					}
 				}
 			}
