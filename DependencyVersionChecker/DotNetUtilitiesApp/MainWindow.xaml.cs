@@ -8,6 +8,8 @@ namespace DotNetUtilitiesApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string _runningSlnPath;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +32,8 @@ namespace DotNetUtilitiesApp
                 else if( command.ToLowerInvariant() == "-analyzesolution" )
                 {
                     AnalyzeSolution( path );
+
+                    _runningSlnPath = path;
                 }
             }
         }
@@ -39,10 +43,17 @@ namespace DotNetUtilitiesApp
             this.AssemblyProberUserControl.LoadFolder( folderPath );
             this.TabControl.SelectedIndex = 0;
         }
+
         public void AnalyzeSolution( string slnPath )
         {
             this.SolutionAnalyzerControl.LoadSolutionFile( slnPath );
             this.TabControl.SelectedIndex = 1;
+        }
+
+        public void PrepareSemanticVersion( string slnPath )
+        {
+            this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
+            this.TabControl.SelectedIndex = 2;
         }
     }
 }

@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:assemblyProber="clr-namespace:DotNetUtilitiesApp.AssemblyProber;assembly=DotNetUtilitiesApp.AssemblyProber"
         xmlns:solutionAnalyzer="clr-namespace:DotNetUtilitiesApp.SolutionAnalyzer;assembly=DotNetUtilitiesApp.SolutionAnalyzer"
+        xmlns:semanticVersionManager="clr-namespace:DotNetUtilitiesApp.SemanticVersionManager;assembly=DotNetUtilitiesApp.SemanticVersionManager"
         Title="MainWindow" Height="350" Width="525">
     <DockPanel LastChildFill="True">
 
@@ -15,6 +16,11 @@
             <TabItem Header="Solution analyzer">
                 <Grid>
                     <solutionAnalyzer:SolutionAnalyzerControl x:Name="SolutionAnalyzerControl" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Version manager">
+                <Grid>
+                    <semanticVersionManager:SemanticVersionManagerControl x:Name="SemanticVersionManagerControl" />
                 </Grid>
             </TabItem>
         </TabControl>

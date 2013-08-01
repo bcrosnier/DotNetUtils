@@ -4,20 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8287BD83-7975-4B55-AC96-B1FF3133385D}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{C33E55E5-26A9-4AEF-8A9D-67C3EF362151}</ProjectGuid>
+    <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DotNetUtilitiesApp</RootNamespace>
-    <AssemblyName>DotNetUtilitiesApp</AssemblyName>
+    <RootNamespace>DotNetUtilitiesApp.SemanticVersionManager</RootNamespace>
+    <AssemblyName>DotNetUtilitiesApp.SemanticVersionManager</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -27,7 +24,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -35,19 +31,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\App.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CK.Core, Version=2.8.14.0, Culture=neutral, PublicKeyToken=731c291b31fb8d27, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CK.Core.2.8.14\lib\net45\CK.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -61,20 +48,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Compile Include="DialogResult.cs" />
+    <Compile Include="SemanticVersionManagerViewModel.cs" />
+    <Page Include="SemanticVersionManagerControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="SemanticVersionManagerControl.xaml.cs">
+      <DependentUpon>SemanticVersionManagerControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -99,7 +80,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -107,29 +87,16 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker.App.Wpf\DotNetUtilitiesApp.AssemblyProber.csproj">
-      <Project>{d87c110a-c76f-4f8b-a0e4-b061c112498f}</Project>
-      <Name>DotNetUtilitiesApp.AssemblyProber</Name>
+    <ProjectReference Include="..\ProjectProber\ProjectProber\ProjectProber.csproj">
+      <Project>{7562aa82-1946-4d4f-9672-cc3d2322a4f8}</Project>
+      <Name>ProjectProber %28ProjectProber\ProjectProber%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DotNetUtilitiesApp.SemanticVersionManager\DotNetUtilitiesApp.SemanticVersionManager.csproj">
-      <Project>{c33e55e5-26a9-4aef-8a9d-67c3ef362151}</Project>
-      <Name>DotNetUtilitiesApp.SemanticVersionManager</Name>
+    <ProjectReference Include="..\WpfUtils\WpfUtils.csproj">
+      <Project>{a1706d7e-e0aa-4944-878d-6033f2587c7e}</Project>
+      <Name>WpfUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DotNetUtilitiesApp.SolutionAnalyzer\DotNetUtilitiesApp.SolutionAnalyzer.csproj">
-      <Project>{7d2eef2e-d5c2-4a9b-b15c-6603afb880ea}</Project>
-      <Name>DotNetUtilitiesApp.SolutionAnalyzer</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\App.snk">
-      <Link>Properties\App.snk</Link>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -29,8 +29,6 @@ namespace BCrosnier.SolutionAnalyzer
     [Guid(GuidList.guidSolutionAnalyzerPkgString)]
     public sealed class SolutionAnalyzerPackage : Package
     {
-        private IActivityLogger _logger;
-
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require
@@ -40,11 +38,6 @@ namespace BCrosnier.SolutionAnalyzer
         /// </summary>
         public SolutionAnalyzerPackage()
         {
-            DefaultActivityLogger logger = new DefaultActivityLogger();
-            logger.Tap.Register(new ActivityLoggerConsoleSink());
-
-            _logger = logger;
-
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 
@@ -59,7 +52,7 @@ namespace BCrosnier.SolutionAnalyzer
         /// </summary>
         protected override void Initialize()
         {
-            MenuCommands commands = new MenuCommands(_logger);
+            MenuCommands commands = new MenuCommands();
 
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
@@ -69,9 +62,13 @@ namespace BCrosnier.SolutionAnalyzer
             if (null != mcs)
             {
                 // Create the command for the menu item.
-                CommandID menuCommandID = new CommandID(GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionAssemblies);
-                MenuCommand menuItem = new MenuCommand(commands.AnalyzeSolutionCommand, menuCommandID);
-                mcs.AddCommand(menuItem);
+                CommandID menuCommandID = new CommandID( GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionAssemblies );
+                MenuCommand menuItem = new MenuCommand( commands.AnalyzeSolutionCommand, menuCommandID );
+                mcs.AddCommand( menuItem );
+
+                CommandID menuCommandAnalyzeSolutionVersionID = new CommandID( GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionVersion );
+                MenuCommand menuItemAnalyzeSolutionVersion = new MenuCommand( commands.AnalyzeSolutionVersionCommand, menuCommandAnalyzeSolutionVersionID );
+                mcs.AddCommand( menuItemAnalyzeSolutionVersion );
             }
         }
 
