@@ -54,6 +54,10 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyVersionInfoChecker.cs" />
+    <Compile Include="AssemblyVersionInfoCheckResult.cs" />
+    <Compile Include="AssemblyVersionInfoParser.cs" />
+    <Compile Include="CSProjCompileLinkInfo.cs" />
     <Compile Include="Impl\NuGetPackageReference.cs" />
     <Compile Include="Impl\ProjectReference.cs" />
     <Compile Include="Impl\Solution.cs" />
