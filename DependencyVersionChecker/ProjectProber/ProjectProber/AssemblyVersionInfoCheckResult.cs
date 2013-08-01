@@ -62,6 +62,9 @@ namespace ProjectProber
 		bool _multipleRelativeLinkInCSProj = false;
 		bool _multipleVersionInPropretiesAssemblyInfo = false;
 
+		IList<Version> Versions { get { return _versions; } }
+		IList<Version> _versions;
+
 		internal AssemblyVersionInfoCheckResult( string solutionDirectoryPath,
 			IReadOnlyDictionary<string, Version> sharedAssemblyInfoVersions,
 			IReadOnlyDictionary<ISolutionProjectItem, CSProjCompileLinkInfo> csProjs,
@@ -71,26 +74,27 @@ namespace ProjectProber
 			SharedAssemblyInfoVersions = sharedAssemblyInfoVersions;
 			CsProjs = csProjs;
 			ProjectVersions = projectVersions;
+			_versions = new List<Version>();
 
 			if( sharedAssemblyInfoVersions.Count > 1 )
 			{
 				_haveSharedAssemblyInfo = true;
 				_multipleSharedAssemblyInfo = true;
-				IList<Version> versionToCompare = new List<Version>();
+				
 				foreach( Version version in sharedAssemblyInfoVersions.Values )
 				{
-					foreach( Version versionCompare in versionToCompare )
+					foreach( Version versionCompare in _versions )
 					{
 						if( versionCompare != version )
 						{
-							versionToCompare.Add( version );
+							_versions.Add( version );
 							_multipleSharedAssemblyInfoDifferenteVersion = true;
 							break;
 						}
 					}
-					if( versionToCompare.Count == 0 )
+					if( _versions.Count == 0 )
 					{
-						versionToCompare.Add( version );
+						_versions.Add( version );
 					}
 				}
 			}
@@ -118,21 +122,20 @@ namespace ProjectProber
 			}
 			else
 			{
-				IList<Version> versionToCompare = new List<Version>();
 				foreach( Version version in projectVersions.Values )
 				{
-					foreach( Version versionCompare in versionToCompare )
+					foreach( Version versionCompare in _versions )
 					{
 						if( versionCompare != version )
 						{
-							versionToCompare.Add( version );
+							_versions.Add( version );
 							_multipleVersionInPropretiesAssemblyInfo = true;
 							break;
 						}
 					}
-					if( versionToCompare.Count == 0 )
+					if( _versions.Count == 0 )
 					{
-						versionToCompare.Add( version );
+						_versions.Add( version );
 					}
 				}
 			}
