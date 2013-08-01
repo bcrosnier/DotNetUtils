@@ -52,7 +52,7 @@ namespace ProjectProber
 			Match m = regex.Match( text );
 			if( m.Success )
 			{
-				return new Version( m.Groups["version"].Value );
+				return ( !string.IsNullOrEmpty( m.Groups["version"].Value ) ) ? new Version( m.Groups["version"].Value ) : null;
 			}
 			else
 			{
@@ -74,7 +74,7 @@ namespace ProjectProber
 			Match m = regex.Match( text );
 			if( m.Success )
 			{
-				return new SemanticVersion( new Version( m.Groups["version"].Value ), m.Groups["Release"].Value );
+				return ( !string.IsNullOrEmpty( m.Groups["version"].Value ) ) ? new SemanticVersion( new Version( m.Groups["version"].Value ), m.Groups["Release"].Value ) : null;
 			}
 			else
 			{

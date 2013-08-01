@@ -69,7 +69,7 @@ namespace ProjectProber
 					AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN ),
 					AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN ),
 					AssemblyVersionInfoParser.GetSemanticAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN ) );
-				sharedAssemblyInfoVersion.Add( temp );
+				projectVersion.Add( temp );
 			}
 
 
