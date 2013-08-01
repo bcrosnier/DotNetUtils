@@ -15,10 +15,13 @@ namespace ProjectProber.Tests
 		{
 			AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles( SolutionParseTests.TEST_CK_CORE_SLN_FILE_PATH );
 			Assert.That( result.HaveSharedAssemblyInfo, Is.True );
+			Assert.That( result.HaveOneVersionNotSemanticVersionCompliante, Is.False );
+			Assert.That( result.MultipleAssemblyFileInfoVersion, Is.False );
+			Assert.That( result.MultipleAssemblyInformationVersion, Is.False );
+			Assert.That( result.MultipleAssemblyVersion, Is.False );
 			Assert.That( result.MultipleRelativeLinkInCSProj, Is.False );
 			Assert.That( result.MultipleSharedAssemblyInfo, Is.False );
-			Assert.That( result.MultipleAssemblyVersion, Is.False );
-			Assert.That( result.MultipleVersionInPropretiesAssemblyInfo, Is.False );
+			Assert.That( result.MultipleVersionInOneAssemblyInfoFile, Is.False );
 		}
 	}
 }

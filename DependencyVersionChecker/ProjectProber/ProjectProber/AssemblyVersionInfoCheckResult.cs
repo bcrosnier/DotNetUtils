@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CK.Package;
 
 namespace ProjectProber
 {
@@ -36,38 +37,23 @@ namespace ProjectProber
 			private set;
 		}
 
-		public bool HaveSharedAssemblyInfo
-		{
-			get { return _haveSharedAssemblyInfo; }
-		}
-		public bool MultipleSharedAssemblyInfo
-		{
-			get { return _multipleSharedAssemblyInfo; }
-		}
-		public bool MultipleAssemblyVersion
-		{
-			get { return _multipleAssemblyVersion; }
-		}
-		public bool MultipleRelativeLinkInCSProj
-		{
-			get { return _multipleRelativeLinkInCSProj; }
-		}
-		public bool MultipleVersionInPropretiesAssemblyInfo
-		{
-			get { return _multipleVersionInPropretiesAssemblyInfo; }
-		}
+		public bool HaveSharedAssemblyInfo { get { return _haveSharedAssemblyInfo; } }
+		public bool MultipleSharedAssemblyInfo { get { return _multipleSharedAssemblyInfo; } }
+		public bool MultipleAssemblyVersion { get { return _multipleAssemblyVersion; } }
+		public bool MultipleRelativeLinkInCSProj { get { return _multipleRelativeLinkInCSProj; } }
+		public bool MultipleAssemblyFileInfoVersion { get { return _multipleAssemblyFileInfoVersion; } }
+		public bool MultipleAssemblyInformationVersion { get { return _multipleAssemblyInformationVersion; } }
+		public bool HaveOneVersionNotSemanticVersionCompliante { get { return _haveOneVersionNotSemanticVersionCompliante; } }
+		public bool MultipleVersionInOneAssemblyInfoFile { get { return _multipleVersionInOneAssemblyInfoFile; } }
 
 		bool _haveSharedAssemblyInfo = false;
 		bool _multipleSharedAssemblyInfo = false;
 		bool _multipleAssemblyVersion = false;
 		bool _multipleRelativeLinkInCSProj = false;
-		bool _multipleVersionInPropretiesAssemblyInfo = false;
-
-		//Todo
-		bool _haveDifferenteVersionInFile = false;
-		bool _assemblyInformationVersionNotSemanticVersionCompliant = false;
-		bool _assemblyVersionNotSemanticVersionCompliant = false;
-
+		bool _multipleAssemblyFileInfoVersion = false;
+		bool _multipleAssemblyInformationVersion = false;
+		bool _haveOneVersionNotSemanticVersionCompliante = false;
+		bool _multipleVersionInOneAssemblyInfoFile = false;
 
 		public IReadOnlyList<AssemblyVersionInfo> Versions { get { return _versions.AsReadOnly(); } }
 		List<AssemblyVersionInfo> _versions;
@@ -99,15 +85,10 @@ namespace ProjectProber
 							break;
 						}
 					}
-					if( !temp )
-					{
-						_versions.Add( version );
-						_multipleAssemblyVersion = true;
-					}
-					if( _versions.Count == 0 )
-					{
-						_versions.Add( version );
-					}
+					if( !temp ) _versions.Add( version );
+					if( version.AssemblyVersion != version.AssemblyFileVersion
+						&& version.AssemblyVersion != version.AssemblyInformationVersion.Version )
+						_multipleVersionInOneAssemblyInfoFile = true;
 				}
 			}
 			else if( sharedAssemblyInfoVersions.Count == 1 )
@@ -126,14 +107,20 @@ namespace ProjectProber
 				csProjCompileLinkInfoToCompare.Add( csProjs.First() );
 				foreach( CSProjCompileLinkInfo csProjCompileLinkInfo in csProjs )
 				{
+					bool temp = false;
 					foreach( CSProjCompileLinkInfo csProjCompileLinkInfoCompare in csProjCompileLinkInfoToCompare )
 					{
-						if( csProjCompileLinkInfoCompare != csProjCompileLinkInfo )
+						if( csProjCompileLinkInfoCompare == csProjCompileLinkInfo )
 						{
-							csProjCompileLinkInfoToCompare.Add( csProjCompileLinkInfo );
-							_multipleRelativeLinkInCSProj = true;
+							temp = true;
 							break;
 						}
+
+					}
+					if( !temp )
+					{
+						csProjCompileLinkInfoToCompare.Add( csProjCompileLinkInfo );
+						_multipleRelativeLinkInCSProj = true;
 					}
 				}
 			}
@@ -151,14 +138,32 @@ namespace ProjectProber
 							break;
 						}
 					}
-					if( !temp )
-					{
-						_versions.Add( version );
-						_multipleAssemblyVersion = true;
-					}
+					if( !temp ) _versions.Add( version );
+					if( version.AssemblyVersion != version.AssemblyFileVersion
+						&& version.AssemblyVersion != version.AssemblyInformationVersion.Version )
+						_multipleVersionInOneAssemblyInfoFile = true;
+
 				}
 			}
-			
+			if( _versions.Count > 1 )
+			{
+				for( int i = 1; i < _versions.Count; i++ )
+					CheckAssemblyInfo( _versions.First(), _versions[i] );
+			}
+		}
+
+		private void CheckAssemblyInfo( AssemblyVersionInfo a1, AssemblyVersionInfo a2 )
+		{
+			if( a1.AssemblyInformationVersion != a2.AssemblyInformationVersion ) _multipleAssemblyVersion = true;
+			if( a1.AssemblyFileVersion != a2.AssemblyFileVersion ) _multipleAssemblyFileInfoVersion = true;
+			if( a1.AssemblyInformationVersion != a2.AssemblyInformationVersion ) _multipleAssemblyInformationVersion = true;
+			SemanticVersion tempToTest;
+			if( !SemanticVersion.TryParse( a1.AssemblyFileVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParse( a1.AssemblyVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParse( a1.AssemblyInformationVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParse( a2.AssemblyFileVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParse( a2.AssemblyVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParse( a2.AssemblyInformationVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
 		}
 	}
 }
