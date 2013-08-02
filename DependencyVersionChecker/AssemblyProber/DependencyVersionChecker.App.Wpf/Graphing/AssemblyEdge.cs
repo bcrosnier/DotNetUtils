@@ -1,10 +1,10 @@
-﻿using AssemblyProber;
+﻿using System.Diagnostics;
+using AssemblyProber;
 using QuickGraph;
-using System.Diagnostics;
 
 namespace DotNetUtilitiesApp.AssemblyProber.Graphing
 {
-    [DebuggerDisplay("{Source.Assembly} -> {Target.Assembly}")]
+    [DebuggerDisplay( "{Source.Assembly} -> {Target.Assembly}" )]
     public class AssemblyEdge : Edge<AssemblyVertex>
     {
         public IAssemblyInfo Parent { get; private set; }
@@ -15,12 +15,12 @@ namespace DotNetUtilitiesApp.AssemblyProber.Graphing
         {
             get
             {
-                return string.Format("{0} depends on {1}", Parent.SimpleName, Child.SimpleName);
+                return string.Format( "{0} depends on {1}", Parent.SimpleName, Child.SimpleName );
             }
         }
 
-        public AssemblyEdge(AssemblyVertex source, AssemblyVertex target)
-            : base(source, target)
+        public AssemblyEdge( AssemblyVertex source, AssemblyVertex target )
+            : base( source, target )
         {
             Child = target.Assembly;
             Parent = source.Assembly;

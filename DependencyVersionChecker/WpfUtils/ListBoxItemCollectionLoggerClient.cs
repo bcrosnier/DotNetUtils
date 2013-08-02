@@ -1,11 +1,11 @@
-﻿using CK.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using CK.Core;
 
 namespace DotNetUtilitiesApp.WpfUtils
 {
@@ -16,7 +16,7 @@ namespace DotNetUtilitiesApp.WpfUtils
     {
         private int _maxLogEntries;
         private Collection<ListBoxItem> _outputCollection;
-        private Thickness _currentPadding = new Thickness(0, 0, 0, 0);
+        private Thickness _currentPadding = new Thickness( 0, 0, 0, 0 );
 
         private static readonly object _paddingLock = new object();
 
@@ -32,20 +32,20 @@ namespace DotNetUtilitiesApp.WpfUtils
         /// </summary>
         /// <param name="targetCollection">Collection to use</param>
         /// <param name="maxLogEntries">Maximum number of entries</param>
-        public ListBoxItemCollectionLoggerClient(Collection<ListBoxItem> targetCollection, int maxLogEntries)
+        public ListBoxItemCollectionLoggerClient( Collection<ListBoxItem> targetCollection, int maxLogEntries )
         {
-            if (targetCollection == null) throw new ArgumentNullException("Output TextWriter must exist.");
+            if( targetCollection == null ) throw new ArgumentNullException( "Output TextWriter must exist." );
             _outputCollection = targetCollection;
             _maxLogEntries = maxLogEntries;
         }
 
-        private void AddString(string str, Brush color)
+        private void AddString( string str, Brush color )
         {
-            InvokeOnAppThread(() =>
+            InvokeOnAppThread( () =>
             {
-                if (_outputCollection.Count >= _maxLogEntries)
+                if( _outputCollection.Count >= _maxLogEntries )
                 {
-                    _outputCollection.RemoveAt(0);
+                    _outputCollection.RemoveAt( 0 );
                 }
                 var item = new ListBoxItem();
                 item.Content = str;
@@ -54,13 +54,13 @@ namespace DotNetUtilitiesApp.WpfUtils
                 item.HorizontalContentAlignment = HorizontalAlignment.Left;
                 item.VerticalContentAlignment = VerticalAlignment.Top;
 
-                _outputCollection.Add(item);
-            });
+                _outputCollection.Add( item );
+            } );
         }
 
-        private static Brush GetColorFromLevel(LogLevel level)
+        private static Brush GetColorFromLevel( LogLevel level )
         {
-            switch (level)
+            switch( level )
             {
                 case LogLevel.Fatal:
                     return FATAL_COLOR;
@@ -82,12 +82,12 @@ namespace DotNetUtilitiesApp.WpfUtils
             }
         }
 
-        private void AddString(string str)
+        private void AddString( string str )
         {
-            AddString(str, INFO_COLOR);
+            AddString( str, INFO_COLOR );
         }
 
-        public void OnFilterChanged(LogLevelFilter current, LogLevelFilter newValue)
+        public void OnFilterChanged( LogLevelFilter current, LogLevelFilter newValue )
         {
             //lock( _paddingLock )
             //{
@@ -95,7 +95,7 @@ namespace DotNetUtilitiesApp.WpfUtils
             //}
         }
 
-        public void OnGroupClosed(IActivityLogGroup group, ICKReadOnlyList<ActivityLogGroupConclusion> conclusions)
+        public void OnGroupClosed( IActivityLogGroup group, ICKReadOnlyList<ActivityLogGroupConclusion> conclusions )
         {
             //AddString( "Group closed: " + group.GroupText );
             //if( conclusions != null )
@@ -107,9 +107,9 @@ namespace DotNetUtilitiesApp.WpfUtils
             //}
         }
 
-        public void OnGroupClosing(IActivityLogGroup group, ref List<ActivityLogGroupConclusion> conclusions)
+        public void OnGroupClosing( IActivityLogGroup group, ref List<ActivityLogGroupConclusion> conclusions )
         {
-            lock (_paddingLock)
+            lock( _paddingLock )
             {
                 this._currentPadding.Left -= OFFSET_VALUE;
             }
@@ -123,9 +123,9 @@ namespace DotNetUtilitiesApp.WpfUtils
             //}
         }
 
-        public void OnOpenGroup(IActivityLogGroup group)
+        public void OnOpenGroup( IActivityLogGroup group )
         {
-            lock (_paddingLock)
+            lock( _paddingLock )
             {
                 this._currentPadding.Left += OFFSET_VALUE;
                 //if( group.IsGroupTextTheExceptionMessage )
@@ -136,48 +136,48 @@ namespace DotNetUtilitiesApp.WpfUtils
                 //{
                 //    AddString( "Group open: " + group.GroupText );
                 //}
-                AddString(String.Format("[{0}] => {1}", group.GroupLevel.ToString(), group.GroupText));
+                AddString( String.Format( "[{0}] => {1}", group.GroupLevel.ToString(), group.GroupText ) );
 
-                if (group.Exception != null)
+                if( group.Exception != null )
                 {
-                    AddString(group.Exception.ToString(), ERROR_COLOR);
+                    AddString( group.Exception.ToString(), ERROR_COLOR );
                 }
             }
         }
 
-        public void OnUnfilteredLog(CKTrait tags, LogLevel level, string text, DateTime logTimeUtc)
+        public void OnUnfilteredLog( CKTrait tags, LogLevel level, string text, DateTime logTimeUtc )
         {
-            lock (_paddingLock)
+            lock( _paddingLock )
             {
-                string message = String.Format("[{0}] {1}: [{2}] {3}",
-                    logTimeUtc.ToLocalTime().ToString("HH:mm:ss.fff"),
-                    DescribeTraits(tags.AtomicTraits),
+                string message = String.Format( "[{0}] {1}: [{2}] {3}",
+                    logTimeUtc.ToLocalTime().ToString( "HH:mm:ss.fff" ),
+                    DescribeTraits( tags.AtomicTraits ),
                     level.ToString(),
                     text
                     );
-                AddString(message, GetColorFromLevel(level));
+                AddString( message, GetColorFromLevel( level ) );
             }
         }
 
-        private static void InvokeOnAppThread(Action action)
+        private static void InvokeOnAppThread( Action action )
         {
             Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if (dispatchObject == null || dispatchObject.CheckAccess())
+            if( dispatchObject == null || dispatchObject.CheckAccess() )
             {
                 action();
             }
             else
             {
-                dispatchObject.Invoke(action);
+                dispatchObject.Invoke( action );
             }
         }
 
-        private static string DescribeTraits(IEnumerable<CKTrait> traits)
+        private static string DescribeTraits( IEnumerable<CKTrait> traits )
         {
-            if (traits == null)
+            if( traits == null )
                 return String.Empty;
 
-            return String.Join(" ", traits);
+            return String.Join( " ", traits );
         }
     }
 }

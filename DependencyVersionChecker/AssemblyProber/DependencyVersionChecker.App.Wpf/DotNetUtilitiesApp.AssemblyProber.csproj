@@ -129,7 +129,7 @@
     <Compile Include="Graphing\AssemblyGraph.cs" />
     <Compile Include="Graphing\AssemblyGraphLayout.cs" />
     <Compile Include="Graphing\AssemblyVertex.cs" />
-    <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="AssemblyProberViewModel.cs" />
     <Page Include="AssemblyProberUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

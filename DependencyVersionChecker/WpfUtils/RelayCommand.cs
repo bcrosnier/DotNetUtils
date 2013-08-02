@@ -15,15 +15,15 @@ namespace DotNetUtilitiesApp.WpfUtils
 
         #region Constructors
 
-        public RelayCommand(Action<object> execute)
-            : this(execute, null)
+        public RelayCommand( Action<object> execute )
+            : this( execute, null )
         {
         }
 
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+        public RelayCommand( Action<object> execute, Predicate<object> canExecute )
         {
-            if (execute == null)
-                throw new ArgumentNullException("execute");
+            if( execute == null )
+                throw new ArgumentNullException( "execute" );
             _execute = execute;
             _canExecute = canExecute;
         }
@@ -33,9 +33,9 @@ namespace DotNetUtilitiesApp.WpfUtils
         #region ICommand Members
 
         [DebuggerStepThrough]
-        public bool CanExecute(object parameter)
+        public bool CanExecute( object parameter )
         {
-            return _canExecute == null ? true : _canExecute(parameter);
+            return _canExecute == null ? true : _canExecute( parameter );
         }
 
         public event EventHandler CanExecuteChanged
@@ -44,9 +44,9 @@ namespace DotNetUtilitiesApp.WpfUtils
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public void Execute(object parameter)
+        public void Execute( object parameter )
         {
-            _execute(parameter);
+            _execute( parameter );
         }
 
         #endregion ICommand Members

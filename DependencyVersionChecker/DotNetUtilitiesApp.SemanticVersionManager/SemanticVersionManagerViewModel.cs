@@ -11,6 +11,8 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
     {
         #region Fields
 
+        private string _activeSolutionPath;
+
         private string _currentVersion;
         private bool _hasBugFixes;
         private bool _hasNewFeatures;
@@ -155,6 +157,8 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         public void LoadFromSolution( string slnPath )
         {
+            _activeSolutionPath = slnPath;
+
             Warnings.Clear();
             AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles( slnPath );
             ShowResultWarnings( result );
@@ -192,22 +196,22 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         private void ShowResultWarnings( AssemblyVersionInfoCheckResult result )
         {
-            if( !result.HaveSharedAssemblyInfo )
+            if( !result.HasSharedAssemblyInfo )
             {
                 Warnings.Add( "No SharedAssemblyInfo file was found in solution directory." );
             }
 
-            if( result.MultipleRelativeLinkInCSProj )
+            if( result.HasMultipleRelativeLinkInCSProj )
             {
                 Warnings.Add( "More than one SharedAssemblyInfo link was found in a project file." );
             }
 
-            if( result.MultipleSharedAssemblyInfo )
+            if( result.HasMultipleSharedAssemblyInfo )
             {
                 Warnings.Add( "More than one SharedAssemblyInfo file was found in the solution." );
             }
 
-            if( result.MultipleVersionInOneAssemblyInfoFile )
+            if( result.HasMultipleVersionInOneAssemblyInfoFile )
             {
                 Warnings.Add( "More than one version was found in a project's Properties/AssemblyInfo.cs." );
             }

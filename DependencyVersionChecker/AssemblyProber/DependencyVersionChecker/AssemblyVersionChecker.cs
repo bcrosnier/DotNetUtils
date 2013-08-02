@@ -18,11 +18,11 @@ namespace AssemblyProber
         /// Creates a new instance of AssemblyVersionChecker.
         /// </summary>
         /// <param name="loader">IAssemblyLoader used for loading assemblies.</param>
-        public AssemblyVersionChecker(IAssemblyLoader loader)
+        public AssemblyVersionChecker( IAssemblyLoader loader )
         {
-            if (loader == null)
+            if( loader == null )
             {
-                throw new ArgumentNullException("loader");
+                throw new ArgumentNullException( "loader" );
             }
             _assemblyLoader = loader;
             Initialize();
@@ -46,15 +46,15 @@ namespace AssemblyProber
         /// Adds a new file to be checked by Check().
         /// </summary>
         /// <param name="file">File to add. Must exist.</param>
-        public void AddFile(FileInfo file)
+        public void AddFile( FileInfo file )
         {
-            if (!file.Exists)
+            if( !file.Exists )
             {
-                throw new FileNotFoundException("Assembly file does not exist", file.FullName);
+                throw new FileNotFoundException( "Assembly file does not exist", file.FullName );
             }
 
-            if (!_filesToCheck.Contains(file))
-                _filesToCheck.Add(file);
+            if( !_filesToCheck.Contains( file ) )
+                _filesToCheck.Add( file );
         }
 
         /// <summary>
@@ -62,12 +62,12 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="dir">Directory to search files in. Must exist.</param>
         /// <param name="recurse">If true, will recurse into subdirectories.</param>
-        public void AddDirectory(DirectoryInfo dir, bool recurse)
+        public void AddDirectory( DirectoryInfo dir, bool recurse )
         {
-            IEnumerable<FileInfo> fileList = ListAssembliesFromDirectory(dir, recurse);
+            IEnumerable<FileInfo> fileList = ListAssembliesFromDirectory( dir, recurse );
 
-            foreach (FileInfo f in fileList)
-                AddFile(f);
+            foreach( FileInfo f in fileList )
+                AddFile( f );
         }
 
         /// <summary>
@@ -76,22 +76,22 @@ namespace AssemblyProber
         /// <param name="dir">Directory to search files in. Must exist.</param>
         /// <param name="recurse">If true, will recurse into subdirectories.</param>
         /// <returns>List of potential assembly files</returns>
-        public static IEnumerable<FileInfo> ListAssembliesFromDirectory(DirectoryInfo dir, bool recurse)
+        public static IEnumerable<FileInfo> ListAssembliesFromDirectory( DirectoryInfo dir, bool recurse )
         {
             List<FileInfo> fileList;
             try
             {
-                fileList = dir.GetFiles("*.dll").ToList();
-                fileList.AddRange(dir.GetFiles("*.exe"));
+                fileList = dir.GetFiles( "*.dll" ).ToList();
+                fileList.AddRange( dir.GetFiles( "*.exe" ) );
             }
-            catch (UnauthorizedAccessException ex)
+            catch( UnauthorizedAccessException ex )
             {
-                Console.WriteLine(ex);
+                Console.WriteLine( ex );
                 return new List<FileInfo>();
             }
 
-            if (recurse)
-                foreach (DirectoryInfo d in dir.GetDirectories()) fileList.AddRange(ListAssembliesFromDirectory(d, recurse));
+            if( recurse )
+                foreach( DirectoryInfo d in dir.GetDirectories() ) fileList.AddRange( ListAssembliesFromDirectory( d, recurse ) );
 
             return fileList;
         }
@@ -105,18 +105,18 @@ namespace AssemblyProber
             List<IAssemblyInfo> assemblies;
             List<AssemblyReferenceName> dependencies = new List<AssemblyReferenceName>();
 
-            foreach (var f in _filesToCheck)
+            foreach( var f in _filesToCheck )
             {
-                _assemblyLoader.LoadFromFile(f);
+                _assemblyLoader.LoadFromFile( f );
             }
 
-            assemblies = _assemblyLoader.Assemblies.Where(x => x.BorderName == null).ToList();
+            assemblies = _assemblyLoader.Assemblies.Where( x => x.BorderName == null ).ToList();
 
-            var conflicts = GetConflictsFromAssemblyList(assemblies);
+            var conflicts = GetConflictsFromAssemblyList( assemblies );
 
-            var refMismatches = GetReferenceMismatches(assemblies);
+            var refMismatches = GetReferenceMismatches( assemblies );
 
-            AssemblyCheckResult result = new AssemblyCheckResult(assemblies, dependencies, conflicts, refMismatches);
+            AssemblyCheckResult result = new AssemblyCheckResult( assemblies, dependencies, conflicts, refMismatches );
 
             return result;
         }
@@ -126,21 +126,21 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="assemblies">Collection of assemblies to check</param>
         /// <returns>Collection of dependencies with discrepancies</returns>
-        public static IEnumerable<AssemblyReferenceName> GetConflictsFromAssemblyList(IEnumerable<IAssemblyInfo> assemblies)
+        public static IEnumerable<AssemblyReferenceName> GetConflictsFromAssemblyList( IEnumerable<IAssemblyInfo> assemblies )
         {
             List<AssemblyReferenceName> dependencies = new List<AssemblyReferenceName>();
-            foreach (var assembly in assemblies)
+            foreach( var assembly in assemblies )
             {
-                if (assembly != null)
-                    dependencies = GetAssemblyDependencies(assembly, dependencies, 0);
+                if( assembly != null )
+                    dependencies = GetAssemblyDependencies( assembly, dependencies, 0 );
             }
 
             // Only get dependencies with multiple links
             var conflicts =
                 dependencies
-                .Where(x => x.ReferenceLinks.Count >= 2)
-                .Where(x => x.HasConflict)
-                .Select(x => x)
+                .Where( x => x.ReferenceLinks.Count >= 2 )
+                .Where( x => x.HasConflict )
+                .Select( x => x )
                 .ToList();
 
             return conflicts;
@@ -151,27 +151,27 @@ namespace AssemblyProber
         /// </summary>
         /// <param name="assemblies">Collection of assemblies to check</param>
         /// <returns>Collection of references</returns>
-        public static IEnumerable<AssemblyReference> GetReferenceMismatches(IEnumerable<IAssemblyInfo> assemblies)
+        public static IEnumerable<AssemblyReference> GetReferenceMismatches( IEnumerable<IAssemblyInfo> assemblies )
         {
             List<AssemblyReference> references = new List<AssemblyReference>();
             List<IAssemblyInfo> parsedAssemblies = new List<IAssemblyInfo>();
-            foreach (var assembly in assemblies)
+            foreach( var assembly in assemblies )
             {
-                if (assembly != null)
-                    references = GetAssemblyReferences(assembly, references, parsedAssemblies);
+                if( assembly != null )
+                    references = GetAssemblyReferences( assembly, references, parsedAssemblies );
             }
 
-            var conflicts = references.Where(x => x.HasVersionMismatch);
+            var conflicts = references.Where( x => x.HasVersionMismatch );
 
             return conflicts;
         }
 
-        private static List<AssemblyReferenceName> GetAssemblyDependencies(IAssemblyInfo info)
+        private static List<AssemblyReferenceName> GetAssemblyDependencies( IAssemblyInfo info )
         {
-            return GetAssemblyDependencies(info, new List<AssemblyReferenceName>(), 0);
+            return GetAssemblyDependencies( info, new List<AssemblyReferenceName>(), 0 );
         }
 
-        private static List<AssemblyReferenceName> GetAssemblyDependencies(IAssemblyInfo info, List<AssemblyReferenceName> existingDependencies, int depth)
+        private static List<AssemblyReferenceName> GetAssemblyDependencies( IAssemblyInfo info, List<AssemblyReferenceName> existingDependencies, int depth )
         {
             if( existingDependencies.Any( x => x.AssemblyName == info.SimpleName ) )
                 return existingDependencies;
@@ -179,54 +179,54 @@ namespace AssemblyProber
             depth++;
             if( depth > 100 )
                 throw new Exception( "Possible assembly recursion" ); // Here to prevent stack overflows
-            foreach (var pair in info.Dependencies)
+            foreach( var pair in info.Dependencies )
             {
                 IAssemblyInfo dep = pair.Value;
-                if (dep.BorderName != null)
+                if( dep.BorderName != null )
                     continue; // Ignore bordering dependencies
 
                 AssemblyReferenceName dependencyItem = existingDependencies
-                    .Where(x => x.AssemblyName == dep.SimpleName)
+                    .Where( x => x.AssemblyName == dep.SimpleName )
                     .FirstOrDefault();
 
-                if (dependencyItem == null)
+                if( dependencyItem == null )
                 {
-                    dependencyItem = new AssemblyReferenceName(dep.SimpleName);
-                    existingDependencies.Add(dependencyItem);
+                    dependencyItem = new AssemblyReferenceName( dep.SimpleName );
+                    existingDependencies.Add( dependencyItem );
                 }
-                if (!dependencyItem.ReferenceLinks.Keys.Contains(info))
-                    dependencyItem.Add(info, dep);
+                if( !dependencyItem.ReferenceLinks.Keys.Contains( info ) )
+                    dependencyItem.Add( info, dep );
 
-                GetAssemblyDependencies(dep, existingDependencies, depth);
+                GetAssemblyDependencies( dep, existingDependencies, depth );
             }
 
             return existingDependencies;
         }
 
-        private static List<AssemblyReference> GetAssemblyReferences(IAssemblyInfo info)
+        private static List<AssemblyReference> GetAssemblyReferences( IAssemblyInfo info )
         {
-            return GetAssemblyReferences(info, new List<AssemblyReference>(), new List<IAssemblyInfo>());
+            return GetAssemblyReferences( info, new List<AssemblyReference>(), new List<IAssemblyInfo>() );
         }
 
-        private static List<AssemblyReference> GetAssemblyReferences(IAssemblyInfo info, List<AssemblyReference> existingReferences, List<IAssemblyInfo> parsedAssemblies)
+        private static List<AssemblyReference> GetAssemblyReferences( IAssemblyInfo info, List<AssemblyReference> existingReferences, List<IAssemblyInfo> parsedAssemblies )
         {
-            if (parsedAssemblies.Contains(info))
+            if( parsedAssemblies.Contains( info ) )
                 return existingReferences;
             else
-                parsedAssemblies.Add(info);
+                parsedAssemblies.Add( info );
 
-            foreach (var pair in info.Dependencies)
+            foreach( var pair in info.Dependencies )
             {
                 IAssemblyInfo dep = pair.Value;
                 string referenceName = pair.Key;
 
-                if (dep.BorderName != null)
+                if( dep.BorderName != null )
                     continue; // Ignore bordering dependencies
 
-                AssemblyReference referenceItem = new AssemblyReference(info, referenceName, dep);
-                existingReferences.Add(referenceItem);
+                AssemblyReference referenceItem = new AssemblyReference( info, referenceName, dep );
+                existingReferences.Add( referenceItem );
 
-                GetAssemblyReferences(dep, existingReferences, parsedAssemblies);
+                GetAssemblyReferences( dep, existingReferences, parsedAssemblies );
             }
             return existingReferences;
         }
@@ -265,15 +265,15 @@ namespace AssemblyProber
         /// </summary>
         public bool HasVersionMismatch { get; private set; }
 
-        internal AssemblyReference(IAssemblyInfo parent, string referenceName, IAssemblyInfo child)
+        internal AssemblyReference( IAssemblyInfo parent, string referenceName, IAssemblyInfo child )
         {
             Parent = parent;
             ReferenceName = referenceName;
             ReferencedAssembly = child;
 
-            ReferenceNameAssemblyObject = AssemblyLoader.ParseAssemblyInfoFromString(ReferenceName);
+            ReferenceNameAssemblyObject = AssemblyLoader.ParseAssemblyInfoFromString( ReferenceName );
 
-            if (ReferenceNameAssemblyObject.Version != ReferencedAssembly.Version)
+            if( ReferenceNameAssemblyObject.Version != ReferencedAssembly.Version )
                 HasVersionMismatch = true;
             else
                 HasVersionMismatch = false;

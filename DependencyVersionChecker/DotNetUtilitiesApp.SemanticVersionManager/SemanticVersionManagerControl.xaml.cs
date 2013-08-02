@@ -1,19 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DotNetUtilitiesApp.SemanticVersionManager
 {
@@ -42,7 +28,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             d.CheckFileExists = true;
             d.Filter = "Visual Studio solutions (*.sln)|*.sln";
             DialogResult result = d.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if( result == System.Windows.Forms.DialogResult.OK )
             {
                 LoadFromSolution( d.FileName );
             }

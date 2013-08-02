@@ -15,11 +15,11 @@ namespace DotNetUtilitiesApp.WpfUtils
         /// Throw new PropertyChanged.
         /// </summary>
         /// <param name="caller">Auto-filled with Member name, when called from a property.</param>
-        protected void RaisePropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string caller = "")
+        protected void RaisePropertyChanged( [System.Runtime.CompilerServices.CallerMemberName] string caller = "" )
         {
-            if (PropertyChanged != null)
+            if( PropertyChanged != null )
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(caller));
+                PropertyChanged( this, new PropertyChangedEventArgs( caller ) );
             }
         }
 

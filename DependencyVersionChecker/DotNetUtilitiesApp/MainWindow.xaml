@@ -4,9 +4,13 @@
         xmlns:assemblyProber="clr-namespace:DotNetUtilitiesApp.AssemblyProber;assembly=DotNetUtilitiesApp.AssemblyProber"
         xmlns:solutionAnalyzer="clr-namespace:DotNetUtilitiesApp.SolutionAnalyzer;assembly=DotNetUtilitiesApp.SolutionAnalyzer"
         xmlns:semanticVersionManager="clr-namespace:DotNetUtilitiesApp.SemanticVersionManager;assembly=DotNetUtilitiesApp.SemanticVersionManager"
-        Title="MainWindow" Height="350" Width="525">
+        Title="{Binding Path=WindowTitle}" Height="600" Width="800">
     <DockPanel LastChildFill="True">
-
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="_Open solution" Command="{Binding Path=LoadSolutionFileCommand}" />
+            </MenuItem>
+        </Menu>
         <TabControl x:Name="TabControl">
             <TabItem Header="Assembly analyzer">
                 <Grid>

@@ -1,12 +1,12 @@
-﻿using ProjectProber.Interfaces;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
     /// <summary>
     /// Project reference to an assembly, through its full or simple name.
     /// </summary>
-    [DebuggerDisplay("{AssemblyName}")]
+    [DebuggerDisplay( "{AssemblyName}" )]
     internal class ProjectReference : IProjectReference
     {
         /// <summary>

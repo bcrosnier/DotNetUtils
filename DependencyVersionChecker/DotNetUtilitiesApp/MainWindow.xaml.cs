@@ -8,57 +8,67 @@ namespace DotNetUtilitiesApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainWindowViewModel _viewModel;
         private string _runningSlnPath;
 
         public MainWindow()
         {
+            // _runningSlnPath is filled in ProcessArgs(), or null'd
+
+            _viewModel = new MainWindowViewModel();
+            this.DataContext = _viewModel;
+
             InitializeComponent();
+            _viewModel.SetControls( this.AssemblyProberUserControl, this.SemanticVersionManagerControl, this.SolutionAnalyzerControl );
+
             ProcessArgs();
+
+            _viewModel.LoadSolutionFile( _runningSlnPath );
         }
 
         private void ProcessArgs()
         {
             string[] args = Environment.GetCommandLineArgs();
 
+            if( args.Length >= 2 )
+            {
+                _runningSlnPath = args[1];
+            }
+
             if( args.Length >= 3 )
             {
-                string command = args[1];
-                string path = args[2];
+                string command = args[2];
 
-                if( command.ToLowerInvariant() == "-analyzeassemblyfolder" )
+                if( command.ToLowerInvariant() == "-assemblyanalysis" )
                 {
-                    AnalyzeAssemblyFolder( path );
+                    AnalyzeAssemblyFolder();
                 }
-                else if( command.ToLowerInvariant() == "-analyzesolution" )
+                else if( command.ToLowerInvariant() == "-packageanalysis" )
                 {
-                    AnalyzeSolution( path );
-
-                    _runningSlnPath = path;
+                    AnalyzeSolution();
                 }
-                else if( command.ToLowerInvariant() == "-analyzesolutionversion" )
+                else if( command.ToLowerInvariant() == "-versionanalysis" )
                 {
-                    PrepareSemanticVersion( path );
-
-                    _runningSlnPath = path;
+                    PrepareSemanticVersion();
                 }
             }
         }
 
-        public void AnalyzeAssemblyFolder( string folderPath )
+        public void AnalyzeAssemblyFolder()
         {
-            this.AssemblyProberUserControl.LoadFolder( folderPath );
+            //this.AssemblyProberUserControl.LoadFolder( folderPath );
             this.TabControl.SelectedIndex = 0;
         }
 
-        public void AnalyzeSolution( string slnPath )
+        public void AnalyzeSolution()
         {
-            this.SolutionAnalyzerControl.LoadSolutionFile( slnPath );
+            //this.SolutionAnalyzerControl.LoadSolutionFile( slnPath );
             this.TabControl.SelectedIndex = 1;
         }
 
-        public void PrepareSemanticVersion( string slnPath )
+        public void PrepareSemanticVersion()
         {
-            this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
+            //this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
             this.TabControl.SelectedIndex = 2;
         }
     }

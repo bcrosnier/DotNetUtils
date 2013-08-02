@@ -50,7 +50,7 @@ namespace AssemblyProber
         /// <param name="dependencies">Dependencies found between assemblies</param>
         /// <param name="versionConflicts">Found version discrepancies</param>
         /// <param name="referenceVersionMismatches">Found reference version mismatches</param>
-        internal AssemblyCheckResult(IEnumerable<IAssemblyInfo> assemblies,
+        internal AssemblyCheckResult( IEnumerable<IAssemblyInfo> assemblies,
             IEnumerable<AssemblyReferenceName> dependencies,
             IEnumerable<AssemblyReferenceName> versionConflicts,
             IEnumerable<AssemblyReference> referenceVersionMismatches

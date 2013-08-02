@@ -1,7 +1,7 @@
-﻿using AssemblyProber;
-using DotNetUtilitiesApp.WpfUtils;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using AssemblyProber;
+using DotNetUtilitiesApp.WpfUtils;
 
 namespace DotNetUtilitiesApp.AssemblyProber
 {
@@ -31,7 +31,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
             set
             {
-                if (value != _isSelected)
+                if( value != _isSelected )
                 {
                     _isSelected = value;
                     RaisePropertyChanged();
@@ -47,7 +47,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
             set
             {
-                if (value != _isExpanded)
+                if( value != _isExpanded )
                 {
                     _isExpanded = value;
                     RaisePropertyChanged();
@@ -63,7 +63,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
             private set
             {
-                if (value != _displayName)
+                if( value != _displayName )
                 {
                     _displayName = value;
                     RaisePropertyChanged();
@@ -79,11 +79,11 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
         }
 
-        public AssemblyInfoViewModel(IAssemblyInfo assembly)
+        public AssemblyInfoViewModel( IAssemblyInfo assembly )
         {
-            if (assembly == null)
+            if( assembly == null )
             {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException( "assembly" );
             }
 
             _assembly = assembly;
@@ -91,10 +91,10 @@ namespace DotNetUtilitiesApp.AssemblyProber
 
             _displayName = assembly.FullName;
 
-            foreach (var pair in assembly.Dependencies)
+            foreach( var pair in assembly.Dependencies )
             {
                 IAssemblyInfo dep = pair.Value;
-                _children.Add(new AssemblyInfoViewModel(dep)); // TODO: Possible stack overflow on redundant dependencies
+                _children.Add( new AssemblyInfoViewModel( dep ) ); // TODO: Possible stack overflow on redundant dependencies
             }
         }
     }

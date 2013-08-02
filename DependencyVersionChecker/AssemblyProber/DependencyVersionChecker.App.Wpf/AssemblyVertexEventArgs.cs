@@ -1,5 +1,5 @@
-﻿using DotNetUtilitiesApp.AssemblyProber.Graphing;
-using System;
+﻿using System;
+using DotNetUtilitiesApp.AssemblyProber.Graphing;
 
 namespace DotNetUtilitiesApp.AssemblyProber
 {
@@ -7,7 +7,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
     {
         public AssemblyVertex Vertex { get; private set; }
 
-        internal AssemblyVertexEventArgs(AssemblyVertex vertex)
+        internal AssemblyVertexEventArgs( AssemblyVertex vertex )
         {
             Vertex = vertex;
         }

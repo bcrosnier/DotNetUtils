@@ -23,7 +23,7 @@ namespace BCrosnier.SolutionAnalyzer
                 return;
             }
 
-            OpenSolutionVersionAnalyzer();
+            OpenSolutionAnalyzer();
         }
 
         private static void ThrowOpenSolutionMessage()

@@ -1,10 +1,10 @@
 ﻿<UserControl x:Class="DotNetUtilitiesApp.SemanticVersionManager.SemanticVersionManagerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:WpfUtils="clr-namespace:DotNetUtilitiesApp.WpfUtils;assembly=DotNetUtilitiesApp.WpfUtils"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -23,7 +23,7 @@
                         <TextBlock Text="{Binding}"
                                    Foreground="Black" Background="Orange"
                                    Padding="5px" Margin="3px"
-                                   />
+ />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
@@ -43,7 +43,7 @@
             <Separator Grid.Row="3" Grid.ColumnSpan="2" />
             <CheckBox Grid.Column="0" Grid.Row="4" IsEnabled="{Binding Path=IsNotReleaseCheckBoxEnabled, FallbackValue=False}" IsChecked="{Binding Path=IsNotStable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" x:Name="IsNotReleaseCheckBox">This verson isn't a stable release version</CheckBox>
 
-            <StackPanel Visibility="{Binding IsChecked, ElementName=IsNotReleaseCheckBox, Converter={StaticResource BooleanToVisibilityConverter}}" >
+            <StackPanel Visibility="{Binding IsChecked, ElementName=IsNotReleaseCheckBox, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock>Enter release tag (e.g. develop, alpha, beta, rc)</TextBlock>
                 <TextBox Text="{Binding Path=VersionTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>

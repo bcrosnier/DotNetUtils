@@ -1,7 +1,7 @@
-﻿using NuGet;
-using ProjectProber.Interfaces;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using NuGet;
+using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
@@ -62,9 +62,9 @@ namespace ProjectProber
             private set;
         }
 
-        internal SolutionCheckResult(string solutionPath, IEnumerable<IPackage> scannedPackages, IEnumerable<ISolutionProjectItem> projects,
+        internal SolutionCheckResult( string solutionPath, IEnumerable<IPackage> scannedPackages, IEnumerable<ISolutionProjectItem> projects,
             IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<IProjectReference>> assemblyReferences,
-            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> packageReferences)
+            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> packageReferences )
         {
             SolutionPath = solutionPath;
             NuGetPackages = scannedPackages;
@@ -75,22 +75,22 @@ namespace ProjectProber
             // Looks for multiple versions of each NuGet package.
             Dictionary<string, List<IPackage>> packagesPerId = new Dictionary<string, List<IPackage>>();
 
-            foreach (IPackage package in NuGetPackages)
+            foreach( IPackage package in NuGetPackages )
             {
                 List<IPackage> packageVersions;
-                if (!packagesPerId.TryGetValue(package.Id, out packageVersions))
+                if( !packagesPerId.TryGetValue( package.Id, out packageVersions ) )
                 {
                     // Package Id is not in the list
                     packageVersions = new List<IPackage>();
-                    packagesPerId.Add(package.Id, packageVersions);
+                    packagesPerId.Add( package.Id, packageVersions );
                 }
 
-                packageVersions.Add(package);
+                packageVersions.Add( package );
             }
 
             PackagesWithMultipleVersions = packagesPerId
-                .Where(x => x.Value.Count > 1)
-                .ToDictionary(x => x.Key, x => (IEnumerable<IPackage>)x.Value);
+                .Where( x => x.Value.Count > 1 )
+                .ToDictionary( x => x.Key, x => (IEnumerable<IPackage>)x.Value );
         }
     }
 }

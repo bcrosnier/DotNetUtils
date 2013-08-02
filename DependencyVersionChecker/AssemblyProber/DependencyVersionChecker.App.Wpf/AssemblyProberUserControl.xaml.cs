@@ -1,13 +1,12 @@
-﻿using AssemblyProber;
-using CK.Core;
-using DotNetUtilitiesApp.AssemblyProber.Graphing;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using WPFExtensions;
+using AssemblyProber;
+using CK.Core;
+using DotNetUtilitiesApp.AssemblyProber.Graphing;
 
 namespace DotNetUtilitiesApp.AssemblyProber
 {
@@ -16,162 +15,160 @@ namespace DotNetUtilitiesApp.AssemblyProber
     /// </summary>
     public partial class AssemblyProberUserControl : System.Windows.Controls.UserControl, IDisposable
     {
-        private MainWindowViewModel _viewModel;
-        private string _lastLoadedFolder = Environment.CurrentDirectory;
+        private AssemblyProberViewModel _viewModel;
+        private string _activeFolder = Environment.CurrentDirectory;
 
         private FileStream _logFileStream;
         private TextWriter _logTextWriter;
 
-        private string wpfExtensionsDllPath = typeof(WPFExtensions.ViewModel.Commanding.CommandSink).Assembly.CodeBase;
+        private string wpfExtensionsDllPath = typeof( WPFExtensions.ViewModel.Commanding.CommandSink ).Assembly.CodeBase;
 
         private Graphing.AssemblyVertex highlightedVertex = null;
 
         public AssemblyProberUserControl()
-            : this(new DefaultActivityLogger(), null)
+            : this( new DefaultActivityLogger(), null )
         {
         }
 
-        public AssemblyProberUserControl(IActivityLogger logger, string directoryPath)
+        public AssemblyProberUserControl( IActivityLogger logger, string directoryPath )
         {
-            if (!DesignerProperties.GetIsInDesignMode(this) && logger is IDefaultActivityLogger)
+            if( !DesignerProperties.GetIsInDesignMode( this ) && logger is IDefaultActivityLogger )
             {
                 string logFilePath = Path.Combine( Path.GetTempPath(), @"AssemblyProberApp.log" );
                 _logFileStream = new FileStream( logFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 8192, false );
-                _logTextWriter = new StreamWriter(_logFileStream);
-                ActivityLoggerTextWriterSink sink = new ActivityLoggerTextWriterSink(_logTextWriter);
+                _logTextWriter = new StreamWriter( _logFileStream );
+                ActivityLoggerTextWriterSink sink = new ActivityLoggerTextWriterSink( _logTextWriter );
 
-                ((IDefaultActivityLogger)logger).Tap.Register(sink);
+                ((IDefaultActivityLogger)logger).Tap.Register( sink );
             }
 
-            IAssemblyLoader l = new AssemblyLoader(logger);
+            IAssemblyLoader l = new AssemblyLoader( logger );
 
-            AssemblyVersionChecker checker = new AssemblyVersionChecker(l);
+            AssemblyVersionChecker checker = new AssemblyVersionChecker( l );
 
-            _viewModel = new MainWindowViewModel(logger, checker, directoryPath);
-            _viewModel.LogFlushRequested += (s, e) => { FlushLog(); };
-            _viewModel.VertexHighlightRequested += (s, e) => { HighlightVertex(e.Vertex); };
+            _viewModel = new AssemblyProberViewModel( logger, checker, directoryPath );
+            _viewModel.LogFlushRequested += ( s, e ) => { FlushLog(); };
+            _viewModel.VertexHighlightRequested += ( s, e ) => { HighlightVertex( e.Vertex ); };
             FlushLog();
 
             this.DataContext = _viewModel;
             InitializeComponent();
         }
 
-        private void HighlightVertex(Graphing.AssemblyVertex vertex)
+        private void HighlightVertex( Graphing.AssemblyVertex vertex )
         {
-            if (highlightedVertex != null)
+            if( highlightedVertex != null )
             {
                 highlightedVertex.IsHighlighted = false;
-                this.graphLayout.RemoveHighlightFromVertex(highlightedVertex);
+                this.graphLayout.RemoveHighlightFromVertex( highlightedVertex );
             }
             highlightedVertex = vertex;
-            if (vertex != null)
+            if( vertex != null )
             {
                 vertex.IsHighlighted = true;
-                this.graphLayout.HighlightVertex(vertex, "None");
+                this.graphLayout.HighlightVertex( vertex, "None" );
             }
         }
 
         private void FlushLog()
         {
-            if (_logTextWriter != null && _logFileStream != null)
+            if( _logTextWriter != null && _logFileStream != null )
             {
                 _logTextWriter.Flush();
                 _logFileStream.Flush();
             }
         }
 
-        private void LoadAssemblyDirectory_Click(object sender, RoutedEventArgs e)
+        private void LoadAssemblyDirectory_Click( object sender, RoutedEventArgs e )
         {
             FolderBrowserDialog d = new FolderBrowserDialog();
-            d.SelectedPath = _lastLoadedFolder;
+            d.SelectedPath = _activeFolder;
             var result = d.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if( result == System.Windows.Forms.DialogResult.OK )
             {
-                DirectoryInfo dir = new DirectoryInfo(d.SelectedPath);
-                _lastLoadedFolder = d.SelectedPath;
+                DirectoryInfo dir = new DirectoryInfo( d.SelectedPath );
+                _activeFolder = d.SelectedPath;
                 Environment.CurrentDirectory = d.SelectedPath;
-                _viewModel.ChangeAssemblyFolderCommand.Execute(dir);
+                _viewModel.ChangeAssemblyFolderCommand.Execute( dir );
             }
         }
 
-        private void LoadAssemblyFile_Click(object sender, RoutedEventArgs e)
+        private void LoadAssemblyFile_Click( object sender, RoutedEventArgs e )
         {
             OpenFileDialog d = new OpenFileDialog();
+            d.InitialDirectory = _activeFolder;
             d.CheckFileExists = true;
             d.Filter = "Binary assemblies (*.dll;*.exe)|*.dll;*.exe";
             DialogResult result = d.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if( result == System.Windows.Forms.DialogResult.OK )
             {
-                FileInfo file = new FileInfo(d.FileName);
+                FileInfo file = new FileInfo( d.FileName );
                 Environment.CurrentDirectory = file.DirectoryName;
-                _viewModel.ChangeAssemblyFile(file);
+                _viewModel.ChangeAssemblyFile( file );
             }
         }
 
-        private void LoadAssemblyXml_Click(object sender, RoutedEventArgs e)
+        private void LoadAssemblyXml_Click( object sender, RoutedEventArgs e )
         {
             OpenFileDialog d = new OpenFileDialog();
             d.CheckFileExists = true;
             d.Filter = "XML file (*.xml)|*.xml";
             DialogResult result = d.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if( result == System.Windows.Forms.DialogResult.OK )
             {
-                FileInfo file = new FileInfo(d.FileName);
-                _viewModel.LoadXmlFile(file);
+                FileInfo file = new FileInfo( d.FileName );
+                _viewModel.LoadXmlFile( file );
             }
         }
 
-        private void SaveAssemblyXml_Click(object sender, RoutedEventArgs e)
+        private void SaveAssemblyXml_Click( object sender, RoutedEventArgs e )
         {
             SaveFileDialog d = new SaveFileDialog();
             d.OverwritePrompt = true;
             d.Filter = "XML file (*.xml)|*.xml";
             DialogResult result = d.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if( result == System.Windows.Forms.DialogResult.OK )
             {
-                FileInfo file = new FileInfo(d.FileName);
-                _viewModel.SaveXmlFile(file);
+                FileInfo file = new FileInfo( d.FileName );
+                _viewModel.SaveXmlFile( file );
             }
         }
 
-        private void GraphTypeMenuItem_Click(object sender, RoutedEventArgs e)
+        private void GraphTypeMenuItem_Click( object sender, RoutedEventArgs e )
         {
             System.Windows.Controls.MenuItem clickedItem = (System.Windows.Controls.MenuItem)e.OriginalSource;
             _viewModel.LayoutAlgorithmType = clickedItem.Header.ToString();
         }
 
-        private void TreeView_Selected(object sender, RoutedEventArgs e)
+        private void TreeView_Selected( object sender, RoutedEventArgs e )
         {
             TreeViewItem selectedItem = (TreeViewItem)e.OriginalSource;
             AssemblyInfoViewModel assemblyViewModel = (AssemblyInfoViewModel)selectedItem.Header;
             IAssemblyInfo assembly = assemblyViewModel.AssemblyInfo;
 
-            AssemblyVertex vertex = _viewModel.GetVertexFromAssembly(assembly);
-            HighlightVertex(vertex);
+            AssemblyVertex vertex = _viewModel.GetVertexFromAssembly( assembly );
+            HighlightVertex( vertex );
         }
 
         public void Dispose()
         {
-            Dispose(true);
+            Dispose( true );
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected virtual void Dispose( bool disposing )
         {
-            if (disposing)
+            if( disposing )
             {
-                if (_logTextWriter != null)
+                if( _logTextWriter != null )
                     _logTextWriter.Close();
-                if (_logFileStream != null)
+                if( _logFileStream != null )
                     _logFileStream.Close();
             }
         }
 
-        public void LoadFolder( string folderPath )
+        public void SetActiveSolution( string solutionPath )
         {
-            DirectoryInfo dir = new DirectoryInfo( folderPath );
-            _lastLoadedFolder = folderPath;
-            Environment.CurrentDirectory = folderPath;
-            _viewModel.ChangeAssemblyFolderCommand.Execute( dir );
+            _activeFolder = Path.GetDirectoryName( solutionPath );
         }
     }
 }

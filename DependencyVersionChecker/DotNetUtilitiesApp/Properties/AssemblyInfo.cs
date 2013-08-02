@@ -5,14 +5,14 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DotNetUtilitiesApp")]
-[assembly: AssemblyDescription(".NET assembly reference and solution checking")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyTitle( "DotNetUtilitiesApp" )]
+[assembly: AssemblyDescription( ".NET assembly reference and solution checking" )]
+[assembly: AssemblyCulture( "" )]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: ComVisible( false )]
 
 //In order to begin building localizable applications, set
 //<UICulture>CultureYouAreCodingWith</UICulture> in your .csproj file

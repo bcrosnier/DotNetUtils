@@ -13,23 +13,23 @@ namespace ProjectProber.Tests
         {
             _logger.Filter = LogLevelFilter.Info;
 
-            SolutionCheckResult r = SolutionChecker.CheckSolutionFile(SolutionParseTests.TEST_SLN_FILE_PATH);
+            SolutionCheckResult r = SolutionChecker.CheckSolutionFile( SolutionParseTests.TEST_SLN_FILE_PATH );
 
             //r = SolutionChecker.CheckSolutionFile( @"D:\Benjamin\Development\CSharp\INVENIETIS-PRIVATE\papv\PAPV.sln", _logger );
 
-            Assert.That(r, Is.Not.Null);
+            Assert.That( r, Is.Not.Null );
 
-            CollectionAssert.IsNotEmpty(r.NuGetPackages);
-            CollectionAssert.AllItemsAreNotNull(r.NuGetPackages);
-            CollectionAssert.AllItemsAreUnique(r.NuGetPackages);
+            CollectionAssert.IsNotEmpty( r.NuGetPackages );
+            CollectionAssert.AllItemsAreNotNull( r.NuGetPackages );
+            CollectionAssert.AllItemsAreUnique( r.NuGetPackages );
 
-            CollectionAssert.IsNotEmpty(r.ProjectAssemblyReferences);
-            CollectionAssert.AllItemsAreNotNull(r.ProjectAssemblyReferences);
-            CollectionAssert.AllItemsAreUnique(r.ProjectAssemblyReferences);
+            CollectionAssert.IsNotEmpty( r.ProjectAssemblyReferences );
+            CollectionAssert.AllItemsAreNotNull( r.ProjectAssemblyReferences );
+            CollectionAssert.AllItemsAreUnique( r.ProjectAssemblyReferences );
 
-            CollectionAssert.IsNotEmpty(r.Projects);
-            CollectionAssert.AllItemsAreNotNull(r.Projects);
-            CollectionAssert.AllItemsAreUnique(r.Projects);
+            CollectionAssert.IsNotEmpty( r.Projects );
+            CollectionAssert.AllItemsAreNotNull( r.Projects );
+            CollectionAssert.AllItemsAreUnique( r.Projects );
         }
 
         //[Test]

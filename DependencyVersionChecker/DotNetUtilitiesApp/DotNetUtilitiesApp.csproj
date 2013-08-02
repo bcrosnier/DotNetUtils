@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,6 +49,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -79,6 +81,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -121,6 +124,10 @@
     <ProjectReference Include="..\DotNetUtilitiesApp.SolutionAnalyzer\DotNetUtilitiesApp.SolutionAnalyzer.csproj">
       <Project>{7d2eef2e-d5c2-4a9b-b15c-6603afb880ea}</Project>
       <Name>DotNetUtilitiesApp.SolutionAnalyzer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfUtils\WpfUtils.csproj">
+      <Project>{a1706d7e-e0aa-4944-878d-6033f2587c7e}</Project>
+      <Name>WpfUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

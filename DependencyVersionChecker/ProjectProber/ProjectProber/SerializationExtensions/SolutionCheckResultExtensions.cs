@@ -1,9 +1,9 @@
-﻿using NuGet;
-using ProjectProber.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using NuGet;
+using ProjectProber.Interfaces;
 
 namespace ProjectProber
 {
@@ -17,12 +17,12 @@ namespace ProjectProber
         /// </summary>
         /// <param name="result">Object to serialize</param>
         /// <param name="w">XmlWriter to use</param>
-        public static void SerializeTo(this SolutionCheckResult result, XmlWriter w)
+        public static void SerializeTo( this SolutionCheckResult result, XmlWriter w )
         {
-            w.WriteStartElement("SolutionCheckResult");
+            w.WriteStartElement( "SolutionCheckResult" );
 
-            w.WriteStartAttribute("Path");
-            w.WriteValue(result.SolutionPath);
+            w.WriteStartAttribute( "Path" );
+            w.WriteValue( result.SolutionPath );
             w.WriteEndAttribute();
 
             //w.WriteStartElement( "PackageVersionMismatches" );
@@ -32,17 +32,17 @@ namespace ProjectProber
             //}
             //w.WriteEndElement();
 
-            w.WriteStartElement("Projects");
-            foreach (ISolutionProjectItem projectItem in result.Projects.OrderBy(x => x.ProjectName))
+            w.WriteStartElement( "Projects" );
+            foreach( ISolutionProjectItem projectItem in result.Projects.OrderBy( x => x.ProjectName ) )
             {
-                WriteProjectItem(projectItem, result.ProjectAssemblyReferences[projectItem], result.ProjectNugetReferences[projectItem], w);
+                WriteProjectItem( projectItem, result.ProjectAssemblyReferences[projectItem], result.ProjectNugetReferences[projectItem], w );
             }
             w.WriteEndElement();
 
-            w.WriteStartElement("NuGetPackages");
-            foreach (IPackage package in result.NuGetPackages.OrderBy(x => x.Id).ThenBy(x => x.Version))
+            w.WriteStartElement( "NuGetPackages" );
+            foreach( IPackage package in result.NuGetPackages.OrderBy( x => x.Id ).ThenBy( x => x.Version ) )
             {
-                WriteNuGetPackage(package, w);
+                WriteNuGetPackage( package, w );
             }
             w.WriteEndElement();
 
@@ -84,95 +84,95 @@ namespace ProjectProber
         //    w.WriteEndElement();
         //}
 
-        private static void WriteNuGetPackage(IPackage package, XmlWriter w)
+        private static void WriteNuGetPackage( IPackage package, XmlWriter w )
         {
-            w.WriteStartElement("NuGetPackage");
+            w.WriteStartElement( "NuGetPackage" );
 
-            w.WriteStartAttribute("Id");
-            w.WriteValue(package.Id);
+            w.WriteStartAttribute( "Id" );
+            w.WriteValue( package.Id );
             w.WriteEndAttribute();
 
-            w.WriteStartAttribute("Version");
-            w.WriteValue(package.Version.ToString());
+            w.WriteStartAttribute( "Version" );
+            w.WriteValue( package.Version.ToString() );
             w.WriteEndAttribute();
 
-            w.WriteStartElement("Title");
-            if (!String.IsNullOrEmpty(package.Title))
-                w.WriteValue(package.Title);
+            w.WriteStartElement( "Title" );
+            if( !String.IsNullOrEmpty( package.Title ) )
+                w.WriteValue( package.Title );
             w.WriteEndElement();
 
-            w.WriteStartElement("Description");
-            if (!String.IsNullOrEmpty(package.Description))
-                w.WriteValue(package.Description);
+            w.WriteStartElement( "Description" );
+            if( !String.IsNullOrEmpty( package.Description ) )
+                w.WriteValue( package.Description );
             w.WriteEndElement();
 
             w.WriteEndElement();
         }
 
-        private static void WriteProjectItem(ISolutionProjectItem projectItem, IEnumerable<IProjectReference> assemblyRefs,
-            IEnumerable<INuGetPackageReference> packageRefs, XmlWriter w)
+        private static void WriteProjectItem( ISolutionProjectItem projectItem, IEnumerable<IProjectReference> assemblyRefs,
+            IEnumerable<INuGetPackageReference> packageRefs, XmlWriter w )
         {
-            w.WriteStartElement("Project");
+            w.WriteStartElement( "Project" );
 
-            w.WriteStartAttribute("Name");
-            w.WriteValue(projectItem.ProjectName);
+            w.WriteStartAttribute( "Name" );
+            w.WriteValue( projectItem.ProjectName );
             w.WriteEndAttribute();
 
-            w.WriteStartAttribute("Path");
-            w.WriteValue(projectItem.ProjectPath);
+            w.WriteStartAttribute( "Path" );
+            w.WriteValue( projectItem.ProjectPath );
             w.WriteEndAttribute();
 
-            w.WriteStartElement("NuGetPackageReferences");
-            if (packageRefs != null)
+            w.WriteStartElement( "NuGetPackageReferences" );
+            if( packageRefs != null )
             {
-                foreach (INuGetPackageReference packageRef in packageRefs.OrderBy(x => x.Id))
+                foreach( INuGetPackageReference packageRef in packageRefs.OrderBy( x => x.Id ) )
                 {
-                    WriteNugetReference(packageRef, w);
+                    WriteNugetReference( packageRef, w );
                 }
             }
             w.WriteEndElement();
 
-            w.WriteStartElement("NuGetAssemblyReferences");
-            foreach (IProjectReference assemblyRef in assemblyRefs.OrderBy(x => x.AssemblyName))
+            w.WriteStartElement( "NuGetAssemblyReferences" );
+            foreach( IProjectReference assemblyRef in assemblyRefs.OrderBy( x => x.AssemblyName ) )
             {
-                WriteAssemblyReference(assemblyRef, w);
+                WriteAssemblyReference( assemblyRef, w );
             }
             w.WriteEndElement();
 
             w.WriteEndElement();
         }
 
-        private static void WriteAssemblyReference(IProjectReference assemblyRef, XmlWriter w)
+        private static void WriteAssemblyReference( IProjectReference assemblyRef, XmlWriter w )
         {
-            w.WriteStartElement("AssemblyRef");
+            w.WriteStartElement( "AssemblyRef" );
 
-            w.WriteStartAttribute("Name");
-            w.WriteValue(assemblyRef.AssemblyName);
+            w.WriteStartAttribute( "Name" );
+            w.WriteValue( assemblyRef.AssemblyName );
             w.WriteEndAttribute();
 
-            w.WriteStartAttribute("Path");
-            w.WriteValue(assemblyRef.HintPath);
+            w.WriteStartAttribute( "Path" );
+            w.WriteValue( assemblyRef.HintPath );
             w.WriteEndAttribute();
 
             w.WriteEndElement();
         }
 
-        private static void WriteNugetReference(INuGetPackageReference packageRef, XmlWriter w)
+        private static void WriteNugetReference( INuGetPackageReference packageRef, XmlWriter w )
         {
-            w.WriteStartElement("NuGetPackageRef");
+            w.WriteStartElement( "NuGetPackageRef" );
 
-            w.WriteStartAttribute("Id");
-            w.WriteValue(packageRef.Id);
+            w.WriteStartAttribute( "Id" );
+            w.WriteValue( packageRef.Id );
             w.WriteEndAttribute();
 
-            w.WriteStartAttribute("Version");
-            w.WriteValue(packageRef.Version);
+            w.WriteStartAttribute( "Version" );
+            w.WriteValue( packageRef.Version );
             w.WriteEndAttribute();
 
-            if (packageRef.TargetFramework != null)
+            if( packageRef.TargetFramework != null )
             {
-                w.WriteStartAttribute("TargetFramework");
-                w.WriteValue(VersionUtility.GetShortFrameworkName(packageRef.TargetFramework));
+                w.WriteStartAttribute( "TargetFramework" );
+                w.WriteValue( VersionUtility.GetShortFrameworkName( packageRef.TargetFramework ) );
                 w.WriteEndAttribute();
             }
 
