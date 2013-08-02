@@ -158,12 +158,12 @@ namespace ProjectProber
 			if( a1.AssemblyFileVersion != a2.AssemblyFileVersion ) _multipleAssemblyFileInfoVersion = true;
 			if( a1.AssemblyInformationVersion != a2.AssemblyInformationVersion ) _multipleAssemblyInformationVersion = true;
 			SemanticVersion tempToTest;
-			if( !SemanticVersion.TryParse( a1.AssemblyFileVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
-			if( !SemanticVersion.TryParse( a1.AssemblyVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
-			if( !SemanticVersion.TryParse( a1.AssemblyInformationVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
-			if( !SemanticVersion.TryParse( a2.AssemblyFileVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
-			if( !SemanticVersion.TryParse( a2.AssemblyVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
-			if( !SemanticVersion.TryParse( a2.AssemblyInformationVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParseStrict( a1.AssemblyFileVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParseStrict( a1.AssemblyVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParseStrict( a1.AssemblyInformationVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParseStrict( a2.AssemblyFileVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParseStrict( a2.AssemblyVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
+			if( !SemanticVersion.TryParseStrict( a2.AssemblyInformationVersion.ToString(), out tempToTest ) ) _haveOneVersionNotSemanticVersionCompliante = true;
 		}
 	}
 }
