@@ -1,0 +1,86 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Core", "CK.Core\CK.Core.csproj", "{97578828-71EC-46B3-BD9A-44E58292386F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A87208F3-D73C-4AD4-9FF5-0314968EDD74}"
+	ProjectSection(SolutionItems) = preProject
+		CK-Core.Tests.nunit = CK-Core.Tests.nunit
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Core.Tests", "Tests\CK.Core.Tests\CK.Core.Tests.csproj", "{68BF384E-34EB-44F9-9502-C1BDEEA01E01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Interop", "CK.Interop\CK.Interop.csproj", "{4807AA42-98B1-4F00-A1EF-EEFA24F9F463}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Reflection", "CK.Reflection\CK.Reflection.csproj", "{6C169A4A-969F-4952-9AD6-3D84BD0AD98B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Storage", "CK.Storage\CK.Storage.csproj", "{DB4586A0-0BB0-4902-870E-391B66539572}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Reflection.Tests", "Tests\CK.Reflection.Tests\CK.Reflection.Tests.csproj", "{A307D343-A7A6-4DDC-829D-E3F22BD380F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Storage.Tests", "Tests\CK.Storage.Tests\CK.Storage.Tests.csproj", "{712E47A0-449C-4C8A-B891-9A6A64C1323D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CK.Storage.Tests.ExternalDll", "Tests\CK.Storage.Tests\ExternalDll\CK.Storage.Tests.ExternalDll.csproj", "{3AA52F84-605A-44B6-AF0E-004E6A3A7B45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Items", "Shared Items", "{E3559EF9-ED4A-4169-9287-6F94CFBD09FA}"
+	ProjectSection(SolutionItems) = preProject
+		SharedKey.snk = SharedKey.snk
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DE733FE1-85BC-4140-AD82-30C7745CAD7F}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97578828-71EC-46B3-BD9A-44E58292386F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97578828-71EC-46B3-BD9A-44E58292386F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97578828-71EC-46B3-BD9A-44E58292386F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97578828-71EC-46B3-BD9A-44E58292386F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68BF384E-34EB-44F9-9502-C1BDEEA01E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68BF384E-34EB-44F9-9502-C1BDEEA01E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68BF384E-34EB-44F9-9502-C1BDEEA01E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68BF384E-34EB-44F9-9502-C1BDEEA01E01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4807AA42-98B1-4F00-A1EF-EEFA24F9F463}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4807AA42-98B1-4F00-A1EF-EEFA24F9F463}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4807AA42-98B1-4F00-A1EF-EEFA24F9F463}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4807AA42-98B1-4F00-A1EF-EEFA24F9F463}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C169A4A-969F-4952-9AD6-3D84BD0AD98B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C169A4A-969F-4952-9AD6-3D84BD0AD98B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C169A4A-969F-4952-9AD6-3D84BD0AD98B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C169A4A-969F-4952-9AD6-3D84BD0AD98B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB4586A0-0BB0-4902-870E-391B66539572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB4586A0-0BB0-4902-870E-391B66539572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB4586A0-0BB0-4902-870E-391B66539572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB4586A0-0BB0-4902-870E-391B66539572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A307D343-A7A6-4DDC-829D-E3F22BD380F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A307D343-A7A6-4DDC-829D-E3F22BD380F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A307D343-A7A6-4DDC-829D-E3F22BD380F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A307D343-A7A6-4DDC-829D-E3F22BD380F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{712E47A0-449C-4C8A-B891-9A6A64C1323D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{712E47A0-449C-4C8A-B891-9A6A64C1323D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{712E47A0-449C-4C8A-B891-9A6A64C1323D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{712E47A0-449C-4C8A-B891-9A6A64C1323D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AA52F84-605A-44B6-AF0E-004E6A3A7B45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AA52F84-605A-44B6-AF0E-004E6A3A7B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AA52F84-605A-44B6-AF0E-004E6A3A7B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AA52F84-605A-44B6-AF0E-004E6A3A7B45}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{68BF384E-34EB-44F9-9502-C1BDEEA01E01} = {A87208F3-D73C-4AD4-9FF5-0314968EDD74}
+		{A307D343-A7A6-4DDC-829D-E3F22BD380F8} = {A87208F3-D73C-4AD4-9FF5-0314968EDD74}
+		{712E47A0-449C-4C8A-B891-9A6A64C1323D} = {A87208F3-D73C-4AD4-9FF5-0314968EDD74}
+		{3AA52F84-605A-44B6-AF0E-004E6A3A7B45} = {A87208F3-D73C-4AD4-9FF5-0314968EDD74}
+	EndGlobalSection
+EndGlobal

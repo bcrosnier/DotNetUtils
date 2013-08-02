@@ -29,7 +29,7 @@ namespace ProjectProber.Impl
 		{
 			_assemblyInfoFilePath = assemblyInfoFilePath;
 			_solutionProjectItem = solutionProjectItem;
-			_assemblyVersion = assemblyFileVersion;
+			_assemblyVersion = assemblyVersion;
 			_assemblyFileVersion = assemblyFileVersion;
 			_assemblyInformationVersion = assemblyInformationVersion;
 

@@ -52,7 +52,7 @@ namespace ProjectProber
 			Match m = regex.Match( text );
 			if( m.Success )
 			{
-				return ( !string.IsNullOrEmpty( m.Groups["version"].Value ) ) ? new Version( m.Groups["version"].Value ) : null;
+				return ( !string.IsNullOrEmpty( m.Groups["Version"].Value ) ) ? new Version( m.Groups["Version"].Value ) : null;
 			}
 			else
 			{
