@@ -3,6 +3,7 @@ using System.Linq;
 using CK.Package;
 using DotNetUtilitiesApp.WpfUtils;
 using ProjectProber;
+using ProjectProber.Impl;
 
 namespace DotNetUtilitiesApp.SemanticVersionManager
 {
@@ -158,16 +159,36 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles( slnPath );
             ShowResultWarnings( result );
 
-            var versions = result.Versions.Where( x => x != null );
-            if( versions.Count() > 0 )
-            {
-                CurrentVersion = versions.First().ToString();
-            }
+            CurrentVersion = GetResultVersion( result );
         }
 
         #endregion Public methods
 
         #region Private methods
+
+        /// <summary>
+        /// Gets a version from a version check result to display as the Current Version in the version update UI.
+        /// </summary>
+        /// <param name="result">AssemblyVersionInfoCheckResult to use</param>
+        /// <returns>Returned version; null if none found</returns>
+        private string GetResultVersion( AssemblyVersionInfoCheckResult result )
+        {
+            var versions = result.Versions.Where( x => x != null );
+            if( versions.Count() > 0 )
+            {
+                AssemblyVersionInfo info = versions.First();
+
+                if( info.AssemblyInformationVersion != null )
+                {
+                    return info.AssemblyInformationVersion.ToString();
+                }
+                else if( info.AssemblyVersion != null )
+                {
+                    return info.AssemblyVersion.ToString();
+                }
+            }
+            return null;
+        }
 
         private void ShowResultWarnings( AssemblyVersionInfoCheckResult result )
         {
