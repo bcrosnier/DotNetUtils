@@ -16,10 +16,10 @@ namespace ProjectProber
 			bool bugFixe,
 			string preRelease )
 		{
-			if( publicBreakingChange ) return new SemanticVersion( version.Version.Major + 1, 0, 0, string.Empty );
-			if( deprecatedOrNewFunction ) return new SemanticVersion( version.Version.Major, version.Version.Minor + 1, 0, string.Empty );
-			if( bugFixe ) return new SemanticVersion( version.Version.Major, version.Version.Minor, version.Version.Build + 1, string.Empty );
-			if( string.IsNullOrEmpty( preRelease ) ) return new SemanticVersion( version.Version.Major, version.Version.Minor, version.Version.Build, preRelease );
+			if( publicBreakingChange ) return new SemanticVersion( version.Version.Major + 1, 0, 0, preRelease );
+			if( deprecatedOrNewFunction ) return new SemanticVersion( version.Version.Major, version.Version.Minor + 1, 0, preRelease );
+			if( bugFixe ) return new SemanticVersion( version.Version.Major, version.Version.Minor, version.Version.Build + 1, preRelease );
+			return new SemanticVersion( new Version( 0, 0, 0) );
 		}
 
 	}
