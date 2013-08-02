@@ -9,36 +9,36 @@ using System.Threading.Tasks;
 
 namespace ProjectProber
 {
-	public class AssemblyVersionInfoParser
+	public static class AssemblyVersionInfoParser
 	{
 		/// <summary>
-		///
+		///Regex pattern for version discovery. Match : AssemblyVersion in SharedAssemblyInfo.cs or AssemblyInfo.cs.
 		/// </summary>
 		/// <example>
-		/// [assembly: AssemblyVersion( "2.8.14-develop" )]
+		/// [assembly: AssemblyVersion( "2.8.14" )]
 		/// </example>
 		public static readonly Regex VERSION_ASSEMBLY_PATTERN = new Regex( @"\[assembly: AssemblyVersion\(\s*\""(?<Version>\d+(\.\d+){0,3})\""\s*\)\]", RegexOptions.Compiled );
 		/// <summary>
-		///
+		///Regex pattern for version discovery. Match : AssemblyFileVersion in SharedAssemblyInfo.cs or AssemblyInfo.cs.
 		/// </summary>
 		/// <example>
-		/// [assembly: AssemblyVersion( "2.8.14-develop" )]
+		/// [assembly: AssemblyFileVersion( "2.8.14" )]
 		/// </example>
 		public static readonly Regex FILE_VERSION_ASSEMBLY_PATTERN = new Regex( @"\[assembly: AssemblyFileVersion\(\s*\""(?<Version>\d+(\.\d+){0,3})\""\s*\)\]", RegexOptions.Compiled );
 		/// <summary>
-		///
+		///Regex pattern for version discovery. Match : AssemblyInformationVersion in SharedAssemblyInfo.cs or AssemblyInfo.cs.
 		/// </summary>
 		/// <example>
-		/// [assembly: AssemblyVersion( "2.8.14-develop" )]
+		/// [assembly: AssemblyInformationalVersion( "2.8.14-develop" )]
 		/// </example>
 		public static readonly Regex INFO_VERSION_ASSEMBLY_PATTERN = new Regex( @"\[assembly: AssemblyInformationalVersion\(\s*\""s*(?<Version>\d+(\.\d+){2})-(?<Release>[0-9a-z-.]*)?\s*\""\s*\)\]", RegexOptions.Compiled );
 
 
 		/// <summary>
-		/// Read a SharedAssemblyInfo.cs file, and return AssemblyVersion.
+		/// Read a version in SharedAssemblyInfo.cs or AssemblyInfo.cs file.
 		/// </summary>
-		/// <param name="filePath">Path of the SharedAssemblyInfo.cs file. Must exist.</param>
-		/// <returns><see cref="System.Version"/></returns>
+		/// <param name="filePath">Path of File. Must exist.</param>
+		/// <returns><see cref="System.Version"/> or null if not found</returns>
 		public static Version GetAssemblyVersionFromAssemblyInfoFile( string filePath, Regex regex )
 		{
 			if( String.IsNullOrEmpty( filePath ) )
@@ -56,11 +56,15 @@ namespace ProjectProber
 			}
 			else
 			{
-				//throws error ?
 				return null;
 			}
 		}
 
+		/// <summary>
+		/// Read a version in SharedAssemblyInfo.cs or AssemblyInfo.cs file.
+		/// </summary>
+		/// <param name="filePath">Path of File. Must exist.</param>
+		/// <returns><see cref="CK.Package.SemanticVersion"/> or null if not found</returns>
 		public static SemanticVersion GetSemanticAssemblyVersionFromAssemblyInfoFile( string filePath, Regex regex )
 		{
 			if( String.IsNullOrEmpty( filePath ) )
@@ -78,7 +82,6 @@ namespace ProjectProber
 			}
 			else
 			{
-				//throws error ?
 				return null;
 			}
 		}
