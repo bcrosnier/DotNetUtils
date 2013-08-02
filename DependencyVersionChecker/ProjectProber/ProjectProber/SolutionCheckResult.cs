@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NuGet;
 using ProjectProber.Interfaces;
-using System.Linq;
-using System;
 
 namespace ProjectProber
 {

@@ -54,10 +54,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyVersionInfoCheckTests.cs" />
+    <Compile Include="AssemblyVersionInfoParserTests.cs" />
     <Compile Include="ProjectReferenceTests.cs" />
     <Compile Include="SolutionCheckTests.cs" />
     <Compile Include="SolutionParseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>

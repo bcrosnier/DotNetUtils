@@ -22,7 +22,7 @@ namespace AssemblyProber.Tests
 
             List<IAssemblyInfo> Files = new List<IAssemblyInfo>();
 
-            foreach ( FileInfo f in fileList )
+            foreach( FileInfo f in fileList )
             {
                 IAssemblyInfo a = l.LoadFromFile( f );
                 IAssemblyInfo b = l.LoadFromFile( f );
@@ -99,20 +99,19 @@ namespace AssemblyProber.Tests
                 IAssemblyInfo a = l.LoadFromFile( f );
                 IAssemblyInfo b = AssemblyLoader.ParseAssemblyInfoFromString( a.FullName );
 
-                Assert.That( a.SimpleName == b.SimpleName , "Name is equivalent" );
+                Assert.That( a.SimpleName == b.SimpleName, "Name is equivalent" );
                 Assert.That( a.Version == b.Version, "Version is equivalent" );
                 Assert.That( a.Culture == b.Culture, "Culture is equivalent" );
                 Assert.That( a.FullName == b.FullName, "FullName is equivalent" );
                 CollectionAssert.AreEqual( a.PublicKeyToken, b.PublicKeyToken );
             }
-
         }
 
         private bool IsAssemblyLoaded( string assemblyFullName )
         {
-            foreach ( Assembly a in AppDomain.CurrentDomain.GetAssemblies() )
+            foreach( Assembly a in AppDomain.CurrentDomain.GetAssemblies() )
             {
-                if ( a.GetName().FullName == assemblyFullName )
+                if( a.GetName().FullName == assemblyFullName )
                     return true;
             }
             return false;

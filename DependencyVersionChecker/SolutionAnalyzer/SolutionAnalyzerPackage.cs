@@ -1,14 +1,9 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.ComponentModel.Design;
-using Microsoft.Win32;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using CK.Core;
 
 namespace BCrosnier.SolutionAnalyzer
 {
@@ -18,8 +13,8 @@ namespace BCrosnier.SolutionAnalyzer
     /// The minimum requirement for a class to be considered a valid package for Visual Studio
     /// is to implement the IVsPackage interface and register itself with the shell.
     /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the 
-    /// IVsPackage interface and uses the registration attributes defined in the framework to 
+    /// to do it: it derives from the Package class that provides the implementation of the
+    /// IVsPackage interface and uses the registration attributes defined in the framework to
     /// register itself and its components with the shell.
     /// </summary>
     // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
@@ -33,28 +28,21 @@ namespace BCrosnier.SolutionAnalyzer
     [Guid( GuidList.guidSolutionAnalyzerPkgString )]
     public sealed class SolutionAnalyzerPackage : Package
     {
-        private IActivityLogger _logger;
         /// <summary>
         /// Default constructor of the package.
-        /// Inside this method you can place any initialization code that does not require 
-        /// any Visual Studio service because at this point the package object is created but 
-        /// not sited yet inside Visual Studio environment. The place to do all the other 
+        /// Inside this method you can place any initialization code that does not require
+        /// any Visual Studio service because at this point the package object is created but
+        /// not sited yet inside Visual Studio environment. The place to do all the other
         /// initialization is the Initialize method.
         /// </summary>
         public SolutionAnalyzerPackage()
         {
-            DefaultActivityLogger logger = new DefaultActivityLogger();
-            logger.Tap.Register( new ActivityLoggerConsoleSink() );
-
-            _logger = logger;
-
             Debug.WriteLine( string.Format( CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString() ) );
         }
 
-
-
         /////////////////////////////////////////////////////////////////////////////
         // Overridden Package Implementation
+
         #region Package Members
 
         /// <summary>
@@ -63,8 +51,6 @@ namespace BCrosnier.SolutionAnalyzer
         /// </summary>
         protected override void Initialize()
         {
-            MenuCommands commands = new MenuCommands( _logger );
-
             Debug.WriteLine( string.Format( CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString() ) );
             base.Initialize();
 
@@ -74,11 +60,11 @@ namespace BCrosnier.SolutionAnalyzer
             {
                 // Create the command for the menu item.
                 CommandID menuCommandID = new CommandID( GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionAssemblies );
-                MenuCommand menuItem = new MenuCommand( commands.AnalyzeSolutionAssembliesCommand, menuCommandID );
+                MenuCommand menuItem = new MenuCommand( MenuCommands.AnalyzeSolutionCommand, menuCommandID );
                 mcs.AddCommand( menuItem );
             }
         }
-        #endregion
 
+        #endregion Package Members
     }
 }

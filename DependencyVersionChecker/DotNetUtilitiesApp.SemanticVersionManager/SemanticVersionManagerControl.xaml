@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="DotNetUtilitiesApp.SemanticVersionManager.SemanticVersionManagerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:WpfUtils="clr-namespace:DotNetUtilitiesApp.WpfUtils;assembly=DotNetUtilitiesApp.WpfUtils"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <WpfUtils:EmptyCollectionVisibilityConverter x:Key="EmptyCollectionVisibilityConverter" />
+    </UserControl.Resources>
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Open solution" Click="OpenSolution_Click" />
+            </MenuItem>
+        </Menu>
+        <StackPanel>
+            <ItemsControl ItemsSource="{Binding Warnings, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   Foreground="Black" Background="Orange"
+                                   Padding="5px" Margin="3px"
+ />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <TextBlock>Current version</TextBlock>
+            <TextBox IsEnabled="False" Foreground="Black" Text="{Binding Path=CurrentVersion, Mode=OneWay}" />
+            <Separator />
+
+            <TextBlock>This version contains...</TextBlock>
+            <CheckBox Grid.Column="0" Grid.Row="0" IsChecked="{Binding Path=HasBugFixes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Bug fixes</CheckBox>
+            <CheckBox Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path=HasNewFeatures, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">New features</CheckBox>
+            <CheckBox Grid.Column="0" Grid.Row="2" IsChecked="{Binding Path=HasBreakingChanges, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Breaking changes on the public API</CheckBox>
+            <Separator Grid.Row="3" Grid.ColumnSpan="2" />
+            <CheckBox Grid.Column="0" Grid.Row="4" IsEnabled="{Binding Path=IsNotReleaseCheckBoxEnabled, FallbackValue=False}" IsChecked="{Binding Path=IsNotStable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" x:Name="IsNotReleaseCheckBox">This verson isn't a stable release version</CheckBox>
+
+            <StackPanel Visibility="{Binding IsChecked, ElementName=IsNotReleaseCheckBox, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock>Enter release tag (e.g. develop, alpha, beta, rc)</TextBlock>
+                <TextBox Text="{Binding Path=VersionTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <Separator />
+            <TextBlock Grid.Column="1" Grid.Row="0" TextWrapping="Wrap">Your new version is:</TextBlock>
+            <TextBox IsEnabled="False" Foreground="Black" Text="{Binding Path=NewVersion, Mode=OneWay}" />
+        </StackPanel>
+    </DockPanel>
+</UserControl>

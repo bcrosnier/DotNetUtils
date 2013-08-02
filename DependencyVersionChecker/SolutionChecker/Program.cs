@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using CK.Core;
 using ProjectProber;
 
 namespace SolutionChecker
 {
-    class Program
+    internal class Program
     {
         private IActivityLogger _logger;
 
-        static void Main( string[] args )
+        private static void Main( string[] args )
         {
             Program program = new Program();
 

@@ -45,7 +45,7 @@ namespace ProjectProber.Tests
             var cSharpProjects = solution.Projects
                 .Where( s => s.GetItemType() == SolutionProjectType.VISUAL_C_SHARP );
 
-            foreach ( var project in cSharpProjects )
+            foreach( var project in cSharpProjects )
             {
                 string fullFilePath = Path.Combine( TEST_SLN_DIRECTORY_PATH, project.ProjectPath );
                 Assert.That( File.Exists( fullFilePath ), "Project path {0} exists", project.ProjectPath );

@@ -31,9 +31,9 @@ namespace AssemblyProber
                 bool hasConflict = false;
                 string fullName = null;
 
-                foreach ( var link in ReferenceLinks )
+                foreach( var link in ReferenceLinks )
                 {
-                    if ( fullName != null && link.Value.FullName != fullName )
+                    if( fullName != null && link.Value.FullName != fullName )
                         hasConflict = true;
                     fullName = link.Value.FullName;
                 }
@@ -64,7 +64,7 @@ namespace AssemblyProber
             Debug.Assert( sourceAssembly.Dependencies.Values.Contains( requestedAssembly ), "requestedAssembly is a dependency of sourceAssembly" );
             Debug.Assert( requestedAssembly.SimpleName == AssemblyName, "requestedAssembly has correct name" );
 
-            if ( ReferenceLinks.Keys.Contains( sourceAssembly ) || ReferenceLinks.Values.Contains( requestedAssembly ) )
+            if( ReferenceLinks.Keys.Contains( sourceAssembly ) || ReferenceLinks.Values.Contains( requestedAssembly ) )
             {
                 //throw new InvalidOperationException( "Cannot add the same assembly twice" );
                 return;

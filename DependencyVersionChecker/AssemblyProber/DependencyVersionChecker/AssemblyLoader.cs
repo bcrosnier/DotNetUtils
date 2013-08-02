@@ -47,7 +47,7 @@ namespace AssemblyProber
 
             //string[] microsoftTokens = new string[] { "b77a5c561934e089", "31bf3856ad364e35", "b03f5f7f11d50a3a", "7cec85d7bea7798e" };
 
-            string token = BitConverter.ToString( newReference.Name.PublicKeyToken ).Replace( "-", string.Empty ).ToLowerInvariant();
+            //string token = BitConverter.ToString(newReference.Name.PublicKeyToken).Replace("-", string.Empty).ToLowerInvariant();
 
             //if( microsoftTokens.Contains( token ) )
             //{
@@ -289,7 +289,6 @@ namespace AssemblyProber
 
             using( _logger.OpenGroup( LogLevel.Trace, "References of: {0}", outputInfo.FullName ) )
             {
-
                 // Recursively load references.
                 foreach( var referenceAssemblyName in moduleInfo.AssemblyReferences )
                 {
@@ -352,7 +351,7 @@ namespace AssemblyProber
                     //}
                     //else
                     //{
-                        outputInfo.InternalDependencies.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
+                    outputInfo.InternalDependencies.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
                     //}
                 }
             }
@@ -464,6 +463,14 @@ namespace AssemblyProber
             }
         }
 
+        /// <summary>
+        /// Create an Assembly full name from its data.
+        /// </summary>
+        /// <param name="name">Assembly simple name</param>
+        /// <param name="version">Assembly version</param>
+        /// <param name="culture">Assembly culture</param>
+        /// <param name="publicKeyToken">Assembly public key</param>
+        /// <returns>Assembly full name</returns>
         public static string GetFullNameOf( string name, Version version, string culture, byte[] publicKeyToken )
         {
             string versionString = version.ToString();
@@ -476,6 +483,6 @@ namespace AssemblyProber
             return String.Format( "{0}, Version={1}, Culture={2}, PublicKeyToken={3}", name, versionString, culture, publicKeyTokenString );
         }
 
-        #endregion
+        #endregion Public static methods
     }
 }

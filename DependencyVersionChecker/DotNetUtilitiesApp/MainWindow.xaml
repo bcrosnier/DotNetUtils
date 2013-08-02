@@ -1,0 +1,32 @@
+﻿<Window x:Class="DotNetUtilitiesApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:assemblyProber="clr-namespace:DotNetUtilitiesApp.AssemblyProber;assembly=DotNetUtilitiesApp.AssemblyProber"
+        xmlns:solutionAnalyzer="clr-namespace:DotNetUtilitiesApp.SolutionAnalyzer;assembly=DotNetUtilitiesApp.SolutionAnalyzer"
+        xmlns:semanticVersionManager="clr-namespace:DotNetUtilitiesApp.SemanticVersionManager;assembly=DotNetUtilitiesApp.SemanticVersionManager"
+        Title="{Binding Path=WindowTitle}" Height="600" Width="800">
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="_Open solution" Command="{Binding Path=LoadSolutionFileCommand}" />
+            </MenuItem>
+        </Menu>
+        <TabControl x:Name="TabControl">
+            <TabItem Header="Assembly analyzer">
+                <Grid>
+                    <assemblyProber:AssemblyProberUserControl x:Name="AssemblyProberUserControl" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Solution analyzer">
+                <Grid>
+                    <solutionAnalyzer:SolutionAnalyzerControl x:Name="SolutionAnalyzerControl" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Version manager">
+                <Grid>
+                    <semanticVersionManager:SemanticVersionManagerControl x:Name="SemanticVersionManagerControl" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AssemblyProberApp.Wpf.Graphing;
+using DotNetUtilitiesApp.AssemblyProber.Graphing;
 
-namespace AssemblyProberApp.Wpf
+namespace DotNetUtilitiesApp.AssemblyProber
 {
     public class AssemblyVertexEventArgs : EventArgs
     {

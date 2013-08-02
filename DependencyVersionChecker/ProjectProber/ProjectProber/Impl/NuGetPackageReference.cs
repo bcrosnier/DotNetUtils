@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
-using ProjectProber.Interfaces;
 using NuGet;
+using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
@@ -35,7 +31,7 @@ namespace ProjectProber.Impl
         public FrameworkName TargetFramework { get; private set; }
 
         internal NuGetPackageReference( string id, string version, string targetFramework )
-            : this(id, version, VersionUtility.ParseFrameworkName(targetFramework))
+            : this( id, version, VersionUtility.ParseFrameworkName( targetFramework ) )
         {
         }
 

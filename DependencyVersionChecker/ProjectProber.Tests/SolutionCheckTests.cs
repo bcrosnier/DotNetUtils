@@ -1,19 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using CK.Core;
-using NuGet;
+﻿using CK.Core;
 using NUnit.Framework;
-using ProjectProber.Interfaces;
 
 namespace ProjectProber.Tests
 {
     [TestFixture]
     public class SolutionCheckTests
     {
-        IActivityLogger _logger = TestUtils.CreateLogger();
+        private IActivityLogger _logger = TestUtils.CreateLogger();
 
         [Test]
         public void CheckSolutionFile()

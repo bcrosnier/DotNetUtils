@@ -49,7 +49,7 @@ namespace ProjectProber.Tests
                 string filename = Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, projectItem.ProjectPath );
                 Assert.That( File.Exists( filename ), "Found project file at {0}", filename );
 
-                string path = Path.Combine( Path.GetDirectoryName(filename), "packages.config" );
+                string path = Path.Combine( Path.GetDirectoryName( filename ), "packages.config" );
 
                 if( File.Exists( path ) )
                 {
@@ -70,7 +70,6 @@ namespace ProjectProber.Tests
             CollectionAssert.IsNotEmpty( packages );
             CollectionAssert.AllItemsAreNotNull( packages );
         }
-
 
         [Test]
         public void TestPackageConfig()
@@ -145,7 +144,6 @@ namespace ProjectProber.Tests
                         CollectionAssert.AllItemsAreNotNull( packageRefs );
                         CollectionAssert.AllItemsAreUnique( packageRefs );
 
-
                         foreach( INuGetPackageReference packageRef in packageRefs )
                         {
                             IPackage package = ProjectUtils.GetPackageFromReference( packageRef, packageRoot );
@@ -159,7 +157,6 @@ namespace ProjectProber.Tests
                     }
                 }
             }
-
         }
 
         public void PrintPackageInfo( IPackage package, FrameworkName framework )
@@ -190,7 +187,6 @@ namespace ProjectProber.Tests
             {
                 _logger.Info( "NuGet package: {0} {1}", package.Id, package.Version );
             }
-
         }
 
         public static ISolutionProjectItem GetTestProjectItem()
@@ -225,7 +221,7 @@ namespace ProjectProber.Tests
 
         public static string GetTestProjectFilePath()
         {
-            string path =  Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, GetTestProjectItem().ProjectPath );
+            string path = Path.Combine( SolutionParseTests.TEST_SLN_DIRECTORY_PATH, GetTestProjectItem().ProjectPath );
             Assert.That( File.Exists( path ), "Test project file was found" );
 
             return path;

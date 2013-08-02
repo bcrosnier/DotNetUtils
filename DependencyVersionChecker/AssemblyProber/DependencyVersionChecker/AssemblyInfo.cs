@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace AssemblyProber
@@ -137,7 +137,7 @@ namespace AssemblyProber
         {
             get
             {
-                return _internalDependencies.ToDictionary( x => x.Key, x => (IAssemblyInfo) x.Value );
+                return _internalDependencies.ToDictionary( x => x.Key, x => (IAssemblyInfo)x.Value );
             }
         }
 

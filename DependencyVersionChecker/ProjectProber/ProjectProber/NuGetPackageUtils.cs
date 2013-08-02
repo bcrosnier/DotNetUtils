@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NuGet;
-using AssemblyProber;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Versioning;
+using AssemblyProber;
+using NuGet;
 
 namespace ProjectProber
 {
-    static class NuGetPackageUtils
+    internal static class NuGetPackageUtils
     {
         public static IEnumerable<IAssemblyInfo> GetAssemblyNames( this IPackage package, IAssemblyLoader assemblyLoader )
         {

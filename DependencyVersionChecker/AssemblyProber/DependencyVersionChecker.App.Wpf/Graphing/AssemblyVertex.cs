@@ -4,8 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using AssemblyProber;
+using DotNetUtilitiesApp.WpfUtils;
 
-namespace AssemblyProberApp.Wpf.Graphing
+namespace DotNetUtilitiesApp.AssemblyProber.Graphing
 {
     [DebuggerDisplay( "{Assembly.FullName}" )]
     public class AssemblyVertex
@@ -102,7 +103,6 @@ namespace AssemblyProberApp.Wpf.Graphing
 
                 sb.Append( String.Format( "Version {0}\n", Assembly.Version.ToString() ) );
 
-
                 if( _messages.Count > 0 )
                 {
                     sb.Append( "Notes:\n" );
@@ -112,7 +112,6 @@ namespace AssemblyProberApp.Wpf.Graphing
                     }
                     sb.Append( "\n" );
                 }
-
 
                 if( _referencedBy.Count > 0 )
                 {

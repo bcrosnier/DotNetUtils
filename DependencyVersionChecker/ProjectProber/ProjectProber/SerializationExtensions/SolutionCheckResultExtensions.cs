@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using NuGet;
 using ProjectProber.Interfaces;
@@ -21,7 +19,6 @@ namespace ProjectProber
         /// <param name="w">XmlWriter to use</param>
         public static void SerializeTo( this SolutionCheckResult result, XmlWriter w )
         {
-
             w.WriteStartElement( "SolutionCheckResult" );
 
             w.WriteStartAttribute( "Path" );
@@ -100,7 +97,7 @@ namespace ProjectProber
             w.WriteEndAttribute();
 
             w.WriteStartElement( "Title" );
-            if( !String.IsNullOrEmpty(package.Title) )
+            if( !String.IsNullOrEmpty( package.Title ) )
                 w.WriteValue( package.Title );
             w.WriteEndElement();
 

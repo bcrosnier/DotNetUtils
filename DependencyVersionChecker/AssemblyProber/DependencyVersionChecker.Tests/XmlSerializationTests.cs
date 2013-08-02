@@ -29,6 +29,7 @@ namespace AssemblyProber.Tests
             AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Usage", "CA2202:Do not dispose objects multiple times" )]
         [Test]
         public void XmlWriterSerializeDocumentDeserialize()
         {
@@ -40,17 +41,17 @@ namespace AssemblyProber.Tests
 
             AssemblyCheckTests.TestAssembliesInfo( assemblies );
 
-            using ( MemoryStream ms = new MemoryStream() )
+            using( MemoryStream ms = new MemoryStream() )
             {
-                using ( XmlWriter w = XmlWriter.Create( ms ) )
+                using( XmlWriter w = XmlWriter.Create( ms ) )
                 {
-                    AssemblyInfoXmlSerializer.SerializeTo( assemblies, w );
+                    assemblies.SerializeTo( w );
                 }
 
-                ms.Seek( 0, System.IO.SeekOrigin.Begin );
+                ms.Seek( 0, System.IO.SeekOrigin.Begin ); // Rewind
 
                 XmlDocument d = new XmlDocument();
-                d.Load( ms );
+                d.Load( ms ); // Disposed here?
 
                 assemblies2 = AssemblyInfoXmlSerializer.DeserializeFromDocument( d ).ToList();
             }
@@ -60,6 +61,7 @@ namespace AssemblyProber.Tests
             AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Usage", "CA2202:Do not dispose objects multiple times" )]
         [Test]
         public void XmlDocumentSerializeReaderDeserialize()
         {
@@ -78,9 +80,9 @@ namespace AssemblyProber.Tests
 
             XmlReaderSettings rs = new XmlReaderSettings();
 
-            using ( MemoryStream ms = new MemoryStream() )
+            using( MemoryStream ms = new MemoryStream() )
             {
-                using ( XmlWriter xw = XmlWriter.Create( ms, ws ) )
+                using( XmlWriter xw = XmlWriter.Create( ms, ws ) )
                 {
                     serialized.WriteContentTo( xw );
                 }
@@ -94,7 +96,7 @@ namespace AssemblyProber.Tests
 
                 ms.Seek( 0, System.IO.SeekOrigin.Begin );
 
-                using ( XmlReader r = XmlReader.Create( ms, rs ) )
+                using( XmlReader r = XmlReader.Create( ms, rs ) )
                 {
                     assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom( r ).ToList();
                 }
@@ -105,6 +107,7 @@ namespace AssemblyProber.Tests
             AssemblyCheckTests.TestAssembliesEquivalence( assemblies, assemblies2 );
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Usage", "CA2202:Do not dispose objects multiple times" )]
         [Test]
         public void XmlWriterSerializeReaderDeserialize()
         {
@@ -121,9 +124,9 @@ namespace AssemblyProber.Tests
 
             XmlReaderSettings rs = new XmlReaderSettings();
 
-            using ( MemoryStream ms = new MemoryStream() )
+            using( MemoryStream ms = new MemoryStream() )
             {
-                using ( XmlWriter xw = XmlWriter.Create( ms, ws ) )
+                using( XmlWriter xw = XmlWriter.Create( ms, ws ) )
                 {
                     AssemblyInfoXmlSerializer.SerializeTo( assemblies, xw );
                 }
@@ -136,7 +139,7 @@ namespace AssemblyProber.Tests
                 //    string s = sr.ReadToEnd();
                 //}
 
-                using ( XmlReader r = XmlReader.Create( ms, rs ) )
+                using( XmlReader r = XmlReader.Create( ms, rs ) )
                 {
                     assemblies2 = AssemblyInfoXmlSerializer.DeserializeFrom( r ).ToList();
                 }

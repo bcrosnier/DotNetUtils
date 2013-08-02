@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using System.Text.RegularExpressions;
 using System.Xml;
 using NuGet;
 using ProjectProber.Impl;
@@ -45,7 +44,7 @@ namespace ProjectProber
 
             return GetPackageFromReference( packageIdentifier, packageRoot );
         }
-        
+
         /// <summary>
         /// Find and open a particular NuGet package using a package packageIdentifier
         /// </summary>
@@ -132,7 +131,6 @@ namespace ProjectProber
             XmlNamespaceManager mgr = new XmlNamespaceManager( d.NameTable );
             mgr.AddNamespace( "p", d.DocumentElement.NamespaceURI );
 
-
             XmlNodeList packageNodeList = d.SelectNodes( "/p:Project/p:ItemGroup/p:Reference", mgr );
 
             foreach( XmlNode packageNode in packageNodeList )
@@ -151,18 +149,23 @@ namespace ProjectProber
                         case "HintPath":
                             hintPath = child.FirstChild.Value;
                             break;
+
                         case "Private":
                             isPrivate = child.FirstChild.Value.ToLowerInvariant() == "true";
                             break;
+
                         case "RequiredTargetFramework":
                             requiredTargetFramework = child.FirstChild.Value;
                             break;
+
                         case "SpecificVersion":
                             specificVersion = child.FirstChild.Value.ToLowerInvariant() == "true";
                             break;
+
                         case "EmbedInteropTypes":
                             embedInteropTypes = child.FirstChild.Value.ToLowerInvariant() == "true";
                             break;
+
                         default:
                             break;
                     }
@@ -182,6 +185,40 @@ namespace ProjectProber
             }
 
             return references;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="projectFile">Path to the project file (.csproj)</param>
+        /// <returns>Collection of new IProjectReference</returns>
+        public static CSProjCompileLinkInfo GetSharedAssemblyRelativeLinkFromProjectFile( string projectFile )
+        {
+            if( string.IsNullOrEmpty( projectFile ) )
+                throw new ArgumentNullException( projectFile );
+            if( !File.Exists( projectFile ) )
+                throw new ArgumentException( "File must exist", "projectFile" );
+
+            XmlDocument d = new XmlDocument();
+            d.Load( projectFile );
+
+            XmlNamespaceManager mgr = new XmlNamespaceManager( d.NameTable );
+            mgr.AddNamespace( "p", d.DocumentElement.NamespaceURI );
+
+            XmlNodeList packageNodeList = d.SelectNodes( "/p:Project/p:ItemGroup/p:Compile", mgr );
+
+            foreach( XmlNode packageNode in packageNodeList )
+            {
+                //Get real path without "\.."
+                string sharedAssemblyInfoRelativePath = Path.GetFullPath( Path.Combine( Path.GetDirectoryName( projectFile ), packageNode.Attributes["Include"].Value ) );
+                string link;
+                if( sharedAssemblyInfoRelativePath.Contains( "SharedAssemblyInfo.cs" ) )
+                {
+                    link = packageNode.FirstChild.InnerText;
+                    return new CSProjCompileLinkInfo( sharedAssemblyInfoRelativePath, link, Path.GetFileNameWithoutExtension( projectFile ) );
+                }
+            }
+            return null;
         }
     }
 }

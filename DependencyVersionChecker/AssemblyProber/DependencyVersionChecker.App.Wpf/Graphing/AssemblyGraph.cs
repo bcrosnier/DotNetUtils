@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using AssemblyProber;
-using GraphSharp.Controls;
 using QuickGraph;
 
-namespace AssemblyProberApp.Wpf.Graphing
+namespace DotNetUtilitiesApp.AssemblyProber.Graphing
 {
     public class AssemblyGraph
         : BidirectionalGraph<AssemblyVertex, AssemblyEdge>
@@ -40,6 +39,4 @@ namespace AssemblyProberApp.Wpf.Graphing
                 vertex.AddMessage( message );
         }
     }
-
-    public class AssemblyGraphLayout : GraphLayout<AssemblyVertex, AssemblyEdge, AssemblyGraph> { }
 }

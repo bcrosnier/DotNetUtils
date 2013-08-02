@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using AssemblyProber;
+using CK.Core;
 using NuGet;
 using ProjectProber.Interfaces;
-using ProjectProber;
-using CK.Core;
-using AssemblyProber;
 
 namespace ProjectProber
 {
@@ -42,7 +40,7 @@ namespace ProjectProber
 
             filePath = Path.GetFullPath( filePath );
             string solutionDirectory = Path.GetDirectoryName( filePath );
-            string packageRoot =  Path.Combine( solutionDirectory, "packages" );
+            string packageRoot = Path.Combine( solutionDirectory, "packages" );
 
             //IAssemblyLoader assemblyLoader = new AssemblyLoader( logger );
             IAssemblyLoader assemblyLoader = new AssemblyLoader();
@@ -74,7 +72,6 @@ namespace ProjectProber
                 IEnumerable<ISolutionProjectItem> supportedProjectItems =
                 solution.Projects
                     .Where( project => project.GetItemType() == SolutionProjectType.VISUAL_C_SHARP ); // Keep only C# projects
-
 
                 logger.Info( "Loading {0} projects.", supportedProjectItems.Count() );
 
@@ -136,7 +133,6 @@ namespace ProjectProber
                                     projectNuGetPackageNames.Add( packageRef.Id );
                                 }
                             }
-
 
                             // Check that: Referenced assemblies, if they are detected inside a NuGet package folder, match the one in the package file
                             foreach( IProjectReference assemblyRef in projectAssemblyReferences.Where( x => !String.IsNullOrEmpty( x.HintPath ) ) )

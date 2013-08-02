@@ -2,7 +2,7 @@
 using AssemblyProber;
 using QuickGraph;
 
-namespace AssemblyProberApp.Wpf.Graphing
+namespace DotNetUtilitiesApp.AssemblyProber.Graphing
 {
     [DebuggerDisplay( "{Source.Assembly} -> {Target.Assembly}" )]
     public class AssemblyEdge : Edge<AssemblyVertex>

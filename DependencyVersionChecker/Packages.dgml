@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="WPF UI\WpfUtils" Label="WpfUtils" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="WPF UI\DotNetUtilitiesApp" Label="DotNetUtilitiesApp" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="WPFExtensions 1.0.0" Label="WPFExtensions 1.0.0" Category="Package" />
+    <Node Id="WPF UI\DotNetUtilitiesApp.AssemblyProber" Label="DotNetUtilitiesApp.AssemblyProber" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="GraphSharp 1.1.0.0" Label="GraphSharp 1.1.0.0" Category="Package" />
+    <Node Id="Mono.Cecil 0.9.5.4" Label="Mono.Cecil 0.9.5.4" Category="Package" />
+    <Node Id="QuickGraph 3.6.61119.7" Label="QuickGraph 3.6.61119.7" Category="Package" />
+    <Node Id="WPFExtensions 1.0.0" Label="WPFExtensions 1.0.0" Category="Package" />
+    <Node Id="VSExtension\SolutionAnalyzer" Label="SolutionAnalyzer" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="WPFExtensions 1.0.0" Label="WPFExtensions 1.0.0" Category="Package" />
+    <Node Id="ProjectProber\SolutionChecker" Label="SolutionChecker" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="ProjectProber\ProjectProber.Tests" Label="ProjectProber.Tests" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="Microsoft.Web.Xdt 1.0.0" Label="Microsoft.Web.Xdt 1.0.0" Category="Package" />
+    <Node Id="Nuget.Core 2.6.0.1" Label="Nuget.Core 2.6.0.1" Category="Package" />
+    <Node Id="ProjectProber\ProjectProber" Label="ProjectProber" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="Microsoft.Web.Xdt 1.0.0" Label="Microsoft.Web.Xdt 1.0.0" Category="Package" />
+    <Node Id="Nuget.Core 2.6.0.1" Label="Nuget.Core 2.6.0.1" Category="Package" />
+    <Node Id="AssemblyProber\AssemblyProber" Label="AssemblyProber" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+    <Node Id="Mono.Cecil 0.9.5.4" Label="Mono.Cecil 0.9.5.4" Category="Package" />
+    <Node Id="AssemblyProber\AssemblyProber.Tests" Label="AssemblyProber.Tests" Category="Project" />
+    <Node Id="CK.Core 2.8.14" Label="CK.Core 2.8.14" Category="Package" />
+  </Nodes>
+  <Links>
+    <Link Source="WPF UI\WpfUtils" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="WPF UI\DotNetUtilitiesApp" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="WPF UI\DotNetUtilitiesApp" Target="WPFExtensions 1.0.0" Category="Installed Package" />
+    <Link Source="GraphSharp 1.1.0.0" Target="QuickGraph 3.6.61119.7" Category="Package Dependency" />
+    <Link Source="GraphSharp 1.1.0.0" Target="WPFExtensions 1.0.0" Category="Package Dependency" />
+    <Link Source="WPF UI\DotNetUtilitiesApp.AssemblyProber" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="WPF UI\DotNetUtilitiesApp.AssemblyProber" Target="GraphSharp 1.1.0.0" Category="Installed Package" />
+    <Link Source="WPF UI\DotNetUtilitiesApp.AssemblyProber" Target="Mono.Cecil 0.9.5.4" Category="Installed Package" />
+    <Link Source="VSExtension\SolutionAnalyzer" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="VSExtension\SolutionAnalyzer" Target="WPFExtensions 1.0.0" Category="Installed Package" />
+    <Link Source="ProjectProber\SolutionChecker" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="Nuget.Core 2.6.0.1" Target="Microsoft.Web.Xdt 1.0.0" Category="Package Dependency" />
+    <Link Source="ProjectProber\ProjectProber.Tests" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="ProjectProber\ProjectProber.Tests" Target="Nuget.Core 2.6.0.1" Category="Installed Package" />
+    <Link Source="Nuget.Core 2.6.0.1" Target="Microsoft.Web.Xdt 1.0.0" Category="Package Dependency" />
+    <Link Source="ProjectProber\ProjectProber" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="ProjectProber\ProjectProber" Target="Nuget.Core 2.6.0.1" Category="Installed Package" />
+    <Link Source="AssemblyProber\AssemblyProber" Target="CK.Core 2.8.14" Category="Installed Package" />
+    <Link Source="AssemblyProber\AssemblyProber" Target="Mono.Cecil 0.9.5.4" Category="Installed Package" />
+    <Link Source="AssemblyProber\AssemblyProber.Tests" Target="CK.Core 2.8.14" Category="Installed Package" />
+  </Links>
+  <Categories>
+    <Category Id="Project" />
+    <Category Id="Package" />
+  </Categories>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Project" ValueLabel="True">
+      <Condition Expression="HasCategory('Project')" />
+      <Setter Property="Background" Value="Blue" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Package Dependency" ValueLabel="True">
+      <Condition Expression="HasCategory('Package Dependency')" />
+      <Setter Property="Background" Value="Yellow" />
+    </Style>
+  </Styles>
+</DirectedGraph>

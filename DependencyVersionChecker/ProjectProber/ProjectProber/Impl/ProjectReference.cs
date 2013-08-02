@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
@@ -44,6 +39,8 @@ namespace ProjectProber.Impl
         /// </summary>
         public bool SpecificVersion { get; internal set; }
 
-        internal ProjectReference() { }
+        internal ProjectReference()
+        {
+        }
     }
 }
