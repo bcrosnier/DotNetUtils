@@ -21,8 +21,8 @@ namespace ProjectProber
 
 		public override bool Equals( object obj )
 		{
-			CSProjCompileLinkInfo temp = (CSProjCompileLinkInfo)obj;
-			return this.SharedAssemblyInfoRelativePath == temp.SharedAssemblyInfoRelativePath && this.AssociateLink == temp.AssociateLink;
+			CSProjCompileLinkInfo temp = obj as CSProjCompileLinkInfo;
+			return temp != null && this.SharedAssemblyInfoRelativePath == temp.SharedAssemblyInfoRelativePath && this.AssociateLink == temp.AssociateLink;
 		}
 
 		public override int GetHashCode()
@@ -32,12 +32,13 @@ namespace ProjectProber
 
 		public static bool operator ==( CSProjCompileLinkInfo obj1, CSProjCompileLinkInfo obj2 )
 		{
+			if( ReferenceEquals( obj1, null ) ) return ReferenceEquals( obj2, null );
 			return obj1.Equals( obj2 );
 		}
 
 		public static bool operator !=( CSProjCompileLinkInfo obj1, CSProjCompileLinkInfo obj2 )
 		{
-			return !obj1.Equals( obj2 );
+			return !( obj1 == obj2 );
 		}
 	}
 }
