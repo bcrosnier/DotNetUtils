@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
+using CK.Package;
 using DotNetUtilitiesApp.WpfUtils;
 using ProjectProber;
 
@@ -17,6 +17,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         private bool _isNotStable;
         private string _versionTag;
         private string _newVersion;
+        private bool _isNotReleaseCheckBoxEnabled;
 
         #endregion Fields
 
@@ -73,6 +74,8 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                 {
                     _hasBugFixes = value;
                     UpdateNewVersion();
+                    RaisePropertyChanged( "IsNotReleaseCheckBoxEnabled" );
+                    RaisePropertyChanged( "IsNotStable" );
                     RaisePropertyChanged();
                 }
             }
@@ -87,6 +90,8 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                 {
                     _hasNewFeatures = value;
                     UpdateNewVersion();
+                    RaisePropertyChanged( "IsNotReleaseCheckBoxEnabled" );
+                    RaisePropertyChanged( "IsNotStable" );
                     RaisePropertyChanged();
                 }
             }
@@ -101,6 +106,8 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                 {
                     _hasBreakingChanges = value;
                     UpdateNewVersion();
+                    RaisePropertyChanged( "IsNotReleaseCheckBoxEnabled" );
+                    RaisePropertyChanged( "IsNotStable" );
                     RaisePropertyChanged();
                 }
             }
@@ -108,7 +115,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         public bool IsNotStable
         {
-            get { return _isNotStable; }
+            get { return IsNotReleaseCheckBoxEnabled && _isNotStable; }
             set
             {
                 if( value != _isNotStable )
@@ -118,6 +125,11 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                     RaisePropertyChanged();
                 }
             }
+        }
+
+        public bool IsNotReleaseCheckBoxEnabled
+        {
+            get { return HasBreakingChanges || HasNewFeatures || HasBugFixes; }
         }
 
         public ObservableCollection<string> Warnings
@@ -133,7 +145,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         public SemanticVersionManagerViewModel()
         {
             Warnings = new ObservableCollection<string>();
-            CurrentVersion = "1.0.0";
+            CurrentVersion = "0.0.0";
         }
 
         #endregion Constructor
@@ -174,12 +186,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                 Warnings.Add( "More than one SharedAssemblyInfo file was found in the solution." );
             }
 
-            if( result.MultipleSharedAssemblyInfoDifferenteVersion )
-            {
-                Warnings.Add( "More than one SharedAssemblyInfo file was found in the solution, with different versions." );
-            }
-
-            if( result.MultipleVersionInPropretiesAssemblyInfo )
+            if( result.MultipleVersionInOneAssemblyInfoFile )
             {
                 Warnings.Add( "More than one version was found in a project's Properties/AssemblyInfo.cs." );
             }
@@ -192,6 +199,21 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         private void UpdateNewVersion()
         {
+            SemanticVersion version;
+            if( SemanticVersion.TryParse( CurrentVersion, out version, false ) )
+            {
+                SemanticVersion newVersion;
+                if( IsNotStable )
+                {
+                    newVersion = SemanticVersionGenerator.GenerateSemanticVersion( version, HasBreakingChanges, HasNewFeatures, HasBugFixes, VersionTag );
+                }
+                else
+                {
+                    newVersion = SemanticVersionGenerator.GenerateSemanticVersion( version, HasBreakingChanges, HasNewFeatures, HasBugFixes, null );
+                }
+
+                NewVersion = newVersion.ToString();
+            }
         }
 
         #endregion Private methods
