@@ -111,15 +111,7 @@ namespace DotNetUtilitiesApp
         {
             _solutionPath = null;
 
-            if( string.IsNullOrEmpty( slnPath ) )
-            {
-                WarnUser( "No solution loaded", "No solution was loaded. Load a solution first." );
-            }
-            if( !File.Exists( slnPath ) )
-            {
-                WarnUser( "Solution file not found", String.Format( "The file at {0} could not be found. No solution was loaded.", slnPath ) );
-            }
-            else
+            if( !string.IsNullOrEmpty( slnPath ) && File.Exists( slnPath ) )
             {
                 _solutionPath = slnPath;
                 string solutionName = Path.GetFileNameWithoutExtension( slnPath );

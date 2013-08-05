@@ -15,15 +15,19 @@ namespace BCrosnier.SolutionAnalyzer
 
         private static readonly string UTILITIES_EXECUTABLE_PATH = typeof( DotNetUtilitiesApp.App ).Assembly.Location;
 
-        internal static void AnalyzeSolutionCommand( object sender, EventArgs e )
+        internal static void AnalyzeSolutionPackagesCommand( object sender, EventArgs e )
         {
-            if( !DTE2.Solution.IsOpen )
-            {
-                ThrowOpenSolutionMessage();
-                return;
-            }
+            OpenPackageVersionAnalyzer();
+        }
 
-            OpenSolutionAnalyzer();
+        internal static void OpenAssemblyCheckerCommand( object sender, EventArgs e )
+        {
+            OpenAssemblyAnalyzer();
+        }
+
+        internal static void AnalyzeSolutionVersionCommand( object sender, EventArgs e )
+        {
+            OpenSolutionVersionAnalyzer();
         }
 
         private static void ThrowOpenSolutionMessage()
@@ -47,21 +51,41 @@ namespace BCrosnier.SolutionAnalyzer
             return;
         }
 
-        private static void OpenSolutionAnalyzer()
+        private static void OpenPackageVersionAnalyzer()
         {
-            OpenUtilities( "-AnalyzeSolution", DTE2.Solution.FullName );
+            if( !DTE2.Solution.IsOpen )
+            {
+                ThrowOpenSolutionMessage();
+                return;
+            }
+            OpenUtilities( DTE2.Solution.FullName, "-PackageAnalysis" );
+        }
+
+        private static void OpenAssemblyAnalyzer()
+        {
+            if( !DTE2.Solution.IsOpen )
+            {
+                ThrowOpenSolutionMessage();
+                return;
+            }
+            OpenUtilities( DTE2.Solution.FullName, "-AssemblyAnalysis" );
         }
 
         private static void OpenSolutionVersionAnalyzer()
         {
-            OpenUtilities( "-AnalyzeSolutionVersion", DTE2.Solution.FullName );
+            if( !DTE2.Solution.IsOpen )
+            {
+                ThrowOpenSolutionMessage();
+                return;
+            }
+            OpenUtilities( DTE2.Solution.FullName, "-VersionAnalysis" );
         }
 
-        private static void OpenUtilities( string command, string path )
+        private static void OpenUtilities( string path, string command )
         {
             if( File.Exists( UTILITIES_EXECUTABLE_PATH ) )
             {
-                string parameters = command + " \"" + path + "\"";
+                string parameters = "\"" + path + "\" " + command;
                 System.Diagnostics.Process.Start( UTILITIES_EXECUTABLE_PATH, parameters );
             }
         }
