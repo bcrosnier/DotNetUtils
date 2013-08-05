@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:assemblyProber="clr-namespace:DotNetUtilitiesApp.AssemblyProber;assembly=DotNetUtilitiesApp.AssemblyProber"
         xmlns:solutionAnalyzer="clr-namespace:DotNetUtilitiesApp.SolutionAnalyzer;assembly=DotNetUtilitiesApp.SolutionAnalyzer"
+        xmlns:versionAnalyzer="clr-namespace:DotNetUtilitiesApp.VersionAnalyzer;assembly=DotNetUtilitiesApp.VersionAnalyzer"
         xmlns:semanticVersionManager="clr-namespace:DotNetUtilitiesApp.SemanticVersionManager;assembly=DotNetUtilitiesApp.SemanticVersionManager"
         Title="{Binding Path=WindowTitle}" Height="600" Width="800">
     <DockPanel LastChildFill="True">
@@ -25,6 +26,11 @@
             <TabItem Header="Version manager">
                 <Grid>
                     <semanticVersionManager:SemanticVersionManagerControl x:Name="SemanticVersionManagerControl" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Version analyzer">
+                <Grid>
+                    <versionAnalyzer:VersionAnalyzerControl x:Name="VersionAnalyzerControl" />
                 </Grid>
             </TabItem>
         </TabControl>

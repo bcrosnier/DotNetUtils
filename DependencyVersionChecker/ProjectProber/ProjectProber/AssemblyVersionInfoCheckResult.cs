@@ -35,7 +35,7 @@ namespace ProjectProber
         /// <remarks>
         /// The path of SharedAssemblyInfo are in SharedAssemblyInfoVersions.
         /// </remarks>
-        public bool HasSharedAssemblyInfo { get { return _hasSharedAssemblyInfo; } }
+        public bool HasNotSharedAssemblyInfo { get { return _hasNotSharedAssemblyInfo; } }
 
         /// <summary>
         /// True if multiple SharedAssemblyInfo in solution has been found.
@@ -107,9 +107,9 @@ namespace ProjectProber
         /// <remarks>
         ///
         /// </remarks>
-        public bool HaveFileWithoutVersion { get { return _hasFileWithoutVersion; } }
+        public bool HasFileWithoutVersion { get { return _hasFileWithoutVersion; } }
 
-        private bool _hasSharedAssemblyInfo = false;
+        private bool _hasNotSharedAssemblyInfo = true;
         private bool _hasMultipleSharedAssemblyInfo = false;
         private bool _hasMultipleAssemblyVersion = false;
         private bool _hasMultipleRelativeLinkInCSProj = false;
@@ -148,7 +148,7 @@ namespace ProjectProber
         {
             if( _sharedAssemblyInfoVersions.Count > 1 )
             {
-                _hasSharedAssemblyInfo = true;
+                _hasNotSharedAssemblyInfo = false;
                 _hasMultipleSharedAssemblyInfo = true;
 
                 CheckAssemblyVersionInfo( _sharedAssemblyInfoVersions );
@@ -215,7 +215,7 @@ namespace ProjectProber
 
         private void CheckCSProjCompileLinkInfo( List<CSProjCompileLinkInfo> csProjs )
         {
-            _hasSharedAssemblyInfo = true;
+            _hasNotSharedAssemblyInfo = true;
             _versions.Add( SharedAssemblyInfoVersions.First() );
             _hasMultipleVersionInOneAssemblyInfoFile = CheckMultipleVersionInOneAssemblyInfoFile( SharedAssemblyInfoVersions.First() );
             IList<CSProjCompileLinkInfo> csProjCompileLinkInfoToCompare = new List<CSProjCompileLinkInfo>();

@@ -6,6 +6,7 @@ using DotNetUtilitiesApp.AssemblyProber;
 using DotNetUtilitiesApp.SemanticVersionManager;
 using DotNetUtilitiesApp.SolutionAnalyzer;
 using DotNetUtilitiesApp.WpfUtils;
+using DotNetUtilitiesApp.VersionAnalyzer;
 
 namespace DotNetUtilitiesApp
 {
@@ -17,8 +18,9 @@ namespace DotNetUtilitiesApp
         private string _solutionPath;
 
         private  AssemblyProberUserControl _assemblyProberControl;
-        private  SemanticVersionManagerControl _semanticVersionManagerControl;
-        private  SolutionAnalyzerControl _solutionAnalyzerControl;
+        private SemanticVersionManagerControl _semanticVersionManagerControl;
+        private SolutionAnalyzerControl _solutionAnalyzerControl;
+        private VersionAnalyzerControl _versionAnalyzerControl;
 
         public ICommand LoadSolutionFileCommand { get; private set; }
 
@@ -64,12 +66,14 @@ namespace DotNetUtilitiesApp
         internal void SetControls(
             AssemblyProberUserControl assemblyProberControl,
             SemanticVersionManagerControl semanticVersionManagerControl,
-            SolutionAnalyzerControl solutionAnalyzerControl
+            SolutionAnalyzerControl solutionAnalyzerControl,
+            VersionAnalyzerControl versionAnalyzerControl
             )
         {
             _assemblyProberControl = assemblyProberControl;
             _semanticVersionManagerControl = semanticVersionManagerControl;
             _solutionAnalyzerControl = solutionAnalyzerControl;
+            _versionAnalyzerControl = versionAnalyzerControl;
         }
 
         private void PrepareCommands()
@@ -101,6 +105,7 @@ namespace DotNetUtilitiesApp
             _assemblyProberControl.SetActiveSolution( _solutionPath );
             _semanticVersionManagerControl.LoadFromSolution( _solutionPath );
             _solutionAnalyzerControl.LoadSolutionFile( _solutionPath );
+            _versionAnalyzerControl.LoadFromSolution(_solutionPath);
         }
 
         #endregion Constructor
