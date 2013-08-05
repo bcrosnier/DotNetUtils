@@ -45,6 +45,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetUtilitiesApp.Solution
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetUtilitiesApp.SemanticVersionManager", "DotNetUtilitiesApp.SemanticVersionManager\DotNetUtilitiesApp.SemanticVersionManager.csproj", "{C33E55E5-26A9-4AEF-8A9D-67C3EF362151}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyGithub", "TinyGithub\TinyGithub.csproj", "{707864D7-7A7F-4AAB-9308-8519FB974E92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyGithub.Tests", "TinyGithub.Tests\TinyGithub.Tests.csproj", "{037D8BF5-8BB7-4464-B813-93638622926A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +111,14 @@ Global
 		{C33E55E5-26A9-4AEF-8A9D-67C3EF362151}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C33E55E5-26A9-4AEF-8A9D-67C3EF362151}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C33E55E5-26A9-4AEF-8A9D-67C3EF362151}.Release|Any CPU.Build.0 = Release|Any CPU
+		{707864D7-7A7F-4AAB-9308-8519FB974E92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{707864D7-7A7F-4AAB-9308-8519FB974E92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{707864D7-7A7F-4AAB-9308-8519FB974E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{707864D7-7A7F-4AAB-9308-8519FB974E92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{037D8BF5-8BB7-4464-B813-93638622926A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{037D8BF5-8BB7-4464-B813-93638622926A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{037D8BF5-8BB7-4464-B813-93638622926A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{037D8BF5-8BB7-4464-B813-93638622926A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
