@@ -23,6 +23,10 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
         private string _messageText;
 
+        private AssemblyVersionInfoCheckResult _result;
+
+        private ObservableCollection<AssemblyVersionError> _assemblyVersionErrors;
+
         private ObservableCollection<string> _warnings;
 
         public ICommand SchmurtzCommand { get; private set; }
@@ -78,6 +82,11 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             get { return _warnings; }
         }
 
+        public ObservableCollection<AssemblyVersionError> AssemblyVersionErrors
+        {
+            get { return _assemblyVersionErrors; }
+        }
+
         #endregion Observable properties
 
         #region Constructor
@@ -85,6 +94,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         public VersionAnalyzerViewModel()
         {
             _warnings = new ObservableCollection<string>();
+            _assemblyVersionErrors = new ObservableCollection<AssemblyVersionError>();
             CurrentVersion = "0.0.0";
 
             SchmurtzCommand = new RelayCommand(ExecuteSchmurtz);
@@ -92,7 +102,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
         private void ExecuteSchmurtz(object obj)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         #endregion Constructor
@@ -104,10 +114,11 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             ActiveSolutionPath = slnPath;
 
             _warnings.Clear();
-            AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles(slnPath);
-            ShowResultWarnings(result);
+            _assemblyVersionErrors.Clear();
+            _result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles(slnPath);
+            ShowResultWarnings();
 
-            CurrentVersion = GetResultVersion(result);
+            CurrentVersion = GetResultVersion(_result);
         }
 
         #endregion Public methods
@@ -137,69 +148,47 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             return null;
         }
 
-        private void ShowResultWarnings(AssemblyVersionInfoCheckResult result)
+        private void ShowResultWarnings()
         {
-            if (result.HasMultipleAssemblyVersion)
+            if (_result.HasMultipleAssemblyVersion)
             {
-                Warnings.Add("Plusieurs AssemblyVersion ont été trouvées dans la solution.");
+                _assemblyVersionErrors.Add( new AssemblyVersionError( AssemblyVersionErrorType.HasMultipleAssemblyVersion, _result ) );
             }
-
-            if (result.HasMultipleAssemblyFileVersion)
+            if (_result.HasMultipleAssemblyFileVersion)
             {
-                Warnings.Add("Plusieurs AssemblyFileVersion ont été trouvées dans la solution.");
+                _assemblyVersionErrors.Add( new AssemblyVersionError( AssemblyVersionErrorType.HasMultipleAssemblyFileVersion, _result ) );
             }
-
-            if (result.HasMultipleAssemblyInformationVersion)
+            if (_result.HasMultipleAssemblyInformationVersion)
             {
-                Warnings.Add("Plusieurs AssemblyInformationVersion ont été trouvées dans la solution.");
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasMultipleAssemblyInformationVersion, _result));
             }
-
-            if (result.HasOneVersionNotSemanticVersionCompliant)
+            if (_result.HasOneVersionNotSemanticVersionCompliant)
             {
-                Warnings.Add("One or more versions is not semantic version compliant.");
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasOneVersionNotSemanticVersionCompliant, _result));
             }
-
-            if (result.HaveFileWithoutVersion)
+            if (_result.HasFileWithoutVersion)
             {
-                if (result.HasSharedAssemblyInfo)
-                {
-                    Warnings.Add("Has a SharedAssemblyInfo.cs without version.");
-                }
-                else
-                {
-                    Warnings.Add("Has one or more AssemblyInfo.cs without version.");
-                }
+                    _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasFileWithoutVersion, _result));
             }
-
-            if (!result.HasSharedAssemblyInfo)
+            if (_result.HasNotSharedAssemblyInfo)
             {
-                Warnings.Add("No SharedAssemblyInfo file was found in solution directory.");
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasNotSharedAssemblyInfo, _result));
             }
-
-            if (result.HasMultipleRelativeLinkInCSProj)
+            if (_result.HasMultipleRelativeLinkInCSProj)
             {
-                Warnings.Add("Des liens relatifs menant à des fichiers différents ont été trouvés.");
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasMultipleRelativeLinkInCSProj, _result));
             }
-
-            if (result.HasRelativeLinkInCSProjNotFound)
+            if (_result.HasRelativeLinkInCSProjNotFound)
             {
-                Warnings.Add("Un fichier sans lien relatif a été trouvé.");
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasRelativeLinkInCSProjNotFound, _result));
             }
-
-
-            if (result.HasMultipleSharedAssemblyInfo)
+            if (_result.HasMultipleSharedAssemblyInfo)
             {
-                Warnings.Add("More than one SharedAssemblyInfo file was found in the solution.");
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasMultipleSharedAssemblyInfo, _result));
             }
-
-            if (result.HasMultipleVersionInOneAssemblyInfoFile)
+            if (_result.HasMultipleVersionInOneAssemblyInfoFile)
             {
-                Warnings.Add("More than one version was found in a project's Properties/AssemblyInfo.cs.");
-            }
-
-            if (result.Versions.Count == 0)
-            {
-                Warnings.Add("Couldn't find any version to use.");
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfoFile, _result));
             }
         }
 

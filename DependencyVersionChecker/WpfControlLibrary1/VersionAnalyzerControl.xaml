@@ -28,12 +28,12 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding MessageText}" />
         <GridSplitter Grid.Column="1" Grid.RowSpan="3" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
         <StackPanel Grid.Row="0" Grid.Column="2" >
-            <ItemsControl ItemsSource="{Binding Warnings, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+            <ItemsControl ItemsSource="{Binding AssemblyVersionErrors, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <DockPanel LastChildFill="True">
                             <Button DockPanel.Dock="Right" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.SchmurtzCommand}" CommandParameter="{Binding}">Schmurtz</Button>
-                            <TextBlock Text="{Binding}"
+                            <TextBlock Text="{Binding Path=ErrorMessage}"
                                    Foreground="Black" Background="Orange"
                                    Padding="5px" Margin="3px"/>
                         </DockPanel>

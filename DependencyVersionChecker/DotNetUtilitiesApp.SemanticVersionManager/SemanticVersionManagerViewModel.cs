@@ -196,7 +196,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         private void ShowResultWarnings( AssemblyVersionInfoCheckResult result )
         {
-            if( !result.HasSharedAssemblyInfo )
+            if( !result.HasNotSharedAssemblyInfo )
             {
                 Warnings.Add( "No SharedAssemblyInfo file was found in solution directory." );
             }

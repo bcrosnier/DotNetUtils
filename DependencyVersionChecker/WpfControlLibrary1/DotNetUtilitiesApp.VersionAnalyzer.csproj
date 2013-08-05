@@ -51,6 +51,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyVersionError.cs" />
+    <Compile Include="AssemblyVersionErrorType.cs" />
     <Compile Include="VersionAnalyzerControl.xaml.cs">
       <DependentUpon>VersionAnalyzerControl.xaml</DependentUpon>
     </Compile>
