@@ -19,7 +19,7 @@ namespace DotNetUtilitiesApp
             this.DataContext = _viewModel;
 
             InitializeComponent();
-            _viewModel.SetControls( this.AssemblyProberUserControl, this.SemanticVersionManagerControl, this.SolutionAnalyzerControl );
+            _viewModel.SetControls( this.AssemblyProberUserControl, this.SemanticVersionManagerControl, this.SolutionAnalyzerControl, this.VersionAnalyzerControl );
 
             ProcessArgs();
 

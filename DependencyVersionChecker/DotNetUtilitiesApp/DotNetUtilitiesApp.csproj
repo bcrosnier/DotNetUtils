@@ -125,6 +125,10 @@
       <Project>{7d2eef2e-d5c2-4a9b-b15c-6603afb880ea}</Project>
       <Name>DotNetUtilitiesApp.SolutionAnalyzer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WpfControlLibrary1\DotNetUtilitiesApp.VersionAnalyzer.csproj">
+      <Project>{4e09ccb6-9344-489a-9b34-4291fd4c8b45}</Project>
+      <Name>DotNetUtilitiesApp.VersionAnalyzer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WpfUtils\WpfUtils.csproj">
       <Project>{a1706d7e-e0aa-4944-878d-6033f2587c7e}</Project>
       <Name>WpfUtils</Name>
