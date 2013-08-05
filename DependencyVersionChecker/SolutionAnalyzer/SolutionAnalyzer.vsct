@@ -36,8 +36,8 @@
         <Parent guid="guidSHLMainMenu"
                 id="IDG_VS_MM_TOOLSADDINS" />
         <Strings>
-          <ButtonText>Choucroute</ButtonText>
-          <CommandName>Choucroute</CommandName>
+          <ButtonText>Solution utilities</ButtonText>
+          <CommandName>Solution utilities</CommandName>
         </Strings>
       </Menu>
     </Menus>
@@ -80,7 +80,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidSolutionAnalyzerCmdSet" id="cmdidAnalyzeSolutionVersion" priority="0x0101" type="Button">
+      <Button guid="guidSolutionAnalyzerCmdSet" id="cmdidAnalyzeSolutionVersion" priority="0x0102" type="Button">
         <Parent guid="guidSolutionAnalyzerCmdSet" id="MyMenuGroup" />
         <Strings>
           <ButtonText>Check solution global version</ButtonText>

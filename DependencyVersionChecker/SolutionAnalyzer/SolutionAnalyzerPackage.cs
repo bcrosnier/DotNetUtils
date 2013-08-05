@@ -64,11 +64,11 @@ namespace BCrosnier.SolutionAnalyzer
                 mcs.AddCommand( menuItem );
 
                 CommandID menuCommand2ID = new CommandID( GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionPackages );
-                MenuCommand menuItem2 = new MenuCommand( MenuCommands.AnalyzeSolutionPackagesCommand, menuCommandID );
+                MenuCommand menuItem2 = new MenuCommand( MenuCommands.AnalyzeSolutionPackagesCommand, menuCommand2ID );
                 mcs.AddCommand( menuItem2 );
 
                 CommandID menuCommand3ID = new CommandID( GuidList.guidSolutionAnalyzerCmdSet, (int)PkgCmdIDList.cmdidAnalyzeSolutionVersion );
-                MenuCommand menuItem3 = new MenuCommand( MenuCommands.AnalyzeSolutionVersionCommand, menuCommandID );
+                MenuCommand menuItem3 = new MenuCommand( MenuCommands.AnalyzeSolutionVersionCommand, menuCommand3ID );
                 mcs.AddCommand( menuItem3 );
             }
         }
