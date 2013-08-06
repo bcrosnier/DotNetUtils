@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\TinyGithub.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\TinyGithub.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RestSharp">
@@ -50,11 +52,13 @@
     <Compile Include="Models\GitCommitAuthor.cs" />
     <Compile Include="Models\GitCommitObject.cs" />
     <Compile Include="Models\GithubCommit.cs" />
+    <Compile Include="Models\GithubError.cs" />
     <Compile Include="Models\GithubObject.cs" />
     <Compile Include="Models\GithubRef.cs" />
     <Compile Include="Models\GithubTreeInfo.cs" />
     <Compile Include="Models\GithubUser.cs" />
     <Compile Include="ResolutionExtensions.cs" />
+    <Compile Include="RestExtensions.cs" />
     <Compile Include="TinyGithub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

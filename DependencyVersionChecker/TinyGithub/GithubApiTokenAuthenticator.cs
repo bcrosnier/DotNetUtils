@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RestSharp;
+﻿using RestSharp;
 
 namespace TinyGithub
 {
-    class GithubApiTokenAuthenticator : IAuthenticator
+    /// <summary>
+    /// Simple GitHub Personal API Access Token authenticator.
+    /// Simply adds access_token parameter to all requests.
+    /// </summary>
+    internal class GithubApiTokenAuthenticator : IAuthenticator
     {
         private readonly string _apiToken;
 
