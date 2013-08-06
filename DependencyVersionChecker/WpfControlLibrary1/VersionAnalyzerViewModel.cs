@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace DotNetUtilitiesApp.VersionAnalyzer
@@ -26,6 +27,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         private AssemblyVersionInfoCheckResult _result;
 
         private ObservableCollection<AssemblyVersionError> _assemblyVersionErrors;
+        private ObservableCollection<UIElement> _detailItems;
 
         private ObservableCollection<string> _warnings;
 
@@ -81,10 +83,15 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         {
             get { return _warnings; }
         }
-
+            
         public ObservableCollection<AssemblyVersionError> AssemblyVersionErrors
         {
             get { return _assemblyVersionErrors; }
+        }
+
+        public ObservableCollection<UIElement> DetailItems
+        {
+            get { return _detailItems; }
         }
 
         #endregion Observable properties
@@ -94,7 +101,10 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         public VersionAnalyzerViewModel()
         {
             _warnings = new ObservableCollection<string>();
+
             _assemblyVersionErrors = new ObservableCollection<AssemblyVersionError>();
+            _detailItems = new ObservableCollection<UIElement>();
+
             CurrentVersion = "0.0.0";
 
             SchmurtzCommand = new RelayCommand(ExecuteSchmurtz);
@@ -102,7 +112,9 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
         private void ExecuteSchmurtz(object obj)
         {
-            //throw new NotImplementedException();
+            AssemblyVersionError e = obj as AssemblyVersionError;
+
+            _detailItems.Add(e.CreateDetailControl());
         }
 
         #endregion Constructor

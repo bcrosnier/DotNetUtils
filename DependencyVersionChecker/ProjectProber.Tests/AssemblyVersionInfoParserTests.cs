@@ -17,7 +17,7 @@ namespace ProjectProber.Tests
             Assert.That( version, Is.EqualTo( new Version( "2.8.14" ) ) );
 
             version = AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(
-                Path.Combine( Path.GetDirectoryName( AssemblyVersionInfoCheckTests.TEST_SLN_FILE_PATH ), "SharedAssemblyInfo.cs" ),
+                Path.Combine( Path.GetDirectoryName( AssemblyVersionInfoCheckTests.TEST_WITHDIFFERENTVERSIONINASSEMBLYINFO_SLN_FILE_PATH ), "SharedAssemblyInfo.cs" ),
                 AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN );
 
             Assert.That( version, Is.Null );
