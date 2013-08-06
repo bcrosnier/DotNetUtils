@@ -215,7 +215,7 @@ namespace ProjectProber
 
         private void CheckCSProjCompileLinkInfo( List<CSProjCompileLinkInfo> csProjs )
         {
-            _hasNotSharedAssemblyInfo = true;
+            _hasNotSharedAssemblyInfo = false;
             _versions.Add( SharedAssemblyInfoVersions.First() );
             _hasMultipleVersionInOneAssemblyInfoFile = CheckMultipleVersionInOneAssemblyInfoFile( SharedAssemblyInfoVersions.First() );
             IList<CSProjCompileLinkInfo> csProjCompileLinkInfoToCompare = new List<CSProjCompileLinkInfo>();
