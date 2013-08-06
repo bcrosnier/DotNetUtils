@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using ProjectProber.Impl;
 
 namespace DotNetUtilitiesApp.VersionAnalyzer
 {
@@ -25,7 +26,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
         public string ErrorMessage
         {
-            get { return _errorMessage; } 
+            get { return _errorMessage; }
         }
 
         internal AssemblyVersionError(AssemblyVersionErrorType assemblyError, AssemblyVersionInfoCheckResult result)
@@ -86,20 +87,32 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                     break;
             }
         }
-        //public static UIElement CreateControlFromName(string controlName, string controlNamespace, string xmlnsPrefix, string properties)
-        //{
-        //    var sb = new StringBuilder();
-        //    sb.Append("<" + controlName + " xmlns");
-        //    if (xmlnsPrefix.Length > 0) sb.Append(":" + xmlnsPrefix);
-        //    sb.Append("=\"" + controlNamespace + "\" " + properties + "/>");
-        //    try
-        //    {
-        //        return (UIElement)XamlReader.Parse(sb.ToString());
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //}
+
+        public UIElement CreateDetailControl()
+        {
+            if (_assemblyError == AssemblyVersionErrorType.HasFileWithoutVersion)
+            {
+                ListBox lb = new ListBox();
+                IEnumerable<AssemblyVersionInfo> filesWithoutVersion;
+                if (!_result.HasNotSharedAssemblyInfo)
+                {
+                    filesWithoutVersion = _result.SharedAssemblyInfoVersions
+                        .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationVersion == null);
+                }
+                else
+                {
+                    filesWithoutVersion = _result.AssemblyVersions
+                        .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationVersion == null);
+                }
+
+                foreach (var fileWithoutVersion in filesWithoutVersion)
+                {
+                    lb.Items.Add(fileWithoutVersion.AssemblyInfoFilePath);
+                }
+
+                return lb;
+            }
+            return new TextBox();
+        }
     }
 }
