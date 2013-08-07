@@ -210,15 +210,15 @@ namespace ProjectProber
             foreach( XmlNode packageNode in packageNodeList )
             {
                 //Get real path without "\.."
-                string sharedAssemblyInfoRelativePath = Path.GetFullPath( Path.Combine( Path.GetDirectoryName( projectFile ), packageNode.Attributes["Include"].Value ) );
+                string sharedAssemblyInfoRelativePath =  Path.GetFullPath( Path.Combine( Path.GetDirectoryName( projectFile ), packageNode.Attributes["Include"].Value ) );
                 string link;
                 if( sharedAssemblyInfoRelativePath.Contains( "SharedAssemblyInfo.cs" ) )
                 {
                     link = packageNode.FirstChild.InnerText;
-                    return new CSProjCompileLinkInfo( sharedAssemblyInfoRelativePath, link, Path.GetFileNameWithoutExtension( projectFile ) );
+                    return new CSProjCompileLinkInfo( sharedAssemblyInfoRelativePath, link, projectFile );
                 }
             }
-            return null;
+            return new CSProjCompileLinkInfo(string.Empty, string.Empty, projectFile);
         }
     }
 }

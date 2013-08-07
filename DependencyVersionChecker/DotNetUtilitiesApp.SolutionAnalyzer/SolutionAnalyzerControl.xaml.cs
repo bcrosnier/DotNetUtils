@@ -21,5 +21,10 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
         {
             _viewModel.AnalyzeSolutionFile( slnPath );
         }
+
+        public void CleanUp()
+        {
+            _viewModel.CleanUp();
+        }
     }
 }

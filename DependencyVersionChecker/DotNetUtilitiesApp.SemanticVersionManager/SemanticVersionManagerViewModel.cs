@@ -157,13 +157,25 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         public void LoadFromSolution( string slnPath )
         {
-            _activeSolutionPath = slnPath;
+            CleanUp();
 
-            Warnings.Clear();
+            _activeSolutionPath = slnPath;
             AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles( slnPath );
             ShowResultWarnings( result );
 
             CurrentVersion = GetResultVersion( result );
+        }
+
+        public void CleanUp()
+        {
+            Warnings.Clear();
+            IsNotStable = false;
+            HasBreakingChanges = false;
+            HasNewFeatures = false;
+            HasBugFixes = false;
+            NewVersion = "0.0.0";
+            VersionTag = string.Empty;
+            CurrentVersion = "0.0.0";
         }
 
         #endregion Public methods

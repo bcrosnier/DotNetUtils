@@ -29,9 +29,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         private ObservableCollection<AssemblyVersionError> _assemblyVersionErrors;
         private ObservableCollection<UIElement> _detailItems;
 
-        private ObservableCollection<string> _warnings;
-
-        public ICommand SchmurtzCommand { get; private set; }
+        public ICommand ViewDetailCommand { get; private set; }
 
         #endregion Fields
 
@@ -77,12 +75,6 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                 }
             }
         }
-
-        //change readonly ?
-        public ObservableCollection<string> Warnings
-        {
-            get { return _warnings; }
-        }
             
         public ObservableCollection<AssemblyVersionError> AssemblyVersionErrors
         {
@@ -100,18 +92,18 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
         public VersionAnalyzerViewModel()
         {
-            _warnings = new ObservableCollection<string>();
-
             _assemblyVersionErrors = new ObservableCollection<AssemblyVersionError>();
             _detailItems = new ObservableCollection<UIElement>();
 
             CurrentVersion = "0.0.0";
 
-            SchmurtzCommand = new RelayCommand(ExecuteSchmurtz);
+            ViewDetailCommand = new RelayCommand(ExecuteViewModel);
         }
 
-        private void ExecuteSchmurtz(object obj)
+        private void ExecuteViewModel(object obj)
         {
+            _detailItems.Clear();
+
             AssemblyVersionError e = obj as AssemblyVersionError;
 
             _detailItems.Add(e.CreateDetailControl());
@@ -123,19 +115,27 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
         public void LoadFromSolution(string slnPath)
         {
-            ActiveSolutionPath = slnPath;
+            CleanUp();
 
-            _warnings.Clear();
-            _assemblyVersionErrors.Clear();
+            ActiveSolutionPath = slnPath;
             _result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles(slnPath);
             ShowResultWarnings();
 
             CurrentVersion = GetResultVersion(_result);
         }
 
+        public void CleanUp()
+        {
+            ActiveSolutionPath = string.Empty;
+            CurrentVersion = string.Empty;
+            DetailItems.Clear();
+            AssemblyVersionErrors.Clear();
+        }
+
         #endregion Public methods
 
         #region private methods
+
         /// <summary>
         /// Gets a version from a version check result to display as the Current Version in the version update UI.
         /// </summary>

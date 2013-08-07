@@ -47,9 +47,13 @@ namespace DotNetUtilitiesApp
                 {
                     AnalyzeSolution();
                 }
-                else if( command.ToLowerInvariant() == "-versionanalysis" )
+                else if( command.ToLowerInvariant() == "-versiongenerator" )
                 {
                     PrepareSemanticVersion();
+                }
+                else if (command.ToLowerInvariant() == "-versionanalysis")
+                {
+                    AnalyzeVersion();
                 }
             }
         }
@@ -70,6 +74,12 @@ namespace DotNetUtilitiesApp
         {
             //this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
             this.TabControl.SelectedIndex = 2;
+        }
+
+        public void AnalyzeVersion()
+        {
+            //this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
+            this.TabControl.SelectedIndex = 3;
         }
     }
 }

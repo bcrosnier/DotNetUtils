@@ -40,7 +40,7 @@ namespace ProjectProber.Impl
         public override bool Equals( Object obj )
         {
             AssemblyVersionInfo other = obj as AssemblyVersionInfo;
-            return _assemblyVersion == other._assemblyVersion
+            return other != null && _assemblyVersion == other._assemblyVersion
                 && _assemblyFileVersion == other._assemblyFileVersion
                 && _assemblyInformationVersion == other._assemblyInformationVersion;
         }

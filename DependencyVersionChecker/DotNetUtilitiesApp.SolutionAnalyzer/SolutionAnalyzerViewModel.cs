@@ -40,6 +40,8 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
 
         public void AnalyzeSolutionFile( string solutionFilePath )
         {
+            CleanUp();
+
             MessageText = String.Format( "Analyzing solution: {0}...", solutionFilePath );
             Task task = Task.Factory.StartNew( () =>
             {
@@ -49,6 +51,11 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
                     SetSolutionResults( result );
                 } );
             } );
+        }
+
+        public void CleanUp()
+        {
+            MessageText = string.Empty;
         }
 
         #endregion Public methods

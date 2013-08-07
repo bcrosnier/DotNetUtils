@@ -16,6 +16,7 @@ namespace DotNetUtilitiesApp
 
         private string _windowTitle;
         private string _solutionPath;
+        private int _tabIndex;
 
         private  AssemblyProberUserControl _assemblyProberControl;
         private SemanticVersionManagerControl _semanticVersionManagerControl;
@@ -23,11 +24,13 @@ namespace DotNetUtilitiesApp
         private VersionAnalyzerControl _versionAnalyzerControl;
 
         public ICommand LoadSolutionFileCommand { get; private set; }
+        public ICommand CheckAllCommand { get; private set; }
+        public ICommand CheckCurrentCommand { get; private set; }
 
         #endregion Fields
 
         #region Observed properties
-
+        
         public string SolutionPath
         {
             get { return _solutionPath; }
@@ -36,6 +39,19 @@ namespace DotNetUtilitiesApp
                 if( value != _solutionPath )
                 {
                     _solutionPath = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public int TabIndex
+        {
+            get { return _tabIndex; }
+            set
+            {
+                if (value != _tabIndex)
+                {
+                    _tabIndex = value;
                     RaisePropertyChanged();
                 }
             }
@@ -78,7 +94,24 @@ namespace DotNetUtilitiesApp
 
         private void PrepareCommands()
         {
-            LoadSolutionFileCommand = new RelayCommand( ExecuteLoadSolutionFileCommand );
+            LoadSolutionFileCommand = new RelayCommand(ExecuteLoadSolutionFileCommand);
+            CheckAllCommand = new RelayCommand(ExecuteCheckAllCommand, CanExecuteCheck);
+            CheckCurrentCommand = new RelayCommand(ExecuteCheckCurrentCommand, CanExecuteCheck);
+        }
+
+        private bool CanExecuteCheck(object obj)
+        {
+            return !string.IsNullOrEmpty(_solutionPath);
+        }
+
+        private void ExecuteCheckCurrentCommand(object obj)
+        {
+            InitTabIndexControl();
+        }
+
+        private void ExecuteCheckAllCommand(object obj)
+        {
+            InitControls();
         }
 
         private void ExecuteLoadSolutionFileCommand( object obj )
@@ -108,12 +141,34 @@ namespace DotNetUtilitiesApp
             _versionAnalyzerControl.LoadFromSolution(_solutionPath);
         }
 
+        private void InitTabIndexControl()
+        {
+            if (_tabIndex == 0)
+            {
+                _assemblyProberControl.SetActiveSolution(_solutionPath);
+            }
+            else if ( _tabIndex == 1)
+            {
+                _solutionAnalyzerControl.LoadSolutionFile(_solutionPath);
+            }
+            else if ( _tabIndex == 2)
+            {
+                _semanticVersionManagerControl.LoadFromSolution(_solutionPath);
+            }
+            else if ( _tabIndex == 3)
+            {
+                _versionAnalyzerControl.LoadFromSolution(_solutionPath);
+            }
+        }
+
         #endregion Constructor
 
         #region Internal methods
 
         internal void LoadSolutionFile( string slnPath )
         {
+            CleanUp();
+
             _solutionPath = null;
 
             if( !string.IsNullOrEmpty( slnPath ) && File.Exists( slnPath ) )
@@ -121,14 +176,20 @@ namespace DotNetUtilitiesApp
                 _solutionPath = slnPath;
                 string solutionName = Path.GetFileNameWithoutExtension( slnPath );
                 WindowTitle = String.Format( ".NET utilities - {0}", solutionName );
-
-                InitControls();
             }
         }
 
         #endregion Internal methods
 
         #region Private methods
+
+        private void CleanUp()
+        {
+            //_assemblyProberControl.CleanUp();
+            _semanticVersionManagerControl.CleanUp();
+            _solutionAnalyzerControl.CleanUp();
+            _versionAnalyzerControl.CleanUp();
+        }
 
         private void WarnUser( string title, string message )
         {
