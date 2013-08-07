@@ -62,7 +62,6 @@
     <Compile Include="AssemblyVersionInfoCheckResult.cs" />
     <Compile Include="AssemblyVersionInfoParser.cs" />
     <Compile Include="CSProjCompileLinkInfo.cs" />
-    <Compile Include="GithubRepositoryManager.cs" />
     <Compile Include="Impl\AssemblyVersionInfo.cs" />
     <Compile Include="Impl\NuGetPackageReference.cs" />
     <Compile Include="Impl\ProjectReference.cs" />

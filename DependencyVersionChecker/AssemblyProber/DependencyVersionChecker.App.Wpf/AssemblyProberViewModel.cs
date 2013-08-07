@@ -223,7 +223,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
                 Task.Factory.StartNew( () =>
                 {
                     AssemblyCheckResult r = _checker.Check();
-                    InvokeOnAppThread( () =>
+                    Invoke.OnAppThread( () =>
                     {
                         _activeAssemblies = r.Assemblies.ToList();
                         LoadAssemblies( _activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches );
@@ -251,7 +251,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
                 Task.Factory.StartNew( () =>
                 {
                     AssemblyCheckResult r = _checker.Check();
-                    InvokeOnAppThread( () =>
+                    Invoke.OnAppThread( () =>
                     {
                         _activeAssemblies = r.Assemblies.ToList();
                         LoadAssemblies( _activeAssemblies, r.VersionConflicts, r.ReferenceVersionMismatches );
@@ -438,19 +438,6 @@ namespace DotNetUtilitiesApp.AssemblyProber
         #endregion Event handler methods
 
         #region Private static methods
-
-        private static void InvokeOnAppThread( Action action )
-        {
-            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if( dispatchObject == null || dispatchObject.CheckAccess() )
-            {
-                action();
-            }
-            else
-            {
-                dispatchObject.BeginInvoke( action );
-            }
-        }
 
         private static IList<IAssemblyInfo> ListReferencedAssemblies( IAssemblyInfo assembly )
         {

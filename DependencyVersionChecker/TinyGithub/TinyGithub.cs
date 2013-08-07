@@ -113,7 +113,16 @@ namespace TinyGithub
 
             if( restResponse.StatusCode != HttpStatusCode.OK )
             {
-                error = new GithubError() { Message = restResponse.Content };
+                var js = new RestSharp.Deserializers.JsonDeserializer();
+
+                try
+                {
+                    error = js.Deserialize<GithubError>( restResponse );
+                }
+                catch( Exception ex )
+                {
+                    error = new GithubError() { Message = String.Format("Failed to parse: {0}", ex.Message ) };
+                }
             }
 
             GithubResponse<T> response = new GithubResponse<T>( restResponse.StatusCode, content, rateLimit, rateLimitRemaining, rateLimitReset, error );

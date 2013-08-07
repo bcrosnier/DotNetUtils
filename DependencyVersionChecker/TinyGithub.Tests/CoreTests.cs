@@ -70,7 +70,7 @@ namespace TinyGithub.Tests
 
             ValidateGithubCommit( commit );
 
-            GithubTreeInfo tree = commit.Tree.Resolve( github, true );
+            GithubTreeInfo tree = commit.Tree.Resolve( github, true ).Content;
         }
 
         #region Object validation

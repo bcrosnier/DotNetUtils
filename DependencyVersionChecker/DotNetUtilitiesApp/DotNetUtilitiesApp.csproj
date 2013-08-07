@@ -133,6 +133,10 @@
       <Project>{7d2eef2e-d5c2-4a9b-b15c-6603afb880ea}</Project>
       <Name>DotNetUtilitiesApp.SolutionAnalyzer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TinyGithub\TinyGithub.csproj">
+      <Project>{707864d7-7a7f-4aab-9308-8519fb974e92}</Project>
+      <Name>TinyGithub</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WpfControlLibrary1\DotNetUtilitiesApp.VersionAnalyzer.csproj">
       <Project>{4e09ccb6-9344-489a-9b34-4291fd4c8b45}</Project>
       <Name>DotNetUtilitiesApp.VersionAnalyzer</Name>

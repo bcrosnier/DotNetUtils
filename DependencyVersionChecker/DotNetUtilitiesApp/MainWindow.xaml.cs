@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 
 namespace DotNetUtilitiesApp
@@ -9,6 +11,7 @@ namespace DotNetUtilitiesApp
     public partial class MainWindow : Window
     {
         private MainWindowViewModel _viewModel;
+        private GithubDownloader.GithubDownloader _githubDownloader;
         private string _runningSlnPath;
 
         public MainWindow()
@@ -84,9 +87,24 @@ namespace DotNetUtilitiesApp
 
         private void OpenFromGithubRepo_Click( object sender, RoutedEventArgs e )
         {
-            Window w = new GithubDownloader.GithubDownloader();
+            if( _githubDownloader == null )
+            {
+                _githubDownloader = new GithubDownloader.GithubDownloader();
+            }
 
-            w.Show();
+            _githubDownloader.Closing += ( s, e1 ) => { _githubDownloader = null; };
+            _githubDownloader.SolutionFileReady += _githubDownloader_SolutionFileReady;
+
+            _githubDownloader.Show();
+        }
+
+        void _githubDownloader_SolutionFileReady( object sender, WpfUtils.StringEventArgs e )
+        {
+            Debug.Assert( File.Exists( e.Content ) );
+            _runningSlnPath = e.Content;
+            _viewModel.LoadSolutionFile( e.Content );
+
+            _githubDownloader.Close();
         }
     }
 }

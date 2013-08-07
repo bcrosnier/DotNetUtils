@@ -46,7 +46,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
             Task task = Task.Factory.StartNew( () =>
             {
                 SolutionCheckResult result = SolutionChecker.CheckSolutionFile( solutionFilePath );
-                InvokeOnAppThread( () =>
+                Invoke.OnAppThread( () =>
                 {
                     SetSolutionResults( result );
                 } );

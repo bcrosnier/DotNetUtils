@@ -41,7 +41,7 @@ namespace DotNetUtilitiesApp.WpfUtils
 
         private void AddString( string str, Brush color )
         {
-            InvokeOnAppThread( () =>
+            Invoke.OnAppThread( () =>
             {
                 if( _outputCollection.Count >= _maxLogEntries )
                 {
@@ -158,20 +158,6 @@ namespace DotNetUtilitiesApp.WpfUtils
                 AddString( message, GetColorFromLevel( level ) );
             }
         }
-
-        private static void InvokeOnAppThread( Action action )
-        {
-            Dispatcher dispatchObject = System.Windows.Application.Current.Dispatcher;
-            if( dispatchObject == null || dispatchObject.CheckAccess() )
-            {
-                action();
-            }
-            else
-            {
-                dispatchObject.Invoke( action );
-            }
-        }
-
         private static string DescribeTraits( IEnumerable<CKTrait> traits )
         {
             if( traits == null )

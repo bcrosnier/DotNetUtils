@@ -49,11 +49,8 @@
                 <TextBox Text="{Binding Path=RepositoryRefName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=master}" />
             </StackPanel>
 
-            <TextBlock Grid.Row="2" Grid.ColumnSpan="3" TextAlignment="Center">
-            <Hyperlink NavigateUri="{Binding Path=GithubRepositoryWebUrl, Mode=OneWay}" RequestNavigate="Hyperlink_RequestNavigate">
-                <Run Text="{Binding Path=GithubRepositoryWebUrl, Mode=OneWay, FallbackValue=https://github.com/Invenietis/ck-core/tree/master}" />
-            </Hyperlink>
-            </TextBlock>
+            <TextBox Grid.Row="2" Grid.ColumnSpan="3" TextAlignment="Center" Text="{Binding Path=GithubRepositoryWebUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=https://github.com/Invenietis/ck-core/tree/master}">
+            </TextBox>
 
             <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Width="200">
                 <Label>Personal API Access Token</Label>
