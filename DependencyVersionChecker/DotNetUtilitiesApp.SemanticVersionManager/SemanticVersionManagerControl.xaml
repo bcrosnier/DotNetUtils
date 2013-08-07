@@ -11,11 +11,6 @@
         <WpfUtils:EmptyCollectionVisibilityConverter x:Key="EmptyCollectionVisibilityConverter" />
     </UserControl.Resources>
     <DockPanel LastChildFill="True">
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="File">
-                <MenuItem Header="Open solution" Click="OpenSolution_Click" />
-            </MenuItem>
-        </Menu>
         <StackPanel>
             <ItemsControl ItemsSource="{Binding Warnings, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <ItemsControl.ItemTemplate>
@@ -41,7 +36,7 @@
             <CheckBox Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path=HasNewFeatures, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">New features</CheckBox>
             <CheckBox Grid.Column="0" Grid.Row="2" IsChecked="{Binding Path=HasBreakingChanges, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Breaking changes on the public API</CheckBox>
             <Separator Grid.Row="3" Grid.ColumnSpan="2" />
-            <CheckBox Grid.Column="0" Grid.Row="4" IsEnabled="{Binding Path=IsNotReleaseCheckBoxEnabled, FallbackValue=False}" IsChecked="{Binding Path=IsNotStable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" x:Name="IsNotReleaseCheckBox">This verson isn't a stable release version</CheckBox>
+            <CheckBox Grid.Column="0" Grid.Row="4" IsChecked="{Binding Path=IsNotStable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" x:Name="IsNotReleaseCheckBox">This verson isn't a stable release version</CheckBox>
 
             <StackPanel Visibility="{Binding IsChecked, ElementName=IsNotReleaseCheckBox, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock>Enter release tag (e.g. develop, alpha, beta, rc)</TextBlock>

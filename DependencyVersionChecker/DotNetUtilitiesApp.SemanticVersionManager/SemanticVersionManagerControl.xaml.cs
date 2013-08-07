@@ -26,17 +26,5 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         {
             _viewModel.CleanUp();
         }
-
-        private void OpenSolution_Click( object sender, RoutedEventArgs e )
-        {
-            OpenFileDialog d = new OpenFileDialog();
-            d.CheckFileExists = true;
-            d.Filter = "Visual Studio solutions (*.sln)|*.sln";
-            DialogResult result = d.ShowDialog();
-            if( result == System.Windows.Forms.DialogResult.OK )
-            {
-                LoadFromSolution( d.FileName );
-            }
-        }
     }
 }

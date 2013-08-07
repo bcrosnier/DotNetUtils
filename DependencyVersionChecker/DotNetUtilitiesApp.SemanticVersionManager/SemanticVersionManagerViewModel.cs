@@ -118,7 +118,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
 
         public bool IsNotStable
         {
-            get { return IsNotReleaseCheckBoxEnabled && _isNotStable; }
+            get { return _isNotStable; }
             set
             {
                 if( value != _isNotStable )
@@ -128,11 +128,6 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                     RaisePropertyChanged();
                 }
             }
-        }
-
-        public bool IsNotReleaseCheckBoxEnabled
-        {
-            get { return HasBreakingChanges || HasNewFeatures || HasBugFixes; }
         }
 
         public ObservableCollection<string> Warnings
@@ -190,7 +185,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         private string GetResultVersion( AssemblyVersionInfoCheckResult result )
         {
             var versions = result.Versions.Where( x => x != null );
-            if( versions.Count() > 0 )
+            if( versions.Count() == 1)
             {
                 AssemblyVersionInfo info = versions.First();
 
@@ -203,32 +198,12 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                     return info.AssemblyVersion.ToString();
                 }
             }
-            return null;
+            return "0.0.0";
         }
 
         private void ShowResultWarnings( AssemblyVersionInfoCheckResult result )
         {
-            if( !result.HasNotSharedAssemblyInfo )
-            {
-                Warnings.Add( "No SharedAssemblyInfo file was found in solution directory." );
-            }
-
-            if( result.HasMultipleRelativeLinkInCSProj )
-            {
-                Warnings.Add( "More than one SharedAssemblyInfo link was found in a project file." );
-            }
-
-            if( result.HasMultipleSharedAssemblyInfo )
-            {
-                Warnings.Add( "More than one SharedAssemblyInfo file was found in the solution." );
-            }
-
-            if( result.HasMultipleVersionInOneAssemblyInfoFile )
-            {
-                Warnings.Add( "More than one version was found in a project's Properties/AssemblyInfo.cs." );
-            }
-
-            if( result.Versions.Count == 0 )
+            if( result.Versions.Count > 1 )
             {
                 Warnings.Add( "Couldn't find any version to use." );
             }
@@ -242,7 +217,13 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                 SemanticVersion newVersion;
                 if( IsNotStable )
                 {
-                    newVersion = SemanticVersionGenerator.GenerateSemanticVersion( version, HasBreakingChanges, HasNewFeatures, HasBugFixes, VersionTag );
+                    string message = "New prerelease must be superior to current one";
+                    Warnings.Remove(message);
+                    newVersion = SemanticVersionGenerator.GenerateSemanticVersion(version, HasBreakingChanges, HasNewFeatures, HasBugFixes, VersionTag);
+                    if (newVersion.ToString() == "0.0.0")
+                    {
+                        Warnings.Add(message);
+                    }
                 }
                 else
                 {
