@@ -1,0 +1,78 @@
+﻿<Window x:Class="DotNetUtilitiesApp.GithubDownloader.GithubDownloader"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Open solution from GitHub" SizeToContent="WidthAndHeight">
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
+                <TextBlock Text="{Binding Path=LoggedInUsername, FallbackValue=Anonymous}" />
+            </StatusBarItem>
+            <Separator DockPanel.Dock="Right"/>
+            <StatusBarItem DockPanel.Dock="Right" HorizontalContentAlignment="Right">
+                <TextBlock>Remaining calls: <Run Text="{Binding Path=RemainingApiCalls, FallbackValue=60}"/></TextBlock>
+            </StatusBarItem>
+            <Separator DockPanel.Dock="Right" />
+
+            <StatusBarItem>
+                <TextBlock Text="{Binding Path=StatusText, FallbackValue=Ready}" />
+            </StatusBarItem>
+        </StatusBar>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.ColumnSpan="3" TextAlignment="Center">This will download the files needed for consistency check from a GitHub repository.<LineBreak />
+            This will not download any NuGet packages.</TextBlock>
+
+            <StackPanel Grid.Row="1" Grid.Column="0" Width="150">
+                <Label>Repository user</Label>
+                <TextBox Text="{Binding Path=RepositoryUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=Invenietis}" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Grid.Column="1" Width="150">
+                <Label>Repository name</Label>
+                <TextBox Text="{Binding Path=RepositoryName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=ck-core}" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Grid.Column="2" Width="150">
+                <Label>Git Ref (eg. branch name)</Label>
+                <TextBox Text="{Binding Path=RepositoryRefName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=master}" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="2" Grid.ColumnSpan="3" TextAlignment="Center">
+            <Hyperlink NavigateUri="{Binding Path=GithubRepositoryWebUrl, Mode=OneWay}" RequestNavigate="Hyperlink_RequestNavigate">
+                <Run Text="{Binding Path=GithubRepositoryWebUrl, Mode=OneWay, FallbackValue=https://github.com/Invenietis/ck-core/tree/master}" />
+            </Hyperlink>
+            </TextBlock>
+
+            <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Width="200">
+                <Label>Personal API Access Token</Label>
+                <TextBox Text="{Binding Path=PersonalApiAccessToken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=44cb944bb9fde224ac8b67d03c868ca3c7cbf6e3}" />
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding Path=RememberApiTokenChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Label>Remember token</Label>
+                </StackPanel>
+                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" TextAlignment="Center" TextWrapping="Wrap">
+                Used to authenticate you.<LineBreak />
+                Get a token for your GitHub account from the <Hyperlink ToolTip="https://github.com/settings/applications" NavigateUri="https://github.com/settings/applications" RequestNavigate="Hyperlink_RequestNavigate">GitHub website</Hyperlink>.
+                </TextBlock>
+
+            </StackPanel>
+
+            <Button Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,10" Padding="8,3,8,3" Command="{Binding Path=OpenSolutionCommand}">Open</Button>
+
+            <ProgressBar Grid.Row="5" Grid.ColumnSpan="3" Height="17" IsIndeterminate="{Binding Path=IsProgressIndeterminate}" Value="{Binding Path=ProgressValue}"/>
+        </Grid>
+
+    </DockPanel>
+</Window>

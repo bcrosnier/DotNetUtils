@@ -10,6 +10,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="_Open solution" Command="{Binding Path=LoadSolutionFileCommand}" />
+                <MenuItem Header="_Open from GitHub repository" Click="OpenFromGithubRepo_Click" />
             </MenuItem>
             <MenuItem Header="Check">
                 <MenuItem Header="Check all" Command="{Binding Path=CheckAllCommand}" />

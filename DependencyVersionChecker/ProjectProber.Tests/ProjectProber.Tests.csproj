@@ -48,6 +48,7 @@
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -58,6 +59,7 @@
   <ItemGroup>
     <Compile Include="AssemblyVersionInfoCheckTests.cs" />
     <Compile Include="AssemblyVersionInfoParserTests.cs" />
+    <Compile Include="GitHubTests.cs" />
     <Compile Include="ProjectReferenceTests.cs" />
     <Compile Include="SolutionCheckTests.cs" />
     <Compile Include="SolutionParseTests.cs" />

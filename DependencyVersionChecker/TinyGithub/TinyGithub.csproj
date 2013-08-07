@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="GithubApiTokenAuthenticator.cs" />
     <Compile Include="GithubResponse.cs" />
+    <Compile Include="ModelExtensions.cs" />
+    <Compile Include="Models\GitBlobInfo.cs" />
     <Compile Include="Models\GitCommitAuthor.cs" />
     <Compile Include="Models\GitCommitObject.cs" />
     <Compile Include="Models\GithubCommit.cs" />

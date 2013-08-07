@@ -81,5 +81,12 @@ namespace DotNetUtilitiesApp
             //this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
             this.TabControl.SelectedIndex = 3;
         }
+
+        private void OpenFromGithubRepo_Click( object sender, RoutedEventArgs e )
+        {
+            Window w = new GithubDownloader.GithubDownloader();
+
+            w.Show();
+        }
     }
 }

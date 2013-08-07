@@ -66,7 +66,7 @@ namespace AssemblyProber
 
         /// <summary>
         /// Utility class for describing an assembly, and its dependencies, using the specified borderChecker to determine whether it should recurse on given references.
-        /// <param name="borderChecker">Delegate which determines whether it should recurse on given references. Will recurse it it returns null.</param>
+        /// <param name="borderChecker">Delegate which determines whether it should recurse on given references. Will recurse if it returns null.</param>
         /// <param name="logger">Parent IActivityLogger to hook on.</param>
         /// </summary>
         public AssemblyLoader( IActivityLogger logger, BorderChecker borderChecker )
@@ -82,7 +82,7 @@ namespace AssemblyProber
 
         /// <summary>
         /// Utility class for describing an assembly, and its dependencies, using the specified borderChecker to determine whether it should recurse on given references.
-        /// <param name="borderChecker">Delegate which determines whether it should recurse on given references. Will recurse it it returns null.</param>
+        /// <param name="borderChecker">Delegate which determines whether it should recurse on given references. Will recurse if it returns null.</param>
         /// </summary>
         public AssemblyLoader( BorderChecker borderChecker )
             : this( null, borderChecker ) { }

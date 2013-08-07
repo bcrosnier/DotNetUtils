@@ -15,7 +15,7 @@ namespace TinyGithub.Tests
         [Test]
         public void AnonymousGetRef()
         {
-            TinyGithub github = new TinyGithub();
+            Github github = new Github();
 
             GithubResponse<GithubRef> r = github.GithubRequest<GithubRef>( TEST_GITHUB_REF );
 
@@ -32,7 +32,7 @@ namespace TinyGithub.Tests
         {
             InitGithubApiToken();
 
-            TinyGithub github = new TinyGithub();
+            Github github = new Github();
 
             github.SetApiToken( _githubApiToken );
 
@@ -51,14 +51,14 @@ namespace TinyGithub.Tests
         {
             InitGithubApiToken();
 
-            TinyGithub github = new TinyGithub();
+            Github github = new Github();
             github.SetApiToken( _githubApiToken );
 
             GithubResponse<GithubRef> refResponse = github.GithubRequest<GithubRef>( TEST_GITHUB_REF );
 
             Assert.That( refResponse.Content.Object.Type == "commit" );
 
-            string commitResource = TinyGithub.TrimUrl( refResponse.Content.Object.Url );
+            string commitResource = Github.TrimUrl( refResponse.Content.Object.Url );
 
             GithubResponse<GithubCommit> commitResponse = github.GithubRequest<GithubCommit>( commitResource );
 

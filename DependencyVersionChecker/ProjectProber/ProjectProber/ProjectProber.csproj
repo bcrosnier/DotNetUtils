@@ -62,6 +62,7 @@
     <Compile Include="AssemblyVersionInfoCheckResult.cs" />
     <Compile Include="AssemblyVersionInfoParser.cs" />
     <Compile Include="CSProjCompileLinkInfo.cs" />
+    <Compile Include="GithubRepositoryManager.cs" />
     <Compile Include="Impl\AssemblyVersionInfo.cs" />
     <Compile Include="Impl\NuGetPackageReference.cs" />
     <Compile Include="Impl\ProjectReference.cs" />
@@ -111,6 +112,10 @@
     <ProjectReference Include="..\..\AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj">
       <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>
       <Name>AssemblyProber %28AssemblyProber\AssemblyProber%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TinyGithub\TinyGithub.csproj">
+      <Project>{707864d7-7a7f-4aab-9308-8519fb974e92}</Project>
+      <Name>TinyGithub</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
