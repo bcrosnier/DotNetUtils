@@ -58,36 +58,37 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                     }
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyFileVersion:
-                    _errorMessage = "Plusieurs AssemblyFileVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyFileVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyInformationVersion:
-                    _errorMessage = "Plusieurs AssemblyInformationVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyInformationVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyVersion:
-                    _errorMessage = "Plusieurs AssemblyVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleRelativeLinkInCSProj:
-                    _errorMessage = "Des liens relatifs menant à des fichiers différents ont été trouvés.";
+                    _errorMessage = "Relative links leading to different files were found.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleSharedAssemblyInfo:
                     _errorMessage = "More than one SharedAssemblyInfo file was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfoFile:
-                    _errorMessage = "Different version was found in a project's Properties/AssemblyInfo.cs.";
+                    _errorMessage = "Different versions were found in a project's Properties/AssemblyInfo.cs.";
                     break;
                 case AssemblyVersionErrorType.HasOneVersionNotSemanticVersionCompliant:
-                    _errorMessage = "One or more versions is not semantic version compliant.";
+                    _errorMessage = "At least one version is not semantic version compliant.";
                     break;
                 case AssemblyVersionErrorType.HasRelativeLinkInCSProjNotFound:
-                    _errorMessage = "Un fichier sans lien relatif a été trouvé.";
+                    _errorMessage = "A file without relative links was found.";
                     break;
                 case AssemblyVersionErrorType.HasNotSharedAssemblyInfo:
                     _errorMessage = "No SharedAssemblyInfo file was found in solution directory.";
                     break;
                 default:
-                    _errorMessage = "Plusieurs AssemblyVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyVersion was found in the solution.";
                     break;
             }
+
         }
 
         public UIElement CreateDetailControl()
@@ -227,15 +228,15 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             {
                 filesWithNonSemanticVersion = _result.SharedAssemblyInfoVersions
                     .Where(x => x.AssemblyVersion != x.AssemblyFileVersion
-                        || (x.AssemblyInformationVersion != null
-                        && x.AssemblyVersion != x.AssemblyInformationVersion.Version) );
+                        || (x.AssemblyInformationSemanticVersion != null
+                        && x.AssemblyVersion != x.AssemblyInformationSemanticVersion.Version) );
             }
             else
             {
                 filesWithNonSemanticVersion = _result.AssemblyVersions
                     .Where(x => x.AssemblyVersion != x.AssemblyFileVersion
-                        || (x.AssemblyInformationVersion != null
-                        && x.AssemblyVersion != x.AssemblyInformationVersion.Version));
+                        || (x.AssemblyInformationSemanticVersion != null
+                        && x.AssemblyVersion != x.AssemblyInformationSemanticVersion.Version));
             }
 
             dg.ItemsSource = filesWithNonSemanticVersion;
@@ -417,12 +418,12 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             if (!_result.HasNotSharedAssemblyInfo)
             {
                 filesWithoutVersion = _result.SharedAssemblyInfoVersions
-                    .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationVersion == null);
+                    .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationSemanticVersion == null);
             }
             else
             {
                 filesWithoutVersion = _result.AssemblyVersions
-                    .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationVersion == null);
+                    .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationSemanticVersion == null);
             }
 
             foreach (var fileWithoutVersion in filesWithoutVersion)

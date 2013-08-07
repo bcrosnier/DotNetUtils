@@ -10,7 +10,8 @@ namespace ProjectProber.Tests
         public static readonly string TEST_WITHSHAREDASSEMBLYINFO_SLN_FILE_PATH = Path.Combine( "..", "..", "..", "..", "TestSolutions", "WithSharedAssemblyInfo", "CK-Core.sln" );
         public static readonly string TEST_WITHDIFFERENTVERSION_SLN_FILE_PATH = Path.Combine( "..", "..", "..", "..", "TestSolutions", "WithDifferentVersion", "CK-Core.sln" );
         public static readonly string TEST_WITHDIFFERENTVERSIONINASSEMBLYINFO_SLN_FILE_PATH = Path.Combine( "..", "..", "..", "..", "TestSolutions", "WithDifferentVersionInAssemblyInfo", "CK-Desktop.sln" );
-        public static readonly string TEST_WITHSHAREDASSEMBLYINFOANDASSEMBLYINFO_SLN_FILE_PATH = Path.Combine( "..", "..", "..", "..", "TestSolutions", "WithSharedAssemblyInfoAndAssemblyInfo", "CK-Core.sln" );
+        public static readonly string TEST_WITHSHAREDASSEMBLYINFOANDASSEMBLYINFO_SLN_FILE_PATH = Path.Combine("..", "..", "..", "..", "TestSolutions", "WithSharedAssemblyInfoAndAssemblyInfo", "CK-Core.sln");
+        public static readonly string TEST_WITHASSEMBLYINFONOTSEMANTICVERSIONCOMPLIANTE_SLN_FILE_PATH = Path.Combine("..", "..", "..", "..", "TestSolutions", "WithAssemblyInfoNotSemanticVersionCompliant", "CK-Core.sln");
 
         [Test]
         public void CheckAssemblyVersionFileTest()
@@ -62,6 +63,18 @@ namespace ProjectProber.Tests
             Assert.That( result.HasMultipleVersionInOneAssemblyInfoFile, Is.False );
             Assert.That( result.HasRelativeLinkInCSProjNotFound, Is.False );
             Assert.That( result.HasFileWithoutVersion, Is.False );
+
+            result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles(TEST_WITHASSEMBLYINFONOTSEMANTICVERSIONCOMPLIANTE_SLN_FILE_PATH);
+            Assert.That(result.HasNotSharedAssemblyInfo, Is.False);
+            Assert.That(result.HasOneVersionNotSemanticVersionCompliant, Is.True);
+            Assert.That(result.HasMultipleAssemblyFileVersion, Is.False);
+            Assert.That(result.HasMultipleAssemblyInformationVersion, Is.False);
+            Assert.That(result.HasMultipleAssemblyVersion, Is.False);
+            Assert.That(result.HasMultipleRelativeLinkInCSProj, Is.False);
+            Assert.That(result.HasMultipleSharedAssemblyInfo, Is.False);
+            Assert.That(result.HasMultipleVersionInOneAssemblyInfoFile, Is.True);
+            Assert.That(result.HasRelativeLinkInCSProjNotFound, Is.False);
+            Assert.That(result.HasFileWithoutVersion, Is.False);
         }
     }
 }

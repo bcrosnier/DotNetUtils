@@ -139,35 +139,38 @@ namespace ProjectProber
             if( _versions.Count > 1 )
             {
                 for( int i = 1; i < _versions.Count; i++ )
-                    CheckAssemblyInfo( _versions.First(), _versions[i] );
+                    CheckMultipleVersionInAssemblyInfo( _versions.First(), _versions[i] );
             }
         }
 
-        private void CheckAssemblyInfo( AssemblyVersionInfo a1, AssemblyVersionInfo a2 )
+        private void CheckMultipleVersionInAssemblyInfo( AssemblyVersionInfo a1, AssemblyVersionInfo a2 )
         {
             if( a1.AssemblyVersion != null && a2.AssemblyVersion != null && a1.AssemblyVersion != a2.AssemblyVersion ) _hasMultipleAssemblyVersion = true;
             if( a1.AssemblyFileVersion != null && a2.AssemblyFileVersion != null && a1.AssemblyFileVersion != a2.AssemblyFileVersion ) _hasMultipleAssemblyFileVersion = true;
-            if( a1.AssemblyInformationVersion != null && a2.AssemblyInformationVersion != null && a1.AssemblyInformationVersion != a2.AssemblyInformationVersion ) _hasMultipleAssemblyInformationVersion = true;
+            if (a1.AssemblyInformationSemanticVersion != null && a2.AssemblyInformationSemanticVersion != null && a1.AssemblyInformationSemanticVersion != a2.AssemblyInformationSemanticVersion) _hasMultipleAssemblyInformationVersion = true;
+            else if (a1.AssemblyInformationVersion != null && a2.AssemblyInformationVersion != null && a1.AssemblyInformationVersion != a2.AssemblyInformationVersion) _hasMultipleAssemblyInformationVersion = true;
+        }
+
+        private void CheckSemanticVersionCompliant(AssemblyVersionInfo a1)
+        {
             SemanticVersion tempToTest;
-            if( a1.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( a1.AssemblyFileVersion.ToString(), out tempToTest ) ) _hasOneVersionNotSemanticVersionCompliant = true;
-            if( a1.AssemblyVersion != null && !SemanticVersion.TryParseStrict( a1.AssemblyVersion.ToString(), out tempToTest ) ) _hasOneVersionNotSemanticVersionCompliant = true;
-            if( a1.AssemblyInformationVersion != null && !SemanticVersion.TryParseStrict( a1.AssemblyInformationVersion.ToString(), out tempToTest ) ) _hasOneVersionNotSemanticVersionCompliant = true;
-            if( a2.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( a2.AssemblyFileVersion.ToString(), out tempToTest ) ) _hasOneVersionNotSemanticVersionCompliant = true;
-            if( a2.AssemblyVersion != null && !SemanticVersion.TryParseStrict( a2.AssemblyVersion.ToString(), out tempToTest ) ) _hasOneVersionNotSemanticVersionCompliant = true;
-            if( a2.AssemblyInformationVersion != null && !SemanticVersion.TryParseStrict( a2.AssemblyInformationVersion.ToString(), out tempToTest ) ) _hasOneVersionNotSemanticVersionCompliant = true;
+            if (a1.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict(a1.AssemblyFileVersion.ToString(), out tempToTest)) _hasOneVersionNotSemanticVersionCompliant = true;
+            if (a1.AssemblyVersion != null && !SemanticVersion.TryParseStrict(a1.AssemblyVersion.ToString(), out tempToTest)) _hasOneVersionNotSemanticVersionCompliant = true;
+            if (a1.AssemblyInformationVersion != null && !SemanticVersion.TryParseStrict(a1.AssemblyInformationVersion.ToString(), out tempToTest)) _hasOneVersionNotSemanticVersionCompliant = true;
         }
 
         private void CheckAssemblyVersionInfo( List<AssemblyVersionInfo> assemblyVersionInfo )
         {
             foreach( AssemblyVersionInfo version in assemblyVersionInfo )
             {
-                if( version.AssemblyVersion == null && version.AssemblyFileVersion == null && version.AssemblyInformationVersion == null )
+                if( version.AssemblyVersion == null && version.AssemblyFileVersion == null && ( version.AssemblyInformationSemanticVersion == null || version.AssemblyInformationVersion != null ) )
                 {
                     _hasFileWithoutVersion = true;
                     continue;
                 }
                 if( version.AssemblyVersion != null && _versions.Count == 0 )
                 {
+                    CheckSemanticVersionCompliant(version);
                     _versions.Add( version );
                     if( CheckMultipleVersionInOneAssemblyInfoFile( version ) ) _hasMultipleVersionInOneAssemblyInfoFile = true;
                 }
@@ -182,6 +185,7 @@ namespace ProjectProber
                 }
                 if( !temp )
                 {
+                    CheckSemanticVersionCompliant(version);
                     _versions.Add( version );
                     if( CheckMultipleVersionInOneAssemblyInfoFile( version ) ) _hasMultipleVersionInOneAssemblyInfoFile = true;
                 }
@@ -191,6 +195,7 @@ namespace ProjectProber
         private void CheckCSProjCompileLinkInfo( List<CSProjCompileLinkInfo> csProjs )
         {
             _hasNotSharedAssemblyInfo = false;
+            CheckSemanticVersionCompliant(SharedAssemblyInfoVersions.First());
             _versions.Add( SharedAssemblyInfoVersions.First() );
             _hasMultipleVersionInOneAssemblyInfoFile = CheckMultipleVersionInOneAssemblyInfoFile( SharedAssemblyInfoVersions.First() );
             IList<CSProjCompileLinkInfo> csProjCompileLinkInfoToCompare = new List<CSProjCompileLinkInfo>();
@@ -224,7 +229,9 @@ namespace ProjectProber
 
         private bool CheckMultipleVersionInOneAssemblyInfoFile( AssemblyVersionInfo assembly )
         {
-            return assembly.AssemblyVersion != assembly.AssemblyFileVersion || (assembly.AssemblyInformationVersion != null && assembly.AssemblyVersion != assembly.AssemblyInformationVersion.Version);
+            return assembly.AssemblyVersion != assembly.AssemblyFileVersion
+                || (assembly.AssemblyInformationSemanticVersion != null && assembly.AssemblyVersion != assembly.AssemblyInformationSemanticVersion.Version)
+                || (assembly.AssemblyInformationVersion != null && assembly.AssemblyVersion != assembly.AssemblyInformationVersion);
         }
     }
 }

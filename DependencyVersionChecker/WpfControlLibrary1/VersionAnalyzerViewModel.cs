@@ -148,9 +148,9 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             {
                 AssemblyVersionInfo info = versions.First();
 
-                if (info.AssemblyInformationVersion != null)
+                if (info.AssemblyInformationSemanticVersion != null)
                 {
-                    return info.AssemblyInformationVersion.ToString();
+                    return info.AssemblyInformationSemanticVersion.ToString();
                 }
                 else if (info.AssemblyVersion != null)
                 {

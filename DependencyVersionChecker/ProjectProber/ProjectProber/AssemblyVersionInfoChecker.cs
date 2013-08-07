@@ -5,6 +5,7 @@ using System.Linq;
 using CK.Core;
 using ProjectProber.Impl;
 using ProjectProber.Interfaces;
+using CK.Package;
 
 namespace ProjectProber
 {
@@ -42,15 +43,30 @@ namespace ProjectProber
             //cherche les SharedAssemblyInfo.cs et les lie directement à leurs versions
             foreach( string path in Directory.GetFiles( solutionDirectoryPath, "SharedAssemblyInfo.cs", SearchOption.AllDirectories ) )
             {
-                AssemblyVersionInfo temp = new AssemblyVersionInfo( path,
-                    null,
-                    AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN ),
-                    AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN ),
-                    AssemblyVersionInfoParser.GetSemanticAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN ) );
-                sharedAssemblyInfoVersion.Add( temp );
+                SemanticVersion semanticVersionTemp = AssemblyVersionInfoParser.GetSemanticAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN );
+                if (semanticVersionTemp != null)
+                {
+                    AssemblyVersionInfo temp = new AssemblyVersionInfo(path,
+                        null,
+                        AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(path, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN),
+                        AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(path, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN),
+                        semanticVersionTemp);
+
+                    sharedAssemblyInfoVersion.Add(temp);
+                }
+                else
+                {
+                    AssemblyVersionInfo temp = new AssemblyVersionInfo(path,
+                        null,
+                        AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(path, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN),
+                        AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(path, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN),
+                        AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(path, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN));
+
+                    sharedAssemblyInfoVersion.Add(temp);
+                }
             }
 
-            ISolution solution = SolutionFactory.ReadFromSolutionFile( solutionFilePath );
+            ProjectProber.Interfaces.ISolution solution = SolutionFactory.ReadFromSolutionFile( solutionFilePath );
 
             IEnumerable<ISolutionProjectItem> cSharpProjects = solution.Projects.Where( x => x.GetItemType() == SolutionProjectType.VISUAL_C_SHARP );
 

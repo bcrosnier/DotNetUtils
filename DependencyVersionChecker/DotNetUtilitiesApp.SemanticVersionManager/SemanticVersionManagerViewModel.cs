@@ -189,9 +189,9 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             {
                 AssemblyVersionInfo info = versions.First();
 
-                if( info.AssemblyInformationVersion != null )
+                if( info.AssemblyInformationSemanticVersion != null )
                 {
-                    return info.AssemblyInformationVersion.ToString();
+                    return info.AssemblyInformationSemanticVersion.ToString();
                 }
                 else if( info.AssemblyVersion != null )
                 {
@@ -212,7 +212,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         private void UpdateNewVersion()
         {
             SemanticVersion version;
-            if( SemanticVersion.TryParse( CurrentVersion, out version, false ) )
+            if( SemanticVersion.TryParse( CurrentVersion, out version, true ) )
             {
                 SemanticVersion newVersion;
                 if( IsNotStable )

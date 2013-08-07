@@ -29,7 +29,7 @@ namespace ProjectProber
         /// <example>
         /// [assembly: AssemblyInformationalVersion( "2.8.14-develop" )]
         /// </example>
-        public static readonly Regex INFO_VERSION_ASSEMBLY_PATTERN = new Regex( @"\[assembly: AssemblyInformationalVersion\(\s*\""s*(?<Version>\d+(\.\d+){2})-(?<Release>[0-9a-z-.]*)?\s*\""\s*\)\]", RegexOptions.Compiled );
+        public static readonly Regex INFO_VERSION_ASSEMBLY_PATTERN = new Regex( @"\[assembly: AssemblyInformationalVersion\(\s*\""s*(?<Version>\d+(\.\d+){0,3})-?(?<Release>[0-9a-z-.]*)?\s*\""\s*\)\]", RegexOptions.Compiled );
 
         /// <summary>
         /// Read a version in SharedAssemblyInfo.cs or AssemblyInfo.cs file.
