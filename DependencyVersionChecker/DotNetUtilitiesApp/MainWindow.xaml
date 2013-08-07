@@ -11,8 +11,12 @@
             <MenuItem Header="File">
                 <MenuItem Header="_Open solution" Command="{Binding Path=LoadSolutionFileCommand}" />
             </MenuItem>
+            <MenuItem Header="Check">
+                <MenuItem Header="Check all" Command="{Binding Path=CheckAllCommand}" />
+                <MenuItem Header="Check current" Command="{Binding Path=CheckCurrentCommand}" />
+            </MenuItem>
         </Menu>
-        <TabControl x:Name="TabControl">
+        <TabControl x:Name="TabControl" SelectedIndex="{Binding Path=TabIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <TabItem Header="Assembly analyzer">
                 <Grid>
                     <assemblyProber:AssemblyProberUserControl x:Name="AssemblyProberUserControl" />

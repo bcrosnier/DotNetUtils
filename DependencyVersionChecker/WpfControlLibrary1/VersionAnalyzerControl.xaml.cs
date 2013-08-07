@@ -35,6 +35,11 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             _viewModel.LoadFromSolution(slnPath);
         }
 
+        public void CleanUp()
+        {
+            _viewModel.CleanUp();
+        }
+
         private void OpenSolution_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog d = new OpenFileDialog();

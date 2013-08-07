@@ -83,6 +83,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj">
+      <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>
+      <Name>AssemblyProber %28AssemblyProber\AssemblyProber%29</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ProjectProber\ProjectProber\ProjectProber.csproj">
       <Project>{7562aa82-1946-4d4f-9672-cc3d2322a4f8}</Project>
       <Name>ProjectProber %28ProjectProber\ProjectProber%29</Name>

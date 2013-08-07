@@ -170,5 +170,10 @@ namespace DotNetUtilitiesApp.AssemblyProber
         {
             _activeFolder = Path.GetDirectoryName( solutionPath );
         }
+
+        //public void CleanUp()
+        //{
+        //    _viewModel.CleanUp();
+        //}
     }
 }

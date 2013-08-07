@@ -2,11 +2,11 @@
 {
     public class CSProjCompileLinkInfo
     {
-        private string SharedAssemblyInfoRelativePath { get; set; }
+        public string SharedAssemblyInfoRelativePath { get; private set; }
 
-        private string AssociateLink { get; set; }
+        public string AssociateLink { get; private set; }
 
-        private string Project { get; set; }
+        public string Project { get; private set; }
 
         public CSProjCompileLinkInfo( string sharedAssemblyInfoRelativePath, string link, string project )
         {
