@@ -13,9 +13,17 @@ namespace DotNetUtilitiesApp
         private MainWindowViewModel _viewModel;
         private GithubDownloader.GithubDownloader _githubDownloader;
         private string _runningSlnPath;
+        private DirectoryInfo _tempDownloadDirectory;
 
         public MainWindow()
         {
+            string tempDownloadPath = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() );
+
+            _tempDownloadDirectory = new DirectoryInfo( tempDownloadPath );
+            _tempDownloadDirectory.Create();
+
+            this.Closing += MainWindow_Closing;
+
             // _runningSlnPath is filled in ProcessArgs(), or null'd
 
             _viewModel = new MainWindowViewModel();
@@ -27,6 +35,11 @@ namespace DotNetUtilitiesApp
 
             ProcessArgs();
 
+        }
+
+        void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
+        {
+            _tempDownloadDirectory.Delete( true );
         }
 
         private void ProcessArgs()
@@ -96,7 +109,7 @@ namespace DotNetUtilitiesApp
         {
             if( _githubDownloader == null )
             {
-                _githubDownloader = new GithubDownloader.GithubDownloader();
+                _githubDownloader = new GithubDownloader.GithubDownloader(_tempDownloadDirectory);
             }
 
             _githubDownloader.Closing += ( s, e1 ) => { _githubDownloader = null; };

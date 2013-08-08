@@ -23,6 +23,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         public event EventHandler<StringEventArgs> SolutionPathAvailable;
 
+        private readonly DirectoryInfo _tempDownloadDirectory;
         private string _loggedInUsername;
         private string _remainingApiCalls;
         private string _statusText;
@@ -210,11 +211,13 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         #endregion Observed properties
 
-        #region Constructor
+        #region Constructor/Disposition
 
-        internal GithubDownloaderViewModel()
+        internal GithubDownloaderViewModel( DirectoryInfo tempDownloadDirectory )
         {
             _github = new Github();
+
+            _tempDownloadDirectory = tempDownloadDirectory;
 
             LoadSettings();
 
@@ -222,6 +225,13 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
             UpdateRateLimit();
         }
+
+        private void PrepareCommands()
+        {
+            OpenSolutionCommand = new RelayCommand( ExecuteOpenSolution, CanExecuteOpenSolution );
+        }
+
+        #endregion Constructor
 
         private void LoadSettings()
         {
@@ -253,13 +263,6 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
             Settings.Default.Save();
         }
-
-        private void PrepareCommands()
-        {
-            OpenSolutionCommand = new RelayCommand( ExecuteOpenSolution, CanExecuteOpenSolution );
-        }
-
-        #endregion Constructor
 
         #region Private methods
 
@@ -471,7 +474,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
                         selections.Add( longPath, shortName );
                     }
 
-                    ChoiceWindowResult<string> result = ChoiceWindow.ShowSelectWindow<string>( "Select solution", "Multiple solution were found in repository. Choose a file:", selections.Values );
+                    ChoiceWindowResult<string> result = ChoiceWindow.ShowSelectWindow<string>( "Select solution", "More than one solution was found in this repository.\nPlease choose a solution file:", selections.Values );
 
                     if( result.Result == System.Windows.MessageBoxResult.OK && result.Selected != null )
                     {
@@ -503,7 +506,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         private IEnumerable<string> DoDownloadOpenSolutionTask()
         {
-            string baseDirectory = Environment.CurrentDirectory;
+            string baseDirectory = _tempDownloadDirectory.FullName;
             string directoryPath = Path.Combine( baseDirectory, RepositoryUser, RepositoryName, RepositoryRefName );
 
             string resource = String.Format( "repos/{0}/{1}/git/refs/heads/{2}", RepositoryUser, RepositoryName, RepositoryRefName );

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Navigation;
 using DotNetUtilitiesApp.WpfUtils;
@@ -14,9 +15,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
         public event EventHandler<StringEventArgs> SolutionFileReady;
         GithubDownloaderViewModel _viewModel;
 
-        public GithubDownloader()
+        public GithubDownloader(DirectoryInfo tempDownloadDir)
         {
-            _viewModel = new GithubDownloaderViewModel();
+            _viewModel = new GithubDownloaderViewModel(tempDownloadDir);
             _viewModel.RaisedWarning +=_viewModel_RaisedWarning;
 
             _viewModel.SolutionPathAvailable += _viewModel_SolutionPathAvailable;

@@ -52,11 +52,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
             MessageText = String.Format( "Analyzing solution: {0}...", solutionFilePath );
             Task task = Task.Factory.StartNew( () =>
             {
-                DefaultActivityLogger logger = new DefaultActivityLogger();
-
-                logger.Tap.Register( new ActivityLoggerConsoleSink() );
-
-                SolutionCheckResult result = SolutionChecker.CheckSolutionFile( solutionFilePath, logger );
+                SolutionCheckResult result = SolutionChecker.CheckSolutionFile( solutionFilePath );
                 Invoke.OnAppThread( () =>
                 {
                     SetSolutionResults( result );
