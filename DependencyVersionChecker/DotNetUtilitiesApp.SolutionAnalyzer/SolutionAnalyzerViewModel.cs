@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using CK.Core;
 using DotNetUtilitiesApp.WpfUtils;
 using NuGet;
 using ProjectProber;
@@ -45,7 +46,11 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
             MessageText = String.Format( "Analyzing solution: {0}...", solutionFilePath );
             Task task = Task.Factory.StartNew( () =>
             {
-                SolutionCheckResult result = SolutionChecker.CheckSolutionFile( solutionFilePath );
+                DefaultActivityLogger logger = new DefaultActivityLogger();
+
+                logger.Tap.Register( new ActivityLoggerConsoleSink() );
+
+                SolutionCheckResult result = SolutionChecker.CheckSolutionFile( solutionFilePath, logger );
                 Invoke.OnAppThread( () =>
                 {
                     SetSolutionResults( result );
@@ -88,7 +93,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine( String.Format( "Solution analyzed: {0}", result.SolutionPath ) );
-            sb.AppendLine( String.Format( "{0} projects, {1} NuGet package references", result.Projects.Count(), result.NuGetPackages.Count() ) );
+            sb.AppendLine( String.Format( "{0} projects, {1} NuGet packageRef references", result.Projects.Count(), result.NuGetPackages.Count() ) );
 
             if( result.PackagesWithMultipleVersions.Count > 0 )
             {
@@ -99,7 +104,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
                         pair.Key, pair.Value.Count()
                         ) );
 
-                    foreach( IPackage packageVersion in pair.Value.OrderBy( x => x.Id ).ThenBy( x => x.Version ) )
+                    foreach( INuGetPackageReference packageVersion in pair.Value.OrderBy( x => x.Id ).ThenBy( x => x.Version ) )
                     {
                         sb.AppendLine( String.Format( "\t\t{0}, version {1} is referenced by these projects:",
                             packageVersion.Id, packageVersion.Version.ToString()
@@ -118,7 +123,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
             }
             else
             {
-                sb.AppendLine( "All solution projects are using the same NuGet package versions." );
+                sb.AppendLine( "All solution projects are using the same NuGet packageRef versions." );
             }
 
             sb.AppendLine();
@@ -132,14 +137,14 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
             sb.AppendLine( "NuGet packages referenced by solution projects:" );
             if( result.Projects.Count() > 0 )
             {
-                foreach( IPackage package in result.NuGetPackages.OrderBy( x => x.Id ).ThenBy( x => x.Version ) )
+                foreach( INuGetPackageReference packageRef in result.NuGetPackages.Keys.OrderBy( x => x.Id ).ThenBy( x => x.Version ) )
                 {
-                    sb.AppendLine( String.Format( "\t{0}, version {1})", package.Id, package.Version.ToString() ) );
+                    sb.AppendLine( String.Format( "\t{0}, version {1}", packageRef.Id, packageRef.Version.ToString() ) );
                 }
             }
             else
             {
-                sb.AppendLine( "This solution's projects do not reference any NuGet package." );
+                sb.AppendLine( "This solution's projects do not reference any NuGet packageRef." );
             }
 
             MessageText = sb.ToString();

@@ -59,7 +59,6 @@
   <ItemGroup>
     <Compile Include="AssemblyVersionInfoCheckTests.cs" />
     <Compile Include="AssemblyVersionInfoParserTests.cs" />
-    <Compile Include="GitHubTests.cs" />
     <Compile Include="ProjectReferenceTests.cs" />
     <Compile Include="SolutionCheckTests.cs" />
     <Compile Include="SolutionParseTests.cs" />

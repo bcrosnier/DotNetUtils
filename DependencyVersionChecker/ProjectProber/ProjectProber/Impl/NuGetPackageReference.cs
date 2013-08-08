@@ -53,5 +53,53 @@ namespace ProjectProber.Impl
             else
                 return String.Format( "{0}, version {1}", Id, Version );
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals( object obj )
+        {
+            NuGetPackageReference packageRef = obj as NuGetPackageReference;
+            return packageRef != null && this.Equals( packageRef );
+        }
+
+        public static bool operator ==( NuGetPackageReference a, NuGetPackageReference b )
+        {
+            if( System.Object.ReferenceEquals( a, b ) )
+            {
+                return true;
+            }
+            if( ((object)a == null) || ((object)b == null) )
+            {
+                return false;
+            }
+
+            return a.Equals( b );
+        }
+
+        public static bool operator !=( NuGetPackageReference a, NuGetPackageReference b )
+        {
+            return !(a == b);
+        }
+
+        public bool Equals( NuGetPackageReference r )
+        {
+            return Id == r.Id && Version == r.Version;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked 
+            {
+                int hash = 17;
+                hash = hash * 23 + Id.GetHashCode();
+                hash = hash * 23 + Version.GetHashCode();
+                //if( TargetFramework != null )
+                //    hash = hash * 23 + TargetFramework.FullName.GetHashCode();
+                return hash;
+            }
+        }
     }
 }

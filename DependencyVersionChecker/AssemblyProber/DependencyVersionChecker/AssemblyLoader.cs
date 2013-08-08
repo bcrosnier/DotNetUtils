@@ -351,7 +351,7 @@ namespace AssemblyProber
                     //}
                     //else
                     //{
-                    outputInfo.InternalDependencies.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
+                        outputInfo.InternalDependencies.Add( referenceAssemblyName.FullName, referenceAssemblyInfo );
                     //}
                 }
             }

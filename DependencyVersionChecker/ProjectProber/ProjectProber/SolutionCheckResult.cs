@@ -18,7 +18,7 @@ namespace ProjectProber
         /// <summary>
         /// Evaluated NuGet packages from all projects of the solution.
         /// </summary>
-        public IEnumerable<IPackage> NuGetPackages { get; private set; }
+        public IReadOnlyDictionary<INuGetPackageReference, IPackage> NuGetPackages { get; private set; }
 
         /// <summary>
         /// Evaluated project items in the solution.
@@ -30,7 +30,7 @@ namespace ProjectProber
         /// </summary>
         /// <remarks>
         /// </remarks>
-        public IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<IProjectReference>> ProjectAssemblyReferences
+        public IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<IProjectAssemblyReference>> ProjectAssemblyReferences
         {
             get;
             private set;
@@ -56,14 +56,14 @@ namespace ProjectProber
         /// Key: CK.Core
         /// Value: { "CK.Core.2.1.0", "CK.Core.2.8.5" }
         /// </example>
-        public IReadOnlyDictionary<string, IEnumerable<IPackage>> PackagesWithMultipleVersions
+        public IReadOnlyDictionary<string, IEnumerable<INuGetPackageReference>> PackagesWithMultipleVersions
         {
             get;
             private set;
         }
 
-        internal SolutionCheckResult( string solutionPath, IEnumerable<IPackage> scannedPackages, IEnumerable<ISolutionProjectItem> projects,
-            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<IProjectReference>> assemblyReferences,
+        internal SolutionCheckResult( string solutionPath, IReadOnlyDictionary<INuGetPackageReference, IPackage> scannedPackages, IEnumerable<ISolutionProjectItem> projects,
+            IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<IProjectAssemblyReference>> assemblyReferences,
             IReadOnlyDictionary<ISolutionProjectItem, IEnumerable<INuGetPackageReference>> packageReferences )
         {
             SolutionPath = solutionPath;
@@ -73,24 +73,24 @@ namespace ProjectProber
             ProjectNugetReferences = packageReferences;
 
             // Looks for multiple versions of each NuGet package.
-            Dictionary<string, List<IPackage>> packagesPerId = new Dictionary<string, List<IPackage>>();
+            Dictionary<string, List<INuGetPackageReference>> packagesPerId = new Dictionary<string, List<INuGetPackageReference>>();
 
-            foreach( IPackage package in NuGetPackages )
+            foreach( INuGetPackageReference packageRef in NuGetPackages.Keys )
             {
-                List<IPackage> packageVersions;
-                if( !packagesPerId.TryGetValue( package.Id, out packageVersions ) )
+                List<INuGetPackageReference> packageVersions;
+                if( !packagesPerId.TryGetValue( packageRef.Id, out packageVersions ) )
                 {
                     // Package Id is not in the list
-                    packageVersions = new List<IPackage>();
-                    packagesPerId.Add( package.Id, packageVersions );
+                    packageVersions = new List<INuGetPackageReference>();
+                    packagesPerId.Add( packageRef.Id, packageVersions );
                 }
 
-                packageVersions.Add( package );
+                packageVersions.Add( packageRef );
             }
 
             PackagesWithMultipleVersions = packagesPerId
                 .Where( x => x.Value.Count > 1 )
-                .ToDictionary( x => x.Key, x => (IEnumerable<IPackage>)x.Value );
+                .ToDictionary( x => x.Key, x => (IEnumerable<INuGetPackageReference>)x.Value );
         }
     }
 }

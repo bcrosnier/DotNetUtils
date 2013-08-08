@@ -23,7 +23,7 @@ namespace ProjectProber
         /// <returns>Collection of assembly paths, relative to the project directory.</returns>
         public static IEnumerable<string> GetPackageAssemblyReferencePaths( string projectPath )
         {
-            IEnumerable<IProjectReference> references = GetReferencesFromProjectFile( projectPath );
+            IEnumerable<IProjectAssemblyReference> references = GetReferencesFromProjectFile( projectPath );
 
             var hintPaths = references
                 .Where( i => i.HintPath != null )
@@ -115,15 +115,15 @@ namespace ProjectProber
         /// Parses a project file, and gets its references.
         /// </summary>
         /// <param name="projectFile">Path to the project file (.csproj)</param>
-        /// <returns>Collection of new IProjectReference</returns>
-        public static IEnumerable<IProjectReference> GetReferencesFromProjectFile( string projectFile )
+        /// <returns>Collection of new IProjectAssemblyReference</returns>
+        public static IEnumerable<IProjectAssemblyReference> GetReferencesFromProjectFile( string projectFile )
         {
             if( string.IsNullOrEmpty( projectFile ) )
                 throw new ArgumentNullException( projectFile );
             if( !File.Exists( projectFile ) )
                 throw new ArgumentException( "File must exist", "projectFile" );
 
-            List<IProjectReference> references = new List<IProjectReference>();
+            List<IProjectAssemblyReference> references = new List<IProjectAssemblyReference>();
 
             XmlDocument d = new XmlDocument();
             d.Load( projectFile );
@@ -171,7 +171,7 @@ namespace ProjectProber
                     }
                 }
 
-                IProjectReference reference = new ProjectReference()
+                IProjectAssemblyReference reference = new ProjectAssemblyReference()
                 {
                     AssemblyName = assemblyName,
                     EmbedInteropTypes = embedInteropTypes,
@@ -191,7 +191,7 @@ namespace ProjectProber
         ///
         /// </summary>
         /// <param name="projectFile">Path to the project file (.csproj)</param>
-        /// <returns>Collection of new IProjectReference</returns>
+        /// <returns>Collection of new IProjectAssemblyReference</returns>
         public static CSProjCompileLinkInfo GetSharedAssemblyRelativeLinkFromProjectFile( string projectFile )
         {
             if( string.IsNullOrEmpty( projectFile ) )

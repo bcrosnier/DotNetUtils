@@ -40,7 +40,7 @@ namespace ProjectProber
             w.WriteEndElement();
 
             w.WriteStartElement( "NuGetPackages" );
-            foreach( IPackage package in result.NuGetPackages.OrderBy( x => x.Id ).ThenBy( x => x.Version ) )
+            foreach( IPackage package in result.NuGetPackages.Values.OrderBy( x => x.Id ).ThenBy( x => x.Version ) )
             {
                 WriteNuGetPackage( package, w );
             }
@@ -109,7 +109,7 @@ namespace ProjectProber
             w.WriteEndElement();
         }
 
-        private static void WriteProjectItem( ISolutionProjectItem projectItem, IEnumerable<IProjectReference> assemblyRefs,
+        private static void WriteProjectItem( ISolutionProjectItem projectItem, IEnumerable<IProjectAssemblyReference> assemblyRefs,
             IEnumerable<INuGetPackageReference> packageRefs, XmlWriter w )
         {
             w.WriteStartElement( "Project" );
@@ -133,7 +133,7 @@ namespace ProjectProber
             w.WriteEndElement();
 
             w.WriteStartElement( "NuGetAssemblyReferences" );
-            foreach( IProjectReference assemblyRef in assemblyRefs.OrderBy( x => x.AssemblyName ) )
+            foreach( IProjectAssemblyReference assemblyRef in assemblyRefs.OrderBy( x => x.AssemblyName ) )
             {
                 WriteAssemblyReference( assemblyRef, w );
             }
@@ -142,7 +142,7 @@ namespace ProjectProber
             w.WriteEndElement();
         }
 
-        private static void WriteAssemblyReference( IProjectReference assemblyRef, XmlWriter w )
+        private static void WriteAssemblyReference( IProjectAssemblyReference assemblyRef, XmlWriter w )
         {
             w.WriteStartElement( "AssemblyRef" );
 

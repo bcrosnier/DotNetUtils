@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DotNetUtilitiesApp.Properties;
 using DotNetUtilitiesApp.WpfUtils;
 using TinyGithub;
-using System.Linq;
 using TinyGithub.Models;
-using System.Text;
 
 namespace DotNetUtilitiesApp.GithubDownloader
 {
@@ -19,6 +20,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
         #region Fields
 
         public event EventHandler<StringEventArgs> RaisedWarning;
+
         public event EventHandler<StringEventArgs> SolutionPathAvailable;
 
         private string _loggedInUsername;
@@ -34,15 +36,15 @@ namespace DotNetUtilitiesApp.GithubDownloader
         private string _githubRepositoryUrl;
         private bool _urlChangeLocked;
 
-        Github _github;
+        private Github _github;
 
-        #endregion
+        #endregion Fields
 
         #region Properties
 
         public ICommand OpenSolutionCommand { get; private set; }
 
-        #endregion
+        #endregion Properties
 
         #region Observed properties
 
@@ -182,14 +184,15 @@ namespace DotNetUtilitiesApp.GithubDownloader
                 {
                     _isProgressIndeterminate = value;
                     RaisePropertyChanged();
-                    RaisePropertyChanged("CanExecuteOpenSolution");
+                    RaisePropertyChanged( "CanExecuteOpenSolution" );
                 }
             }
         }
 
         public string GithubRepositoryWebUrl
         {
-            get {
+            get
+            {
                 return _githubRepositoryUrl;
             }
             set
@@ -205,9 +208,10 @@ namespace DotNetUtilitiesApp.GithubDownloader
             }
         }
 
-        #endregion
+        #endregion Observed properties
 
         #region Constructor
+
         internal GithubDownloaderViewModel()
         {
             _github = new Github();
@@ -254,10 +258,12 @@ namespace DotNetUtilitiesApp.GithubDownloader
         {
             OpenSolutionCommand = new RelayCommand( ExecuteOpenSolution, CanExecuteOpenSolution );
         }
-        #endregion
+
+        #endregion Constructor
 
         #region Private methods
-        private void UpdateRateLimit<T>(GithubResponse<T> response)
+
+        private void UpdateRateLimit<T>( GithubResponse<T> response )
         {
             RemainingApiCalls = response.RateLimitRemaining.ToString();
         }
@@ -345,6 +351,34 @@ namespace DotNetUtilitiesApp.GithubDownloader
             return Regex.Match( apiToken, "^[a-fA-F0-9]{40}$" ).Success;
         }
 
+        private static string GetGitBlobSha( byte[] data )
+        {
+            using( SHA1Managed sha1 = new SHA1Managed() )
+            {
+                string header = "blob " + data.LongLength.ToString() + "\0";
+
+                byte[] headerBytes = System.Text.Encoding.ASCII.GetBytes( header );
+
+                byte[] finalHash = headerBytes.Concat( data ).ToArray();
+
+                byte[] hash = sha1.ComputeHash( finalHash );
+                StringBuilder output = new StringBuilder( 2 * hash.Length );
+                foreach( byte b in hash )
+                {
+                    output.AppendFormat( "{0:x2}", b );
+                }
+
+                return output.ToString();
+            }
+        }
+
+        private string GetBlobSha( FileInfo file )
+        {
+            byte[] fileBytes = File.ReadAllBytes( file.FullName );
+
+            return GetGitBlobSha( fileBytes );
+        }
+
         private void ParseGithubUrl( string url )
         {
             string pattern = @"^(?:https?://)?(?:www\.)?github\.com/([a-zA-Z0-9-_.]*)/([a-zA-Z0-9-_.]*)(?:/tree/([a-zA-Z0-9-_.]+))?";
@@ -390,13 +424,14 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
             RaisePropertyChanged( "GithubRepositoryWebUrl" );
         }
-        #endregion
+
+        #endregion Private methods
 
         #region Command handlers
 
         private bool CanExecuteOpenSolution( object obj )
         {
-            return !IsProgressIndeterminate && ( ProgressValue == 0 || ProgressValue == 100 ) && !string.IsNullOrEmpty( RepositoryUser ) && !string.IsNullOrEmpty( RepositoryName );
+            return !IsProgressIndeterminate && (ProgressValue == 0 || ProgressValue == 100) && !string.IsNullOrEmpty( RepositoryUser ) && !string.IsNullOrEmpty( RepositoryName );
         }
 
         async private void ExecuteOpenSolution( object obj )
@@ -424,7 +459,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             }
         }
 
-        #endregion
+        #endregion Command handlers
 
         #region Github download task
 
@@ -497,7 +532,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
                 return null;
             }
             GithubTreeInfo treeInfo = treeResponse.Content;
-            
+
             // Get select tree files
 
             IEnumerable<GitCommitObject> fileObjects = treeInfo.Tree.Where( x => x.Type == "blob" );
@@ -511,7 +546,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             objectsToGet.AddRange( fileObjects.Where( x => x.Path.EndsWith( "AssemblyInfo.cs", StringComparison.InvariantCultureIgnoreCase ) ) );
             // C# project files
             objectsToGet.AddRange( fileObjects.Where( x => x.Path.EndsWith( ".csproj", StringComparison.InvariantCultureIgnoreCase ) ) );
-            // NuGet package configuration files
+            // NuGet packageRef configuration files
             objectsToGet.AddRange( fileObjects.Where( x => x.Path.EndsWith( "packages.config", StringComparison.InvariantCultureIgnoreCase ) ) );
 
             if( !objectsToGet.Any( x => x.Path.EndsWith( ".sln", StringComparison.InvariantCultureIgnoreCase ) ) )
@@ -540,26 +575,31 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
                 string destPath = Path.Combine( directoryPath, objectToGet.Path );
 
-                GithubResponse<GitBlobInfo> blobInfoResponse = objectToGet.ResolveAs<GitBlobInfo>( _github );
-                GitBlobInfo blobInfo = blobInfoResponse.Content;
-                Invoke.OnAppThread( () =>
+                FileInfo destFile = new FileInfo( destPath );
+
+                if( !destFile.Exists || objectToGet.Size != destFile.Length || objectToGet.Sha != GetBlobSha( destFile ) )
                 {
-                    UpdateRateLimit( blobInfoResponse );
-                } );
-                if( response.StatusCode != System.Net.HttpStatusCode.OK )
-                {
-                    RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ((int)response.StatusCode).ToString(), response.Error.Message ) );
-                    return null;
+                    GithubResponse<GitBlobInfo> blobInfoResponse = objectToGet.ResolveAs<GitBlobInfo>( _github );
+                    GitBlobInfo blobInfo = blobInfoResponse.Content;
+                    Invoke.OnAppThread( () =>
+                    {
+                        UpdateRateLimit( blobInfoResponse );
+                    } );
+                    if( response.StatusCode != System.Net.HttpStatusCode.OK )
+                    {
+                        RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ((int)response.StatusCode).ToString(), response.Error.Message ) );
+                        return null;
+                    }
+
+                    string sourceUrl = objectToGet.Url;
+
+                    _github.DownloadBlobInfo( blobInfo, destPath );
                 }
-
-                string sourceUrl = objectToGet.Url;
-
-                _github.DownloadBlobInfo( blobInfo, destPath );
             }
 
             return solutionFile;
         }
 
-        #endregion
+        #endregion Github download task
     }
 }

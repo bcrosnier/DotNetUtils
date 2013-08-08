@@ -64,11 +64,11 @@
     <Compile Include="CSProjCompileLinkInfo.cs" />
     <Compile Include="Impl\AssemblyVersionInfo.cs" />
     <Compile Include="Impl\NuGetPackageReference.cs" />
-    <Compile Include="Impl\ProjectReference.cs" />
+    <Compile Include="Impl\ProjectAssemblyReference.cs" />
     <Compile Include="Impl\Solution.cs" />
     <Compile Include="Impl\SolutionProjectItem.cs" />
     <Compile Include="Interfaces\INuGetPackageReference.cs" />
-    <Compile Include="Interfaces\IProjectReference.cs" />
+    <Compile Include="Interfaces\IProjectAssemblyReference.cs" />
     <Compile Include="Interfaces\ISolution.cs" />
     <Compile Include="Interfaces\ISolutionProjectItem.cs" />
     <Compile Include="NuGetPackageUtils.cs" />

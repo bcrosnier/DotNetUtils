@@ -1,46 +1,38 @@
-﻿using System.Diagnostics;
-using ProjectProber.Interfaces;
-
-namespace ProjectProber.Impl
+﻿namespace ProjectProber.Interfaces
 {
     /// <summary>
     /// Project reference to an assembly, through its full or simple name.
     /// </summary>
-    [DebuggerDisplay( "{AssemblyName}" )]
-    internal class ProjectReference : IProjectReference
+    public interface IProjectAssemblyReference
     {
         /// <summary>
         /// Required target framework of the reference. Can be null.
         /// </summary>
-        public string RequiredTargetFramework { get; internal set; }
+        string RequiredTargetFramework { get; }
 
         /// <summary>
         /// Requested assembly name. Either a simple name, or an assembly full name.
         /// </summary>
-        public string AssemblyName { get; internal set; }
+        string AssemblyName { get; }
 
         /// <summary>
-        /// Assembly hint path, where the builder will try to look. Can be null.
+        /// Assembly hint path, where the builder will try to look. Can be null. Relative to project file.
         /// </summary>
-        public string HintPath { get; internal set; }
+        string HintPath { get; }
 
         /// <summary>
         /// Private flag of the reference.
         /// </summary>
-        public bool IsPrivate { get; internal set; }
+        bool IsPrivate { get; }
 
         /// <summary>
         /// EmbedInteropTypes flag of the reference.
         /// </summary>
-        public bool EmbedInteropTypes { get; internal set; }
+        bool EmbedInteropTypes { get; }
 
         /// <summary>
         /// SpecificVersion flag of the reference.
         /// </summary>
-        public bool SpecificVersion { get; internal set; }
-
-        internal ProjectReference()
-        {
-        }
+        bool SpecificVersion { get; }
     }
 }
