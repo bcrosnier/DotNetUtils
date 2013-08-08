@@ -62,7 +62,7 @@ namespace ProjectProber
         /// </summary>
         /// <param name="filePath">Path of File. Must exist.</param>
         /// <returns><see cref="CK.Package.SemanticVersion"/> or null if not found</returns>
-        public static SemanticVersion GetSemanticAssemblyVersionFromAssemblyInfoFile( string filePath, Regex regex )
+        public static string GetSemanticAssemblyVersionFromAssemblyInfoFile( string filePath, Regex regex )
         {
             if( String.IsNullOrEmpty( filePath ) )
                 throw new ArgumentNullException( "filePath" );
@@ -75,7 +75,7 @@ namespace ProjectProber
             Match m = regex.Match( text );
             if( m.Success )
             {
-                return (!string.IsNullOrEmpty( m.Groups["version"].Value )) ? new SemanticVersion( new Version( m.Groups["version"].Value ), m.Groups["Release"].Value ) : null;
+                return (!string.IsNullOrEmpty( m.Groups["Release"].Value )) ? m.Groups["Version"].ToString() + "-" + m.Groups["Release"].Value.ToString() : m.Groups["Version"].ToString();
             }
             else
             {

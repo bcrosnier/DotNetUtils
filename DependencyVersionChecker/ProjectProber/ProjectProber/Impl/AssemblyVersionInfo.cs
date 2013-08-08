@@ -11,9 +11,7 @@ namespace ProjectProber.Impl
 
         public Version AssemblyFileVersion { get { return _assemblyFileVersion; } }
 
-        public SemanticVersion AssemblyInformationSemanticVersion { get { return _assemblyInformationSemanticVersion; } }
-
-        public Version AssemblyInformationVersion { get { return _assemblyInformationVersion; } }
+        public string AssemblyInformationVersion { get { return _assemblyInformationVersion; } }
 
         public bool IsSharedAssemblyInformation { get { return _isSharedAssemblyInformation; } }
 
@@ -23,24 +21,12 @@ namespace ProjectProber.Impl
 
         private Version _assemblyVersion;
         private Version _assemblyFileVersion;
-        private Version _assemblyInformationVersion;
-        private SemanticVersion _assemblyInformationSemanticVersion;
+        private string _assemblyInformationVersion;
         private bool _isSharedAssemblyInformation;
         private string _assemblyInfoFilePath;
         private ISolutionProjectItem _solutionProjectItem;
 
-        public AssemblyVersionInfo( string assemblyInfoFilePath, ISolutionProjectItem solutionProjectItem, Version assemblyVersion, Version assemblyFileVersion, SemanticVersion assemblyInformationSemanticVersion )
-        {
-            _assemblyInfoFilePath = assemblyInfoFilePath;
-            _solutionProjectItem = solutionProjectItem;
-            _assemblyVersion = assemblyVersion;
-            _assemblyFileVersion = assemblyFileVersion;
-            _assemblyInformationSemanticVersion = assemblyInformationSemanticVersion;
-
-            _isSharedAssemblyInformation = solutionProjectItem == null;
-        }
-
-        public AssemblyVersionInfo(string assemblyInfoFilePath, ISolutionProjectItem solutionProjectItem, Version assemblyVersion, Version assemblyFileVersion, Version assemblyInformationVersion)
+        public AssemblyVersionInfo(string assemblyInfoFilePath, ISolutionProjectItem solutionProjectItem, Version assemblyVersion, Version assemblyFileVersion, string assemblyInformationVersion)
         {
             _assemblyInfoFilePath = assemblyInfoFilePath;
             _solutionProjectItem = solutionProjectItem;

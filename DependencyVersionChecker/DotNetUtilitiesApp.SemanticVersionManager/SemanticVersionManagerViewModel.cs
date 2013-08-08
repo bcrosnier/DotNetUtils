@@ -185,17 +185,16 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         private string GetResultVersion( AssemblyVersionInfoCheckResult result )
         {
             var versions = result.Versions.Where( x => x != null );
-            if( versions.Count() == 1)
+            var informationVersions = result.InformationVersions.Where( x => !string.IsNullOrEmpty( x ) );
+            if( versions.Count() == 1 )
             {
-                AssemblyVersionInfo info = versions.First();
-
-                if( info.AssemblyInformationSemanticVersion != null )
+                if( !string.IsNullOrEmpty( informationVersions.First() ) )
                 {
-                    return info.AssemblyInformationSemanticVersion.ToString();
+                    return informationVersions.First();
                 }
-                else if( info.AssemblyVersion != null )
+                else if( versions.First() != null )
                 {
-                    return info.AssemblyVersion.ToString();
+                    return versions.First().ToString();
                 }
             }
             return "0.0.0";

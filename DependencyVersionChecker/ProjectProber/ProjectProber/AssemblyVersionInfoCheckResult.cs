@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using ProjectProber.Impl;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using CK.Package;
-using ProjectProber.Impl;
 
 namespace ProjectProber
 {
@@ -10,7 +13,7 @@ namespace ProjectProber
         /// <summary>
         /// It's a path's *.sln directory.
         /// </summary>
-        public string SolutionDirectoryPath { get; private set; }
+        public string SolutionDirectoryPath { get { return _solutionDirectoryPath; } }
 
         /// <summary>
         /// Represent different SharedAssemblyInfo.cs files in solution.
@@ -33,7 +36,17 @@ namespace ProjectProber
         /// <remarks>
         /// The path of SharedAssemblyInfo are in SharedAssemblyInfoVersions.
         /// </remarks>
-        public bool HasNotSharedAssemblyInfo { get { return _hasNotSharedAssemblyInfo; } }
+        public bool HasNotSharedAssemblyInfo
+        { 
+            get { return _hasNotSharedAssemblyInfo; }
+            private set
+            {
+                if( _hasNotSharedAssemblyInfo )
+                {
+                    _hasNotSharedAssemblyInfo = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if multiple SharedAssemblyInfo in solution has been found.
@@ -41,47 +54,149 @@ namespace ProjectProber
         /// <remarks>
         /// The path of SharedAssemblyInfos are in SharedAssemblyInfoVersions.
         /// </remarks>
-        public bool HasMultipleSharedAssemblyInfo { get { return _hasMultipleSharedAssemblyInfo; } }
+        public bool HasMultipleSharedAssemblyInfo
+        { 
+            get { return _hasMultipleSharedAssemblyInfo; }
+            private set
+            {
+                if( !_hasMultipleSharedAssemblyInfo )
+                {
+                    _hasMultipleSharedAssemblyInfo = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if multiple AssemblyVersion has been found.
         /// </summary>
-        public bool HasMultipleAssemblyVersion { get { return _hasMultipleAssemblyVersion; } }
+        public bool HasMultipleAssemblyVersion
+        { 
+            get { return _hasMultipleAssemblyVersion; }
+            private set
+            {
+                if( !_hasMultipleAssemblyVersion )
+                {
+                    _hasMultipleAssemblyVersion = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if multiple RelativePath has been found in *.csproj.
         /// </summary>
-        public bool HasMultipleRelativeLinkInCSProj { get { return _hasMultipleRelativeLinkInCSProj; } }
+        public bool HasMultipleRelativeLinkInCSProj
+        { 
+            get { return _hasMultipleRelativeLinkInCSProj; }
+            private set
+            {
+                if( !_hasMultipleRelativeLinkInCSProj )
+                {
+                    _hasMultipleRelativeLinkInCSProj = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if multiple AssemblyFileVersion has been found.
         /// </summary>
-        public bool HasMultipleAssemblyFileVersion { get { return _hasMultipleAssemblyFileVersion; } }
+        public bool HasMultipleAssemblyFileVersion
+        { 
+            get { return _hasMultipleAssemblyFileVersion; }
+            private set
+            {
+                if( !_hasMultipleAssemblyFileVersion )
+                {
+                    _hasMultipleAssemblyFileVersion = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if multiple AssemblyInformationVersion has been found.
         /// </summary>
-        public bool HasMultipleAssemblyInformationVersion { get { return _hasMultipleAssemblyInformationVersion; } }
+        public bool HasMultipleAssemblyInformationVersion
+        { 
+            get { return _hasMultipleAssemblyInformationVersion; }
+            private set
+            {
+                if( !_hasMultipleAssemblyInformationVersion )
+                {
+                    _hasMultipleAssemblyInformationVersion = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if the version found isn't semantic version compliante.
         /// </summary>
-        public bool HasOneVersionNotSemanticVersionCompliant { get { return _hasOneVersionNotSemanticVersionCompliant; } }
+        public bool HasOneVersionNotSemanticVersionCompliant
+        { 
+            get { return _hasOneVersionNotSemanticVersionCompliant; }
+            private set
+            {
+                if( !_hasOneVersionNotSemanticVersionCompliant )
+                {
+                    _hasOneVersionNotSemanticVersionCompliant = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if multiple version has been found in a single file.
         /// </summary>
-        public bool HasMultipleVersionInOneAssemblyInfoFile { get { return _hasMultipleVersionInOneAssemblyInfoFile; } }
+        public bool HasMultipleVersionInOneAssemblyInfo
+        { 
+            get { return _hasMultipleVersionInOneAssemblyInfo; }
+            private set
+            {
+                if( !_hasMultipleVersionInOneAssemblyInfo )
+                {
+                    _hasMultipleVersionInOneAssemblyInfo = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if multiple AssemblyVersion has been found.
         /// </summary>
-        public bool HasRelativeLinkInCSProjNotFound { get { return _hasRelativeLinkInCSProjNotFound; } }
+        public bool HasRelativeLinkInCSProjNotFound
+        { 
+            get { return _hasRelativeLinkInCSProjNotFound; }
+            private set
+            {
+                if( !_hasRelativeLinkInCSProjNotFound )
+                {
+                    _hasRelativeLinkInCSProjNotFound = value;
+                }
+            }
+        }
 
         /// <summary>
         /// True if versions cannot be found un SharedAssemblyInfo.cs or AssemblyInfo.cs.
         /// </summary>
-        public bool HasFileWithoutVersion { get { return _hasFileWithoutVersion; } }
+        public bool HasFileWithoutVersion
+        { 
+            get { return _hasFileWithoutVersion; }
+            private set
+            {
+                if( !_hasFileWithoutVersion )
+                {
+                    _hasFileWithoutVersion = value;
+                }
+            }
+        }
+
+        public bool HasAssemblyInfoWithVersion 
+        { 
+            get { return _hasAssemblyInfoWithVersion; }
+            private set
+            {
+                if( !_hasAssemblyInfoWithVersion )
+                {
+                    _hasAssemblyInfoWithVersion = value;
+                }
+            }
+        }
 
         private bool _hasNotSharedAssemblyInfo = true;
         private bool _hasMultipleSharedAssemblyInfo = false;
@@ -91,147 +206,173 @@ namespace ProjectProber
         private bool _hasMultipleAssemblyFileVersion = false;
         private bool _hasMultipleAssemblyInformationVersion = false;
         private bool _hasOneVersionNotSemanticVersionCompliant = false;
-        private bool _hasMultipleVersionInOneAssemblyInfoFile = false;
+        private bool _hasMultipleVersionInOneAssemblyInfo = false;
         private bool _hasFileWithoutVersion = false;
+        private bool _hasAssemblyInfoWithVersion = false;
         private List<CSProjCompileLinkInfo> _csProjs;
         private List<AssemblyVersionInfo> _assemblyVersions;
         private List<AssemblyVersionInfo> _sharedAssemblyInfoVersions;
+        private string _solutionDirectoryPath;
 
         /// <summary>
         /// It's different versions has been found.
         /// </summary>
-        public IReadOnlyList<AssemblyVersionInfo> Versions { get { return _versions.AsReadOnly(); } }
+        public IReadOnlyList<Version> Versions { get { return _versions.AsReadOnly(); } }
 
-        private List<AssemblyVersionInfo> _versions;
+        private List<Version> _versions;
+
+        /// <summary>
+        /// It's different versions has been found.
+        /// </summary>
+        public IReadOnlyList<Version> FileVersions { get { return _fileVersions.AsReadOnly(); } }
+
+        private List<Version> _fileVersions;
+
+        /// <summary>
+        /// It's different versions has been found.
+        /// </summary>
+        public IReadOnlyList<string> InformationVersions { get { return _informationVersions.AsReadOnly(); } }
+
+        private List<string> _informationVersions;
+
 
         internal AssemblyVersionInfoCheckResult( string solutionDirectoryPath,
             List<AssemblyVersionInfo> sharedAssemblyInfoVersions,
             List<CSProjCompileLinkInfo> csProjs,
             List<AssemblyVersionInfo> assemblyVersions )
         {
-            SolutionDirectoryPath = solutionDirectoryPath;
+            _solutionDirectoryPath = solutionDirectoryPath;
             _sharedAssemblyInfoVersions = sharedAssemblyInfoVersions;
             _csProjs = csProjs;
             _assemblyVersions = assemblyVersions;
-            _versions = new List<AssemblyVersionInfo>();
+            _versions = new List<Version>();
+            _fileVersions = new List<Version>();
+            _informationVersions = new List<string>();
 
             RunAnalyse();
         }
 
         private void RunAnalyse()
         {
-            if( _sharedAssemblyInfoVersions.Count > 1 )
+            HasNotSharedAssemblyInfo = CheckForSharedAssemblyInfo();
+            if( !HasNotSharedAssemblyInfo )
             {
-                _hasNotSharedAssemblyInfo = false;
-                _hasMultipleSharedAssemblyInfo = true;
+                HasAssemblyInfoWithVersion = CheckForAssemblyWithVersion();
+                if( HasAssemblyInfoWithVersion )
+                {
+                    CheckAssemblyVersionInfo( _assemblyVersions );
+                }
+
+                CheckSharedAssemblyInfo();
 
                 CheckAssemblyVersionInfo( _sharedAssemblyInfoVersions );
-                CheckCSProjCompileLinkInfo(_csProjs);
-            }
-            else if( _sharedAssemblyInfoVersions.Count == 1 )
-            {
-                CheckCSProjCompileLinkInfo( _csProjs );
             }
             else
             {
                 CheckAssemblyVersionInfo( _assemblyVersions );
             }
-            if( _versions.Count > 1 )
-            {
-                for( int i = 1; i < _versions.Count; i++ )
-                    CheckMultipleVersionInAssemblyInfo( _versions.First(), _versions[i] );
-            }
         }
 
-        private void CheckMultipleVersionInAssemblyInfo( AssemblyVersionInfo a1, AssemblyVersionInfo a2 )
+        //test bizarre car une double négation est utilisé.
+        private bool CheckForSharedAssemblyInfo()
         {
-            if( a1.AssemblyVersion != null && a2.AssemblyVersion != null && a1.AssemblyVersion != a2.AssemblyVersion ) _hasMultipleAssemblyVersion = true;
-            if( a1.AssemblyFileVersion != null && a2.AssemblyFileVersion != null && a1.AssemblyFileVersion != a2.AssemblyFileVersion ) _hasMultipleAssemblyFileVersion = true;
-            if (a1.AssemblyInformationSemanticVersion != null && a2.AssemblyInformationSemanticVersion != null && a1.AssemblyInformationSemanticVersion != a2.AssemblyInformationSemanticVersion) _hasMultipleAssemblyInformationVersion = true;
-            else if (a1.AssemblyInformationVersion != null && a2.AssemblyInformationVersion != null && a1.AssemblyInformationVersion != a2.AssemblyInformationVersion) _hasMultipleAssemblyInformationVersion = true;
+            return _sharedAssemblyInfoVersions.Count == 0;
         }
 
-        private void CheckSemanticVersionCompliant(AssemblyVersionInfo a1)
+        private bool CheckForMultipleSharedAssemblyInfo()
+        {
+            return _sharedAssemblyInfoVersions.Count > 0;
+        }
+
+        private bool CheckForRelativeLink()
+        {
+            return _csProjs.Any( x => string.IsNullOrEmpty( x.AssociateLink ) 
+                                    && string.IsNullOrEmpty( x.SharedAssemblyInfoRelativePath ) );
+        }
+
+        private bool CheckForMultipleRelativeLink()
+        {
+            return _csProjs.Distinct().Count() > 1;
+        }
+
+        private bool CheckForAssemblyWithVersion()
+        {
+            return _assemblyVersions.Any( x => x.AssemblyVersion != null
+                                            || !string.IsNullOrEmpty( x.AssemblyInformationVersion )
+                                            || x.AssemblyFileVersion != null );
+        }
+
+        //virer le paramètre ?
+        private bool CheckForSemanticVersionCompliant( List<AssemblyVersionInfo> listVersions )
+        {
+            return listVersions.Any( x => ( x.AssemblyVersion != null
+                                        && IsSemanticVersionCompliant( x.AssemblyVersion.ToString() ) ) 
+                                        || ( x.AssemblyFileVersion != null 
+                                        && IsSemanticVersionCompliant( x.AssemblyFileVersion.ToString() ) )
+                                        || ( !string.IsNullOrEmpty( x.AssemblyInformationVersion ) 
+                                        &&IsSemanticVersionCompliant( x.AssemblyInformationVersion ) ) );
+        }
+
+        private bool CheckForFileWithoutVersion( List<AssemblyVersionInfo> listVersions )
+        {
+            return listVersions.Any( x => x.AssemblyVersion == null 
+                                        && x.AssemblyFileVersion == null 
+                                        && (!string.IsNullOrEmpty( x.AssemblyInformationVersion ) ) );
+        }
+
+        private bool CheckForMultipleVersionInOneAssemblyInfo( List<AssemblyVersionInfo> listVersions )
+        {
+            return listVersions.Any( x => x.AssemblyVersion != x.AssemblyFileVersion
+                                        || (!string.IsNullOrEmpty( x.AssemblyInformationVersion ) 
+                                        && x.AssemblyVersion.ToString() != x.AssemblyInformationVersion) );
+        }
+
+        private void CheckForMultipleVersion( List<AssemblyVersionInfo> listVersions )
+        {
+            HasMultipleAssemblyVersion = CheckForMultipleAssemblyVersion( listVersions );
+            HasMultipleAssemblyFileVersion = CheckForMultipleAssemblyFileVersion( listVersions );
+            HasMultipleAssemblyInformationVersion = CheckForMultipleAssemblyInformationVersion( listVersions );
+        }
+
+        private bool CheckForMultipleAssemblyVersion( List<AssemblyVersionInfo> listVersions )
+        {
+            _versions = listVersions.Where(x => x.AssemblyVersion != null ).Select( x => x.AssemblyVersion ).Distinct().ToList();
+            return _versions.Count > 1;
+        }
+
+        private bool CheckForMultipleAssemblyFileVersion( List<AssemblyVersionInfo> listVersions )
+        {
+            _fileVersions = listVersions.Where( x => x.AssemblyFileVersion != null ).Select( x => x.AssemblyFileVersion ).Distinct().ToList();
+            return _fileVersions.Count > 1;
+        }
+
+        private bool CheckForMultipleAssemblyInformationVersion( List<AssemblyVersionInfo> listVersions )
+        {
+            _informationVersions = listVersions.Where( x => x.AssemblyInformationVersion != null ).Select( x => x.AssemblyInformationVersion ).Distinct().ToList();
+            return _informationVersions.Count > 1;
+        }
+
+        private void CheckSharedAssemblyInfo()
+        {
+            HasRelativeLinkInCSProjNotFound = CheckForRelativeLink();
+            HasMultipleRelativeLinkInCSProj = CheckForMultipleRelativeLink();
+            HasAssemblyInfoWithVersion = CheckForAssemblyWithVersion();
+            HasMultipleSharedAssemblyInfo = CheckForMultipleSharedAssemblyInfo();
+        }
+
+
+        private bool IsSemanticVersionCompliant( string version )
         {
             SemanticVersion tempToTest;
-            if (a1.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict(a1.AssemblyFileVersion.ToString(), out tempToTest)) _hasOneVersionNotSemanticVersionCompliant = true;
-            if (a1.AssemblyVersion != null && !SemanticVersion.TryParseStrict(a1.AssemblyVersion.ToString(), out tempToTest)) _hasOneVersionNotSemanticVersionCompliant = true;
-            if (a1.AssemblyInformationVersion != null && !SemanticVersion.TryParseStrict(a1.AssemblyInformationVersion.ToString(), out tempToTest)) _hasOneVersionNotSemanticVersionCompliant = true;
+            return !SemanticVersion.TryParseStrict( version, out tempToTest );
         }
 
-        private void CheckAssemblyVersionInfo( List<AssemblyVersionInfo> assemblyVersionInfo )
+        private void CheckAssemblyVersionInfo( List<AssemblyVersionInfo> listVersions )
         {
-            foreach( AssemblyVersionInfo version in assemblyVersionInfo )
-            {
-                if( version.AssemblyVersion == null && version.AssemblyFileVersion == null && ( version.AssemblyInformationSemanticVersion == null || version.AssemblyInformationVersion != null ) )
-                {
-                    _hasFileWithoutVersion = true;
-                    continue;
-                }
-                if( version.AssemblyVersion != null && _versions.Count == 0 )
-                {
-                    CheckSemanticVersionCompliant(version);
-                    _versions.Add( version );
-                    if( CheckMultipleVersionInOneAssemblyInfoFile( version ) ) _hasMultipleVersionInOneAssemblyInfoFile = true;
-                }
-                bool temp = false;
-                foreach( AssemblyVersionInfo versionCompare in _versions )
-                {
-                    if( versionCompare.Equals( version ) )
-                    {
-                        temp = true;
-                        break;
-                    }
-                }
-                if( !temp )
-                {
-                    CheckSemanticVersionCompliant(version);
-                    _versions.Add( version );
-                    if( CheckMultipleVersionInOneAssemblyInfoFile( version ) ) _hasMultipleVersionInOneAssemblyInfoFile = true;
-                }
-            }
-        }
-
-        private void CheckCSProjCompileLinkInfo( List<CSProjCompileLinkInfo> csProjs )
-        {
-            _hasNotSharedAssemblyInfo = false;
-            CheckSemanticVersionCompliant(SharedAssemblyInfoVersions.First());
-            _versions.Add( SharedAssemblyInfoVersions.First() );
-            _hasMultipleVersionInOneAssemblyInfoFile = CheckMultipleVersionInOneAssemblyInfoFile( SharedAssemblyInfoVersions.First() );
-            IList<CSProjCompileLinkInfo> csProjCompileLinkInfoToCompare = new List<CSProjCompileLinkInfo>();
-            foreach( CSProjCompileLinkInfo csProjCompileLinkInfo in csProjs )
-            {
-                if( string.IsNullOrEmpty( csProjCompileLinkInfo.AssociateLink ) && string.IsNullOrEmpty ( csProjCompileLinkInfo.SharedAssemblyInfoRelativePath ) )
-                {
-                    _hasRelativeLinkInCSProjNotFound = true;
-                    continue;
-                }
-                if( csProjCompileLinkInfoToCompare.Count == 0 )
-                {
-                    csProjCompileLinkInfoToCompare.Add( csProjCompileLinkInfo );
-                }
-                bool temp = false;
-                foreach( CSProjCompileLinkInfo csProjCompileLinkInfoCompare in csProjCompileLinkInfoToCompare )
-                {
-                    if( csProjCompileLinkInfoCompare == csProjCompileLinkInfo )
-                    {
-                        temp = true;
-                        break;
-                    }
-                }
-                if( !temp )
-                {
-                    csProjCompileLinkInfoToCompare.Add( csProjCompileLinkInfo );
-                    _hasMultipleRelativeLinkInCSProj = true;
-                }
-            }
-        }
-
-        private bool CheckMultipleVersionInOneAssemblyInfoFile( AssemblyVersionInfo assembly )
-        {
-            return assembly.AssemblyVersion != assembly.AssemblyFileVersion
-                || (assembly.AssemblyInformationSemanticVersion != null && assembly.AssemblyVersion != assembly.AssemblyInformationSemanticVersion.Version)
-                || (assembly.AssemblyInformationVersion != null && assembly.AssemblyVersion != assembly.AssemblyInformationVersion);
+            HasFileWithoutVersion = CheckForFileWithoutVersion( listVersions );
+            HasOneVersionNotSemanticVersionCompliant = CheckForSemanticVersionCompliant( listVersions );
+            HasMultipleVersionInOneAssemblyInfo = CheckForMultipleVersionInOneAssemblyInfo( listVersions );
+            CheckForMultipleVersion( listVersions );
         }
     }
 }
