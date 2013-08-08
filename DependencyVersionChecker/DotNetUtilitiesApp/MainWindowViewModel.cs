@@ -169,11 +169,11 @@ namespace DotNetUtilitiesApp
         {
             CleanUp();
 
-            _solutionPath = null;
+            SolutionPath = null;
 
             if( !string.IsNullOrEmpty( slnPath ) && File.Exists( slnPath ) )
             {
-                _solutionPath = slnPath;
+                SolutionPath = slnPath;
                 string solutionName = Path.GetFileNameWithoutExtension( slnPath );
                 WindowTitle = String.Format( ".NET utilities - {0}", solutionName );
             }
