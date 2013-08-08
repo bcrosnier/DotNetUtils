@@ -51,6 +51,7 @@ namespace DotNetUtilitiesApp
                 _runningSlnPath = args[1];
 
                 _viewModel.LoadSolutionFile( _runningSlnPath );
+                _viewModel.CheckAllCommand.Execute( null );
             }
 
             if( args.Length >= 3 )
@@ -77,32 +78,27 @@ namespace DotNetUtilitiesApp
             else
             {
                 this.TabControl.SelectedIndex = 1;
-                _viewModel.CheckAllCommand.Execute( null );
             }
         }
 
         public void OpenAssemblyAnalysis()
         {
             this.TabControl.SelectedIndex = 0;
-            this.AssemblyProberUserControl.SetActiveSolution( _runningSlnPath );
         }
 
         public void OpenRunPackageAnalysis()
         {
             this.TabControl.SelectedIndex = 1;
-            this.SolutionAnalyzerControl.LoadAndCheckSolution( _runningSlnPath );
         }
 
         public void OpenRunVersionUpdater()
         {
             this.TabControl.SelectedIndex = 2;
-            this.SemanticVersionManagerControl.LoadAndCheckSolution( _runningSlnPath );
         }
 
         public void OpenAnalyzeVersion()
         {
             this.TabControl.SelectedIndex = 3;
-            this.VersionAnalyzerControl.LoadAndCheckSolution( _runningSlnPath );
         }
 
         private void OpenFromGithubRepo_Click( object sender, RoutedEventArgs e )
