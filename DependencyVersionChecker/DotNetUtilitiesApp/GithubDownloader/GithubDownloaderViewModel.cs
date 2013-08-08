@@ -372,7 +372,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             }
         }
 
-        private string GetBlobSha( FileInfo file )
+        private static string GetBlobSha( FileInfo file )
         {
             byte[] fileBytes = File.ReadAllBytes( file.FullName );
 
@@ -444,14 +444,45 @@ namespace DotNetUtilitiesApp.GithubDownloader
                 RepositoryRefName = "master";
             }
 
-            string slnPath = await DoDownloadOpenSolution();
+            IEnumerable<string> slnPaths = await DoDownloadOpenSolution();
 
             IsProgressIndeterminate = false;
             ProgressValue = 100;
 
-            if( slnPath != null )
+            if( slnPaths != null )
             {
-                RaiseSlnPathAvailable( slnPath );
+                if( slnPaths.Count() > 1 )
+                {
+                    Dictionary<string,string> selections = new Dictionary<string, string>();
+
+                    var MatchingChars =
+                        from len in Enumerable.Range( 0, slnPaths.Min( s => s.Length ) ).Reverse()
+                        let possibleMatch = slnPaths.First().Substring( 0, len )
+                        where slnPaths.All( f => f.StartsWith( possibleMatch ) )
+                        select possibleMatch;
+
+                    string LongestDir = Path.GetDirectoryName( MatchingChars.First() );
+
+                    foreach( string longName in slnPaths )
+                    {
+                        string longPath = Path.GetFullPath( longName );
+
+                        string shortName = longPath.Substring( LongestDir.Length );
+                        selections.Add( longPath, shortName );
+                    }
+
+                    ChoiceWindowResult<string> result = ChoiceWindow.ShowSelectWindow<string>( "Select solution", "Multiple solution were found in repository. Choose a file:", selections.Values );
+
+                    if( result.Result == System.Windows.MessageBoxResult.OK && result.Selected != null )
+                    {
+                        string selectedPath = selections.Where( x => x.Value == result.Selected ).Select( x => x.Key ).First();
+                        RaiseSlnPathAvailable( selectedPath );
+                    }
+                }
+                else if( slnPaths.Count() == 1 )
+                {
+                    RaiseSlnPathAvailable( slnPaths.First() );
+                }
             }
             else
             {
@@ -463,14 +494,14 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         #region Github download task
 
-        private Task<string> DoDownloadOpenSolution()
+        private Task<IEnumerable<string>> DoDownloadOpenSolution()
         {
-            Task<string> task = new Task<string>( DoDownloadOpenSolutionTask );
+            Task<IEnumerable<string>> task = new Task<IEnumerable<string>>( DoDownloadOpenSolutionTask );
             task.Start();
             return task;
         }
 
-        private string DoDownloadOpenSolutionTask()
+        private IEnumerable<string> DoDownloadOpenSolutionTask()
         {
             string baseDirectory = Environment.CurrentDirectory;
             string directoryPath = Path.Combine( baseDirectory, RepositoryUser, RepositoryName, RepositoryRefName );
@@ -555,13 +586,12 @@ namespace DotNetUtilitiesApp.GithubDownloader
                 return null;
             }
 
-            string solutionFile = Path.Combine( directoryPath, objectsToGet.Where( x => x.Path.EndsWith( ".sln", StringComparison.InvariantCultureIgnoreCase ) ).First().Path );
-
             Invoke.OnAppThread( () =>
             {
                 IsProgressIndeterminate = false;
                 ProgressValue = 0;
             } );
+
             int objectCount = objectsToGet.Count;
             int i = 0;
             foreach( var objectToGet in objectsToGet )
@@ -597,7 +627,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
                 }
             }
 
-            return solutionFile;
+            return objectsToGet.Where( x => x.Path.EndsWith( ".sln", StringComparison.InvariantCultureIgnoreCase ) ).Select( x => Path.Combine( directoryPath, x.Path ) );
         }
 
         #endregion Github download task
