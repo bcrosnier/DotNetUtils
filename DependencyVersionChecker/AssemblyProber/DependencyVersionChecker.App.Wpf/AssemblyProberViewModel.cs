@@ -18,8 +18,6 @@ namespace DotNetUtilitiesApp.AssemblyProber
     public class AssemblyProberViewModel
         : ViewModel
     {
-        //private readonly int MAX_LOG_ENTRIES = 1000; // Maximum number of log entries in the collection
-
         #region Members
 
         public event EventHandler LogFlushRequested;
@@ -30,7 +28,6 @@ namespace DotNetUtilitiesApp.AssemblyProber
         private ObservableCollection<AssemblyInfoViewModel> _assemblyViewModels;
         private DirectoryInfo _assemblyDirectory;
         private IActivityLogger _logger;
-        private ObservableCollection<ListBoxItem> _logItems;
         private bool _isSystemAssembliesEnabled;
 
         public ICommand ChangeAssemblyFolderCommand { get; private set; }
@@ -62,23 +59,6 @@ namespace DotNetUtilitiesApp.AssemblyProber
                 if( value != _assemblyViewModels )
                 {
                     _assemblyViewModels = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        public ObservableCollection<ListBoxItem> LogData
-        {
-            get
-            {
-                return this._logItems;
-            }
-
-            private set
-            {
-                if( this._logItems != value )
-                {
-                    this._logItems = value;
                     RaisePropertyChanged();
                 }
             }
@@ -161,7 +141,6 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
 
             _logger = parentLogger;
-            _logItems = new ObservableCollection<ListBoxItem>();
 
             _graph = new AssemblyGraph( true );
 
@@ -191,11 +170,11 @@ namespace DotNetUtilitiesApp.AssemblyProber
 
             if( openAtPath != null )
             {
-                ChangeAssemblyDirectory( new DirectoryInfo( openAtPath ) );
+                LoadAssemblyDirectory( new DirectoryInfo( openAtPath ) );
             }
             //else
             //{
-            //    ChangeAssemblyDirectory(new DirectoryInfo(Environment.CurrentDirectory));
+            //    LoadAssemblyDirectory(new DirectoryInfo(Environment.CurrentDirectory));
             //}
         }
 
@@ -209,7 +188,24 @@ namespace DotNetUtilitiesApp.AssemblyProber
 
         #region Public Methods
 
-        public void ChangeAssemblyDirectory( DirectoryInfo dir )
+        public void Reset()
+        {
+            _checker.Reset();
+            _assemblyViewModels.Clear();
+
+            if( _drawnAssemblies != null )
+                _drawnAssemblies.Clear();
+            if( _drawnEdges != null )
+                _drawnEdges.Clear();
+            if( _drawnVertices != null )
+                _drawnVertices.Clear();
+            if( _assemblyViewModels != null )
+                _assemblyViewModels.Clear();
+            if( _graph != null )
+                _graph.Clear();
+        }
+
+        public void LoadAssemblyDirectory( DirectoryInfo dir )
         {
             _logger.Info( "Loading directory: {0}", dir.FullName );
             StatusBarText = String.Format( "Loading directory: {0}", dir.FullName );
@@ -237,7 +233,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
         }
 
-        public void ChangeAssemblyFile( FileInfo file )
+        public void LoadAssemblyFile( FileInfo file )
         {
             _logger.Info( "Loading file: {0}", file.FullName );
             StatusBarText = String.Format( "Loading file: {0}", file.FullName );
@@ -473,7 +469,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             }
 
             DirectoryInfo dir = parameter as DirectoryInfo;
-            ChangeAssemblyDirectory( dir );
+            LoadAssemblyDirectory( dir );
         }
 
         public void ExecuteToggleSystemAssemblies( object parameter )

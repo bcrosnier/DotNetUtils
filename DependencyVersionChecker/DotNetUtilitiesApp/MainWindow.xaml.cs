@@ -22,11 +22,11 @@ namespace DotNetUtilitiesApp
             this.DataContext = _viewModel;
 
             InitializeComponent();
+
             _viewModel.SetControls( this.AssemblyProberUserControl, this.SemanticVersionManagerControl, this.SolutionAnalyzerControl, this.VersionAnalyzerControl );
 
             ProcessArgs();
 
-            _viewModel.LoadSolutionFile( _runningSlnPath );
         }
 
         private void ProcessArgs()
@@ -36,6 +36,8 @@ namespace DotNetUtilitiesApp
             if( args.Length >= 2 )
             {
                 _runningSlnPath = args[1];
+
+                _viewModel.LoadSolutionFile( _runningSlnPath );
             }
 
             if( args.Length >= 3 )
@@ -44,45 +46,50 @@ namespace DotNetUtilitiesApp
 
                 if( command.ToLowerInvariant() == "-assemblyanalysis" )
                 {
-                    AnalyzeAssemblyFolder();
+                    OpenAssemblyAnalysis();
                 }
                 else if( command.ToLowerInvariant() == "-packageanalysis" )
                 {
-                    AnalyzeSolution();
+                    OpenRunPackageAnalysis();
                 }
                 else if( command.ToLowerInvariant() == "-versiongenerator" )
                 {
-                    PrepareSemanticVersion();
+                    OpenRunVersionUpdater();
                 }
-                else if (command.ToLowerInvariant() == "-versionanalysis")
+                else if( command.ToLowerInvariant() == "-versionanalysis" )
                 {
-                    AnalyzeVersion();
+                    OpenAnalyzeVersion();
                 }
+            }
+            else
+            {
+                this.TabControl.SelectedIndex = 1;
+                _viewModel.CheckAllCommand.Execute( null );
             }
         }
 
-        public void AnalyzeAssemblyFolder()
+        public void OpenAssemblyAnalysis()
         {
-            //this.AssemblyProberUserControl.LoadFolder( folderPath );
             this.TabControl.SelectedIndex = 0;
+            this.AssemblyProberUserControl.SetActiveSolution( _runningSlnPath );
         }
 
-        public void AnalyzeSolution()
+        public void OpenRunPackageAnalysis()
         {
-            //this.SolutionAnalyzerControl.LoadSolutionFile( slnPath );
             this.TabControl.SelectedIndex = 1;
+            this.SolutionAnalyzerControl.LoadAndCheckSolution( _runningSlnPath );
         }
 
-        public void PrepareSemanticVersion()
+        public void OpenRunVersionUpdater()
         {
-            //this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
             this.TabControl.SelectedIndex = 2;
+            this.SemanticVersionManagerControl.LoadAndCheckSolution( _runningSlnPath );
         }
 
-        public void AnalyzeVersion()
+        public void OpenAnalyzeVersion()
         {
-            //this.SemanticVersionManagerControl.LoadFromSolution( slnPath );
             this.TabControl.SelectedIndex = 3;
+            this.VersionAnalyzerControl.LoadAndCheckSolution( _runningSlnPath );
         }
 
         private void OpenFromGithubRepo_Click( object sender, RoutedEventArgs e )
@@ -105,6 +112,9 @@ namespace DotNetUtilitiesApp
             _viewModel.LoadSolutionFile( e.Content );
 
             _githubDownloader.Close();
+
+            this.TabControl.SelectedIndex = 1;
+            _viewModel.CheckAllCommand.Execute( null );
         }
     }
 }

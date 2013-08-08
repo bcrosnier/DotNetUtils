@@ -20,7 +20,6 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         private bool _isNotStable;
         private string _versionTag;
         private string _newVersion;
-        private bool _isNotReleaseCheckBoxEnabled;
 
         #endregion Fields
 

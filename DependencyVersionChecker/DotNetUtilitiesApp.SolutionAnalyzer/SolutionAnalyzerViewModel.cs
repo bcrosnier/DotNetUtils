@@ -14,6 +14,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
 {
     internal class SolutionAnalyzerViewModel : ViewModel
     {
+        private const string DEFAULT_MESSAGE = @"No solution analyzed. Use the Solution menu to load it.";
         #region Fields
 
         private string _messageText;
@@ -36,6 +37,11 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
         }
 
         #endregion Observable properties
+
+        internal SolutionAnalyzerViewModel()
+        {
+            MessageText = DEFAULT_MESSAGE;
+        }
 
         #region Public methods
 
@@ -60,7 +66,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
 
         public void CleanUp()
         {
-            MessageText = string.Empty;
+            MessageText = DEFAULT_MESSAGE;
         }
 
         #endregion Public methods

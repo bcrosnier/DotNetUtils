@@ -18,7 +18,7 @@ namespace DotNetUtilitiesApp
         private string _solutionPath;
         private int _tabIndex;
 
-        private  AssemblyProberUserControl _assemblyProberControl;
+        private AssemblyProberUserControl _assemblyProberControl;
         private SemanticVersionManagerControl _semanticVersionManagerControl;
         private SolutionAnalyzerControl _solutionAnalyzerControl;
         private VersionAnalyzerControl _versionAnalyzerControl;
@@ -30,7 +30,7 @@ namespace DotNetUtilitiesApp
         #endregion Fields
 
         #region Observed properties
-        
+
         public string SolutionPath
         {
             get { return _solutionPath; }
@@ -49,7 +49,7 @@ namespace DotNetUtilitiesApp
             get { return _tabIndex; }
             set
             {
-                if (value != _tabIndex)
+                if( value != _tabIndex )
                 {
                     _tabIndex = value;
                     RaisePropertyChanged();
@@ -94,37 +94,41 @@ namespace DotNetUtilitiesApp
 
         private void PrepareCommands()
         {
-            LoadSolutionFileCommand = new RelayCommand(ExecuteLoadSolutionFileCommand);
-            CheckAllCommand = new RelayCommand(ExecuteCheckAllCommand, CanExecuteCheck);
-            CheckCurrentCommand = new RelayCommand(ExecuteCheckCurrentCommand, CanExecuteCheck);
+            LoadSolutionFileCommand = new RelayCommand( ExecuteLoadSolutionFileCommand );
+            CheckAllCommand = new RelayCommand( ExecuteCheckAllCommand, CanExecuteCheck );
+            CheckCurrentCommand = new RelayCommand( ExecuteCheckCurrentCommand, CanExecuteCheck );
         }
 
-        private bool CanExecuteCheck(object obj)
+        private bool CanExecuteCheck( object obj )
         {
-            return !string.IsNullOrEmpty(_solutionPath);
+            return !string.IsNullOrEmpty( _solutionPath );
         }
 
-        private void ExecuteCheckCurrentCommand(object obj)
+        private void ExecuteCheckCurrentCommand( object obj )
         {
-            InitTabIndexControl();
+            LoadSolutionInActiveControl();
         }
 
-        private void ExecuteCheckAllCommand(object obj)
+        private void ExecuteCheckAllCommand( object obj )
         {
-            InitControls();
+            LoadSolutionInAllControls();
         }
 
         private void ExecuteLoadSolutionFileCommand( object obj )
         {
             OpenFileDialog d = new OpenFileDialog();
+
             if( _solutionPath != null )
             {
                 d.InitialDirectory = Path.GetDirectoryName( _solutionPath );
                 d.FileName = _solutionPath;
             }
+
             d.CheckFileExists = true;
             d.Filter = "Visual Studio solution (*.sln)|*.sln";
+
             DialogResult result = d.ShowDialog();
+
             if( result == System.Windows.Forms.DialogResult.OK )
             {
                 FileInfo file = new FileInfo( d.FileName );
@@ -133,31 +137,31 @@ namespace DotNetUtilitiesApp
             }
         }
 
-        private void InitControls()
+        private void LoadSolutionInAllControls()
         {
             _assemblyProberControl.SetActiveSolution( _solutionPath );
-            _semanticVersionManagerControl.LoadFromSolution( _solutionPath );
-            _solutionAnalyzerControl.LoadSolutionFile( _solutionPath );
-            _versionAnalyzerControl.LoadFromSolution(_solutionPath);
+            _semanticVersionManagerControl.LoadAndCheckSolution( _solutionPath );
+            _solutionAnalyzerControl.LoadAndCheckSolution( _solutionPath );
+            _versionAnalyzerControl.LoadAndCheckSolution( _solutionPath );
         }
 
-        private void InitTabIndexControl()
+        private void LoadSolutionInActiveControl()
         {
-            if (_tabIndex == 0)
+            if( _tabIndex == 0 )
             {
-                _assemblyProberControl.SetActiveSolution(_solutionPath);
+                _assemblyProberControl.SetActiveSolution( _solutionPath );
             }
-            else if ( _tabIndex == 1)
+            else if( _tabIndex == 1 )
             {
-                _solutionAnalyzerControl.LoadSolutionFile(_solutionPath);
+                _solutionAnalyzerControl.LoadAndCheckSolution( _solutionPath );
             }
-            else if ( _tabIndex == 2)
+            else if( _tabIndex == 2 )
             {
-                _semanticVersionManagerControl.LoadFromSolution(_solutionPath);
+                _semanticVersionManagerControl.LoadAndCheckSolution( _solutionPath );
             }
-            else if ( _tabIndex == 3)
+            else if( _tabIndex == 3 )
             {
-                _versionAnalyzerControl.LoadFromSolution(_solutionPath);
+                _versionAnalyzerControl.LoadAndCheckSolution( _solutionPath );
             }
         }
 
@@ -185,7 +189,7 @@ namespace DotNetUtilitiesApp
 
         private void CleanUp()
         {
-            //_assemblyProberControl.CleanUp();
+            _assemblyProberControl.CleanUp();
             _semanticVersionManagerControl.CleanUp();
             _solutionAnalyzerControl.CleanUp();
             _versionAnalyzerControl.CleanUp();

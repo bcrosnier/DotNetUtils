@@ -16,11 +16,11 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="_Open solution" Command="{Binding Path=LoadSolutionFileCommand}" />
-                <MenuItem Header="_Open from GitHub repository" Click="OpenFromGithubRepo_Click" />
+                <MenuItem Header="Open from _GitHub repository" Click="OpenFromGithubRepo_Click" />
             </MenuItem>
-            <MenuItem Header="Check">
-                <MenuItem Header="Check all" Command="{Binding Path=CheckAllCommand}" />
-                <MenuItem Header="Check current" Command="{Binding Path=CheckCurrentCommand}" />
+            <MenuItem Header="_Solution">
+                <MenuItem Header="Load in _all tabs" Command="{Binding Path=CheckAllCommand}" />
+                <MenuItem Header="Load in active _tab" Command="{Binding Path=CheckCurrentCommand}" />
             </MenuItem>
         </Menu>
         <TabControl x:Name="TabControl" SelectedIndex="{Binding Path=TabIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -29,12 +29,12 @@
                     <assemblyProber:AssemblyProberUserControl x:Name="AssemblyProberUserControl" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Solution analyzer">
+            <TabItem Header="NuGet package analyzer">
                 <Grid>
                     <solutionAnalyzer:SolutionAnalyzerControl x:Name="SolutionAnalyzerControl" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Version manager">
+            <TabItem Header="Version update wizard">
                 <Grid>
                     <semanticVersionManager:SemanticVersionManagerControl x:Name="SemanticVersionManagerControl" />
                 </Grid>

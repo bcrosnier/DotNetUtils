@@ -30,7 +30,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             InitializeComponent();
         }
 
-        public void LoadFromSolution(string slnPath)
+        public void LoadAndCheckSolution(string slnPath)
         {
             _viewModel.LoadFromSolution(slnPath);
         }
@@ -48,7 +48,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             DialogResult result = d.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                LoadFromSolution(d.FileName);
+                LoadAndCheckSolution(d.FileName);
             }
         }
     }

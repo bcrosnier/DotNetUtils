@@ -17,7 +17,7 @@ namespace DotNetUtilitiesApp.SolutionAnalyzer
             InitializeComponent();
         }
 
-        public void LoadSolutionFile( string slnPath )
+        public void LoadAndCheckSolution( string slnPath )
         {
             _viewModel.AnalyzeSolutionFile( slnPath );
         }

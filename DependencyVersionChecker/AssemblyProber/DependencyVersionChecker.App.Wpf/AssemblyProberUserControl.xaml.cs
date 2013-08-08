@@ -104,7 +104,7 @@ namespace DotNetUtilitiesApp.AssemblyProber
             {
                 FileInfo file = new FileInfo( d.FileName );
                 Environment.CurrentDirectory = file.DirectoryName;
-                _viewModel.ChangeAssemblyFile( file );
+                _viewModel.LoadAssemblyFile( file );
             }
         }
 
@@ -148,6 +148,11 @@ namespace DotNetUtilitiesApp.AssemblyProber
 
             AssemblyVertex vertex = _viewModel.GetVertexFromAssembly( assembly );
             HighlightVertex( vertex );
+        }
+
+        public void CleanUp()
+        {
+            _viewModel.Reset();
         }
 
         public void Dispose()

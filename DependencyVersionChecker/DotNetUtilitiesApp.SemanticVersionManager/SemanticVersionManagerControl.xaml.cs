@@ -17,7 +17,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             InitializeComponent();
         }
 
-        public void LoadFromSolution( string slnPath )
+        public void LoadAndCheckSolution( string slnPath )
         {
             _viewModel.LoadFromSolution( slnPath );
         }
