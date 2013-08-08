@@ -98,7 +98,16 @@ namespace TinyGithub
                 }
             }
 
-            IRestResponse<T> restResponse = _client.Execute<T>( request );
+            IRestResponse<T> restResponse;
+            try
+            {
+                restResponse = _client.Execute<T>( request );
+            }
+            catch( Exception ex )
+            {
+                GithubError netError = new GithubError() { Message = ex.Message };
+                return new GithubResponse<T>( HttpStatusCode.ServiceUnavailable, default(T), 0, 0, 0, netError );
+            }
 
             string rateLimitHeader = restResponse.GetHeader( "X-RateLimit-Limit" );
             string rateLimitRemainingHeader = restResponse.GetHeader( "X-RateLimit-Remaining" );
