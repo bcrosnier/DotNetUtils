@@ -191,18 +191,8 @@ namespace DotNetUtilitiesApp.AssemblyProber
         public void Reset()
         {
             _checker.Reset();
-            _assemblyViewModels.Clear();
-
-            if( _drawnAssemblies != null )
-                _drawnAssemblies.Clear();
-            if( _drawnEdges != null )
-                _drawnEdges.Clear();
-            if( _drawnVertices != null )
-                _drawnVertices.Clear();
-            if( _assemblyViewModels != null )
-                _assemblyViewModels.Clear();
-            if( _graph != null )
-                _graph.Clear();
+            AssemblyViewModels.Clear();
+            Graph = new AssemblyGraph( true );
         }
 
         public void LoadAssemblyDirectory( DirectoryInfo dir )
