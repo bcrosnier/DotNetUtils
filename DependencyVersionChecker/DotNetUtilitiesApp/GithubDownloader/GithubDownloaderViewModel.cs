@@ -23,7 +23,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         public event EventHandler<StringEventArgs> SolutionPathAvailable;
 
-        private readonly DirectoryInfo _tempDownloadDirectory;
+        private readonly DirectoryInfo _cacheDirectory;
         private string _loggedInUsername;
         private string _remainingApiCalls;
         private string _statusText;
@@ -213,11 +213,11 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         #region Constructor/Disposition
 
-        internal GithubDownloaderViewModel( DirectoryInfo tempDownloadDirectory )
+        internal GithubDownloaderViewModel( DirectoryInfo cacheDirectory )
         {
             _github = new Github();
 
-            _tempDownloadDirectory = tempDownloadDirectory;
+            _cacheDirectory = cacheDirectory;
 
             LoadSettings();
 
@@ -506,8 +506,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         private IEnumerable<string> DoDownloadOpenSolutionTask()
         {
-            string baseDirectory = _tempDownloadDirectory.FullName;
+            string baseDirectory = _cacheDirectory.FullName;
             string directoryPath = Path.Combine( baseDirectory, RepositoryUser, RepositoryName, RepositoryRefName );
+            DirectoryInfo directory = new DirectoryInfo( directoryPath );
 
             string resource = String.Format( "repos/{0}/{1}/git/refs/heads/{2}", RepositoryUser, RepositoryName, RepositoryRefName );
 
@@ -597,6 +598,15 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
             int objectCount = objectsToGet.Count;
             int i = 0;
+
+            if( !directory.Exists )
+            {
+                directory.Create();
+            }
+
+            List<FileInfo> downloadedFiles = new List<FileInfo>();
+            List<FileInfo> filesInCache = new DirectoryInfo( directoryPath ).GetFiles( "*", SearchOption.AllDirectories ).ToList();
+
             foreach( var objectToGet in objectsToGet )
             {
                 i++;
@@ -608,7 +618,14 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
                 string destPath = Path.Combine( directoryPath, objectToGet.Path );
 
-                FileInfo destFile = new FileInfo( destPath );
+                FileInfo destFile = new FileInfo( Path.GetFullPath( destPath ) );
+
+                if( filesInCache.Any( x => Path.GetFullPath( x.FullName ) == Path.GetFullPath( destFile.FullName ) ) )
+                {
+                    filesInCache.Remove( filesInCache.Where( x => Path.GetFullPath( x.FullName ) == Path.GetFullPath( destFile.FullName ) ).First() );
+                }
+
+                downloadedFiles.Add( destFile );
 
                 if( !destFile.Exists || objectToGet.Size != destFile.Length || objectToGet.Sha != GetBlobSha( destFile ) )
                 {
