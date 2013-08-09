@@ -11,7 +11,7 @@ namespace ProjectProber.Impl
 
         public Version AssemblyFileVersion { get { return _assemblyFileVersion; } }
 
-        public SemanticVersion AssemblyInformationVersion { get { return _assemblyInformationVersion; } }
+        public string AssemblyInformationVersion { get { return _assemblyInformationVersion; } }
 
         public bool IsSharedAssemblyInformation { get { return _isSharedAssemblyInformation; } }
 
@@ -21,12 +21,12 @@ namespace ProjectProber.Impl
 
         private Version _assemblyVersion;
         private Version _assemblyFileVersion;
-        private SemanticVersion _assemblyInformationVersion;
+        private string _assemblyInformationVersion;
         private bool _isSharedAssemblyInformation;
         private string _assemblyInfoFilePath;
         private ISolutionProjectItem _solutionProjectItem;
 
-        public AssemblyVersionInfo( string assemblyInfoFilePath, ISolutionProjectItem solutionProjectItem, Version assemblyVersion, Version assemblyFileVersion, SemanticVersion assemblyInformationVersion )
+        public AssemblyVersionInfo(string assemblyInfoFilePath, ISolutionProjectItem solutionProjectItem, Version assemblyVersion, Version assemblyFileVersion, string assemblyInformationVersion)
         {
             _assemblyInfoFilePath = assemblyInfoFilePath;
             _solutionProjectItem = solutionProjectItem;

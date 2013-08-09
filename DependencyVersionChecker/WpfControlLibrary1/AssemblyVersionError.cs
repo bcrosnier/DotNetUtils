@@ -31,7 +31,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             get { return _errorMessage; }
         }
 
-        internal AssemblyVersionError(AssemblyVersionErrorType assemblyError, AssemblyVersionInfoCheckResult result)
+        internal AssemblyVersionError( AssemblyVersionErrorType assemblyError, AssemblyVersionInfoCheckResult result )
         {
             _assemblyError = assemblyError;
             _result = result;
@@ -45,10 +45,10 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
         private void SelectErrorMessage()
         {
-            switch (_assemblyError)
+            switch( _assemblyError )
             {
                 case AssemblyVersionErrorType.HasFileWithoutVersion:
-                    if (!_result.HasNotSharedAssemblyInfo)
+                    if( !_result.HasNotSharedAssemblyInfo )
                     {
                         _errorMessage = "Has a SharedAssemblyInfo.cs without version.";
                     }
@@ -58,41 +58,42 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                     }
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyFileVersion:
-                    _errorMessage = "Plusieurs AssemblyFileVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyFileVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyInformationVersion:
-                    _errorMessage = "Plusieurs AssemblyInformationVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyInformationVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyVersion:
-                    _errorMessage = "Plusieurs AssemblyVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleRelativeLinkInCSProj:
-                    _errorMessage = "Des liens relatifs menant à des fichiers différents ont été trouvés.";
+                    _errorMessage = "Relative links leading to different files were found.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleSharedAssemblyInfo:
                     _errorMessage = "More than one SharedAssemblyInfo file was found in the solution.";
                     break;
-                case AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfoFile:
-                    _errorMessage = "Different version was found in a project's Properties/AssemblyInfo.cs.";
+                case AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfo:
+                    _errorMessage = "Different versions were found in a project's Properties/AssemblyInfo.cs.";
                     break;
                 case AssemblyVersionErrorType.HasOneVersionNotSemanticVersionCompliant:
-                    _errorMessage = "One or more versions is not semantic version compliant.";
+                    _errorMessage = "At least one version is not semantic version compliant.";
                     break;
                 case AssemblyVersionErrorType.HasRelativeLinkInCSProjNotFound:
-                    _errorMessage = "Un fichier sans lien relatif a été trouvé.";
+                    _errorMessage = "A file without relative links was found.";
                     break;
                 case AssemblyVersionErrorType.HasNotSharedAssemblyInfo:
                     _errorMessage = "No SharedAssemblyInfo file was found in solution directory.";
                     break;
                 default:
-                    _errorMessage = "Plusieurs AssemblyVersion ont été trouvées dans la solution.";
+                    _errorMessage = "More than one AssemblyVersion was found in the solution.";
                     break;
             }
+
         }
 
         public UIElement CreateDetailControl()
         {
-            switch (_assemblyError)
+            switch( _assemblyError )
             {
                 case AssemblyVersionErrorType.HasFileWithoutVersion:
                     return GetDetailForHasFileWithoutVersion();
@@ -106,7 +107,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                     return GetDetailForHasMultipleRelativeLinkInCSProj();
                 case AssemblyVersionErrorType.HasMultipleSharedAssemblyInfo:
                     return GetDetailForHasMultipleSharedAssemblyInfo();
-                case AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfoFile:
+                case AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfo:
                     return GetDetailForHasMultipleVersionInOneAssemblyInfoFile();
                 case AssemblyVersionErrorType.HasOneVersionNotSemanticVersionCompliant:
                     return GetDetailForHasOneVersionNotSemanticVersionCompliant();
@@ -131,10 +132,10 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             ListBox lb = new ListBox();
             IEnumerable<CSProjCompileLinkInfo> CSProjwithoutRelativeLink;
             CSProjwithoutRelativeLink = _result.CsProjs
-                .Where(x => string.IsNullOrEmpty( x.SharedAssemblyInfoRelativePath ) && string.IsNullOrEmpty( x.AssociateLink ) ) ;
-            foreach (var CSProj in CSProjwithoutRelativeLink)
+                .Where( x => string.IsNullOrEmpty( x.SharedAssemblyInfoRelativePath ) && string.IsNullOrEmpty( x.AssociateLink ) );
+            foreach( var CSProj in CSProjwithoutRelativeLink )
             {
-                lb.Items.Add(CSProj.Project);
+                lb.Items.Add( CSProj.Project );
             }
 
             return lb;
@@ -149,41 +150,41 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column1 = new DataGridTextColumn();
             column1.Header = "Path";
-            column1.Binding = new Binding("AssemblyInfoFilePath");
-            column1.Width = new DataGridLength(340);
+            column1.Binding = new Binding( "AssemblyInfoFilePath" );
+            column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add(new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right));
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Version";
-            column2.Binding = new Binding("AssemblyVersion");
+            column2.Binding = new Binding( "AssemblyVersion" );
 
             var column3 = new DataGridTextColumn();
             column3.Header = "File Version";
-            column3.Binding = new Binding("AssemblyFileVersion");
+            column3.Binding = new Binding( "AssemblyFileVersion" );
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding("AssemblyInformationVersion");
+            column4.Binding = new Binding( "AssemblyInformationVersion" );
 
-            dg.Columns.Add(column1);
-            dg.Columns.Add(column2);
-            dg.Columns.Add(column3);
-            dg.Columns.Add(column4);
+            dg.Columns.Add( column1 );
+            dg.Columns.Add( column2 );
+            dg.Columns.Add( column3 );
+            dg.Columns.Add( column4 );
 
             IEnumerable<AssemblyVersionInfo> filesWithNonSemanticVersion;
             SemanticVersion temp;
-            if (!_result.HasNotSharedAssemblyInfo)
+            if( !_result.HasNotSharedAssemblyInfo )
             {
                 filesWithNonSemanticVersion = _result.SharedAssemblyInfoVersions
-                    .Where(x => ( x.AssemblyVersion != null && !SemanticVersion.TryParseStrict(x.AssemblyVersion.ToString(), out temp) )
-                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict(x.AssemblyFileVersion.ToString(), out temp)));
+                    .Where( x => (x.AssemblyVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyVersion.ToString(), out temp ))
+                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyFileVersion.ToString(), out temp )) );
             }
             else
             {
                 filesWithNonSemanticVersion = _result.AssemblyVersions
-                    .Where(x => (x.AssemblyVersion != null && !SemanticVersion.TryParseStrict(x.AssemblyVersion.ToString(), out temp))
-                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict(x.AssemblyFileVersion.ToString(), out temp)));
+                    .Where( x => (x.AssemblyVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyVersion.ToString(), out temp ))
+                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyFileVersion.ToString(), out temp )) );
             }
 
             dg.ItemsSource = filesWithNonSemanticVersion;
@@ -200,42 +201,42 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column1 = new DataGridTextColumn();
             column1.Header = "Path";
-            column1.Binding = new Binding("AssemblyInfoFilePath");
-            column1.Width = new DataGridLength(340);
+            column1.Binding = new Binding( "AssemblyInfoFilePath" );
+            column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add(new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right));
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Version";
-            column2.Binding = new Binding("AssemblyVersion");
+            column2.Binding = new Binding( "AssemblyVersion" );
 
             var column3 = new DataGridTextColumn();
             column3.Header = "File Version";
-            column3.Binding = new Binding("AssemblyFileVersion");
+            column3.Binding = new Binding( "AssemblyFileVersion" );
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding("AssemblyInformationVersion");
+            column4.Binding = new Binding( "AssemblyInformationVersion" );
 
-            dg.Columns.Add(column1);
-            dg.Columns.Add(column2);
-            dg.Columns.Add(column3);
-            dg.Columns.Add(column4);
+            dg.Columns.Add( column1 );
+            dg.Columns.Add( column2 );
+            dg.Columns.Add( column3 );
+            dg.Columns.Add( column4 );
 
             IEnumerable<AssemblyVersionInfo> filesWithNonSemanticVersion;
-            if (!_result.HasNotSharedAssemblyInfo)
+            if( !_result.HasNotSharedAssemblyInfo )
             {
                 filesWithNonSemanticVersion = _result.SharedAssemblyInfoVersions
-                    .Where(x => x.AssemblyVersion != x.AssemblyFileVersion
-                        || (x.AssemblyInformationVersion != null
-                        && x.AssemblyVersion != x.AssemblyInformationVersion.Version) );
+                    .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
+                        || (!string.IsNullOrEmpty( x.AssemblyInformationVersion )
+                        && x.AssemblyVersion.ToString() != x.AssemblyInformationVersion) );
             }
             else
             {
                 filesWithNonSemanticVersion = _result.AssemblyVersions
-                    .Where(x => x.AssemblyVersion != x.AssemblyFileVersion
-                        || (x.AssemblyInformationVersion != null
-                        && x.AssemblyVersion != x.AssemblyInformationVersion.Version));
+                    .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
+                        || (!string.IsNullOrEmpty( x.AssemblyInformationVersion )
+                        && x.AssemblyVersion.ToString() != x.AssemblyInformationVersion) );
             }
 
             dg.ItemsSource = filesWithNonSemanticVersion;
@@ -252,27 +253,27 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column1 = new DataGridTextColumn();
             column1.Header = "Path";
-            column1.Binding = new Binding("AssemblyInfoFilePath");
-            column1.Width = new DataGridLength(340);
+            column1.Binding = new Binding( "AssemblyInfoFilePath" );
+            column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add(new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right));
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Version";
-            column2.Binding = new Binding("AssemblyVersion");
+            column2.Binding = new Binding( "AssemblyVersion" );
 
             var column3 = new DataGridTextColumn();
             column3.Header = "File Version";
-            column3.Binding = new Binding("AssemblyFileVersion");
+            column3.Binding = new Binding( "AssemblyFileVersion" );
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding("AssemblyInformationVersion");
+            column4.Binding = new Binding( "AssemblyInformationVersion" );
 
-            dg.Columns.Add(column1);
-            dg.Columns.Add(column2);
-            dg.Columns.Add(column3);
-            dg.Columns.Add(column4);
+            dg.Columns.Add( column1 );
+            dg.Columns.Add( column2 );
+            dg.Columns.Add( column3 );
+            dg.Columns.Add( column4 );
 
             dg.ItemsSource = _result.SharedAssemblyInfoVersions;
 
@@ -288,22 +289,22 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column1 = new DataGridTextColumn();
             column1.Header = "Project Path";
-            column1.Binding = new Binding("Project");
-            column1.Width = new DataGridLength(340);
+            column1.Binding = new Binding( "Project" );
+            column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add(new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right));
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Relative path";
-            column2.Binding = new Binding("SharedAssemblyInfoRelativePath");
+            column2.Binding = new Binding( "SharedAssemblyInfoRelativePath" );
 
             var column3 = new DataGridTextColumn();
             column3.Header = "Associate path";
-            column3.Binding = new Binding("AssociateLink");
+            column3.Binding = new Binding( "AssociateLink" );
 
-            dg.Columns.Add(column1);
-            dg.Columns.Add(column2);
-            dg.Columns.Add(column3);
+            dg.Columns.Add( column1 );
+            dg.Columns.Add( column2 );
+            dg.Columns.Add( column3 );
 
             dg.ItemsSource = _result.CsProjs;
 
@@ -319,19 +320,19 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column1 = new DataGridTextColumn();
             column1.Header = "Path";
-            column1.Binding = new Binding("AssemblyInfoFilePath");
-            column1.Width = new DataGridLength(340);
+            column1.Binding = new Binding( "AssemblyInfoFilePath" );
+            column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add(new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right));
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Version";
-            column2.Binding = new Binding("AssemblyVersion");
+            column2.Binding = new Binding( "AssemblyVersion" );
 
-            dg.Columns.Add(column1);
-            dg.Columns.Add(column2);
-            if (!_result.HasNotSharedAssemblyInfo)
+            dg.Columns.Add( column1 );
+            dg.Columns.Add( column2 );
+            if( !_result.HasNotSharedAssemblyInfo )
             {
                 dg.ItemsSource = _result.SharedAssemblyInfoVersions;
             }
@@ -352,19 +353,19 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column1 = new DataGridTextColumn();
             column1.Header = "Path";
-            column1.Binding = new Binding("AssemblyInfoFilePath");
-            column1.Width = new DataGridLength(340);
+            column1.Binding = new Binding( "AssemblyInfoFilePath" );
+            column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add(new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right));
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Information version";
-            column2.Binding = new Binding("AssemblyInformationVersion");
+            column2.Binding = new Binding( "AssemblyInformationVersion" );
 
-            dg.Columns.Add(column1);
-            dg.Columns.Add(column2);
-            if (!_result.HasNotSharedAssemblyInfo)
+            dg.Columns.Add( column1 );
+            dg.Columns.Add( column2 );
+            if( !_result.HasNotSharedAssemblyInfo )
             {
                 dg.ItemsSource = _result.SharedAssemblyInfoVersions;
             }
@@ -385,20 +386,20 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column1 = new DataGridTextColumn();
             column1.Header = "Path";
-            column1.Binding = new Binding("AssemblyInfoFilePath");
-            column1.Width = new DataGridLength(340);
+            column1.Binding = new Binding( "AssemblyInfoFilePath" );
+            column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add(new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right));
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
 
             var column2 = new DataGridTextColumn();
             column2.Header = "File version";
-            column2.Binding = new Binding("AssemblyFileVersion");
+            column2.Binding = new Binding( "AssemblyFileVersion" );
 
-            dg.Columns.Add(column1);
-            dg.Columns.Add(column2);
-            
-            if (!_result.HasNotSharedAssemblyInfo)
+            dg.Columns.Add( column1 );
+            dg.Columns.Add( column2 );
+
+            if( !_result.HasNotSharedAssemblyInfo )
             {
                 dg.ItemsSource = _result.SharedAssemblyInfoVersions;
             }
@@ -414,20 +415,20 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         {
             ListBox lb = new ListBox();
             IEnumerable<AssemblyVersionInfo> filesWithoutVersion;
-            if (!_result.HasNotSharedAssemblyInfo)
+            if( !_result.HasNotSharedAssemblyInfo )
             {
                 filesWithoutVersion = _result.SharedAssemblyInfoVersions
-                    .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationVersion == null);
+                    .Where( x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && string.IsNullOrEmpty( x.AssemblyInformationVersion ) );
             }
             else
             {
                 filesWithoutVersion = _result.AssemblyVersions
-                    .Where(x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && x.AssemblyInformationVersion == null);
+                    .Where( x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && string.IsNullOrEmpty( x.AssemblyInformationVersion ) );
             }
 
-            foreach (var fileWithoutVersion in filesWithoutVersion)
+            foreach( var fileWithoutVersion in filesWithoutVersion )
             {
-                lb.Items.Add(fileWithoutVersion.AssemblyInfoFilePath);
+                lb.Items.Add( fileWithoutVersion.AssemblyInfoFilePath );
             }
 
             return lb;
