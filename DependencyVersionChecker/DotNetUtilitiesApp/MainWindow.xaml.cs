@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 
 namespace DotNetUtilitiesApp
@@ -13,16 +14,21 @@ namespace DotNetUtilitiesApp
         private MainWindowViewModel _viewModel;
         private GithubDownloader.GithubDownloader _githubDownloader;
         private string _runningSlnPath;
-        private DirectoryInfo _tempDownloadDirectory;
+
+        private readonly DirectoryInfo _appDataDirectory;
+        private readonly DirectoryInfo _githubCacheDirectory;
 
         public MainWindow()
         {
             string tempDownloadPath = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() );
 
-            _tempDownloadDirectory = new DirectoryInfo( tempDownloadPath );
-            _tempDownloadDirectory.Create();
+            _appDataDirectory = new DirectoryInfo( GetAppDataDirectoryPath() );
+            if( !_appDataDirectory.Exists )
+                _appDataDirectory.Create();
 
-            this.Closing += MainWindow_Closing;
+            _githubCacheDirectory = new DirectoryInfo( Path.Combine( _appDataDirectory.FullName, "github-cache" ) );
+            if( !_githubCacheDirectory.Exists )
+                _githubCacheDirectory.Create();
 
             // _runningSlnPath is filled in ProcessArgs(), or null'd
 
@@ -34,12 +40,13 @@ namespace DotNetUtilitiesApp
             _viewModel.SetControls( this.AssemblyProberUserControl, this.SemanticVersionManagerControl, this.SolutionAnalyzerControl, this.VersionAnalyzerControl );
 
             ProcessArgs();
-
         }
 
-        void MainWindow_Closing( object sender, System.ComponentModel.CancelEventArgs e )
+        private static string GetAppDataDirectoryPath()
         {
-            _tempDownloadDirectory.Delete( true );
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+            return Path.Combine( appDataPath, assemblyName );
         }
 
         private void ProcessArgs()
@@ -105,7 +112,7 @@ namespace DotNetUtilitiesApp
         {
             if( _githubDownloader == null )
             {
-                _githubDownloader = new GithubDownloader.GithubDownloader(_tempDownloadDirectory);
+                _githubDownloader = new GithubDownloader.GithubDownloader( _githubCacheDirectory );
             }
 
             _githubDownloader.Closing += ( s, e1 ) => { _githubDownloader = null; };

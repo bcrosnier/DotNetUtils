@@ -150,11 +150,8 @@ namespace TinyGithub
             if( !directory.Exists )
                 directory.Create();
 
-            using( Stream writeStream = File.Open( targetFilePath, FileMode.Create, FileAccess.Write, FileShare.Read ) )
-            {
-                byte[] data = blobInfo.GetBlobData();
-                writeStream.Write( data, 0, data.Length );
-            }
+            byte[] data = blobInfo.GetBlobData();
+            File.WriteAllBytes( Path.GetFullPath( targetFilePath ), data );
         }
 
         /// <summary>

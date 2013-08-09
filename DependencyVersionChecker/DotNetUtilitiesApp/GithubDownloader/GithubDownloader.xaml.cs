@@ -15,9 +15,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
         public event EventHandler<StringEventArgs> SolutionFileReady;
         GithubDownloaderViewModel _viewModel;
 
-        public GithubDownloader(DirectoryInfo tempDownloadDir)
+        public GithubDownloader(DirectoryInfo cacheDir)
         {
-            _viewModel = new GithubDownloaderViewModel(tempDownloadDir);
+            _viewModel = new GithubDownloaderViewModel(cacheDir);
             _viewModel.RaisedWarning +=_viewModel_RaisedWarning;
 
             _viewModel.SolutionPathAvailable += _viewModel_SolutionPathAvailable;
