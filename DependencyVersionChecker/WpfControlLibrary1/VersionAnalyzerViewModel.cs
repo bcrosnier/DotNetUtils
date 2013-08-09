@@ -143,18 +143,17 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         /// <returns>Returned version; null if none found</returns>
         private string GetResultVersion(AssemblyVersionInfoCheckResult result)
         {
-            var versions = result.Versions.Where(x => x != null);
-            if (versions.Count() > 0)
+            var versions = result.Versions.Where( x => x != null );
+            var informationVersions = result.InformationVersions.Where( x => !string.IsNullOrEmpty( x ) );
+            if( versions.Count() == 1 )
             {
-                AssemblyVersionInfo info = versions.First();
-
-                if (info.AssemblyInformationVersion != null)
+                if( !string.IsNullOrEmpty( informationVersions.First() ) )
                 {
-                    return info.AssemblyInformationVersion.ToString();
+                    return informationVersions.First();
                 }
-                else if (info.AssemblyVersion != null)
+                else if( versions.First() != null )
                 {
-                    return info.AssemblyVersion.ToString();
+                    return versions.First().ToString();
                 }
             }
             return null;
@@ -198,9 +197,9 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             {
                 _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasMultipleSharedAssemblyInfo, _result));
             }
-            if (_result.HasMultipleVersionInOneAssemblyInfoFile)
+            if (_result.HasMultipleVersionInOneAssemblyInfo)
             {
-                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfoFile, _result));
+                _assemblyVersionErrors.Add(new AssemblyVersionError(AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfo, _result));
             }
         }
 

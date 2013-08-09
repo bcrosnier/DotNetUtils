@@ -16,7 +16,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         HasMultipleAssemblyFileVersion,
         HasMultipleAssemblyInformationVersion,
         HasOneVersionNotSemanticVersionCompliant,
-        HasMultipleVersionInOneAssemblyInfoFile,
+        HasMultipleVersionInOneAssemblyInfo,
         HasFileWithoutVersion
     }
 }
