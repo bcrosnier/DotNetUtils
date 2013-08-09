@@ -281,7 +281,7 @@ namespace ProjectProber
 
         private bool CheckForMultipleSharedAssemblyInfo()
         {
-            return _sharedAssemblyInfoVersions.Count > 0;
+            return _sharedAssemblyInfoVersions.Count > 1;
         }
 
         private bool CheckForRelativeLink()
@@ -292,7 +292,9 @@ namespace ProjectProber
 
         private bool CheckForMultipleRelativeLink()
         {
-            return _csProjs.Distinct().Count() > 1;
+            if( _csProjs.Select( x => x.AssociateLink ).Distinct().Count() > 1 ) return true;
+            if( _csProjs.Select( x => x.SharedAssemblyInfoRelativePath ).Distinct().Count() > 1 ) return true;
+            return false;
         }
 
         private bool CheckForAssemblyWithVersion()

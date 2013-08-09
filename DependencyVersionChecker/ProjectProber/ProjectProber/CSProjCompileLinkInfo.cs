@@ -23,7 +23,7 @@
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return SharedAssemblyInfoRelativePath.GetHashCode() + AssociateLink.GetHashCode() + Project.GetHashCode() ;
         }
 
         public static bool operator ==( CSProjCompileLinkInfo obj1, CSProjCompileLinkInfo obj2 )
