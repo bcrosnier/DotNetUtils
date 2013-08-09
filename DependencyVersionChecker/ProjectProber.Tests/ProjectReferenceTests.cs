@@ -24,7 +24,7 @@
 //            Assert.That( File.Exists( filename ), "Found project file" );
 
 //            //IEnumerable<ProjectItem> items = ProjectUtils.LoadProjectReferencesFromFile( filename );
-            IEnumerable<IProjectAssemblyReference> refs = ProjectUtils.GetReferencesFromProjectFile( filename );
+            //IEnumerable<IProjectAssemblyReference> refs = ProjectUtils.GetReferencesFromProjectFile( filename );
 
 //            CollectionAssert.IsNotEmpty( refs );
 //            CollectionAssert.AllItemsAreNotNull( refs );
@@ -88,7 +88,7 @@
 //        {
 //            string path = GetTestProjectFilePath();
 
-            IEnumerable<IProjectAssemblyReference> references = ProjectUtils.GetReferencesFromProjectFile( path );
+            //IEnumerable<IProjectAssemblyReference> references = ProjectUtils.GetReferencesFromProjectFile( path );
 
 //            CollectionAssert.IsNotEmpty( references );
 //            CollectionAssert.AllItemsAreNotNull( references );
@@ -115,7 +115,7 @@
 
 //                    Assert.That( File.Exists( fullProjectFilePath ), "Project file {0} exists", fullProjectFilePath );
 
-                    IEnumerable<IProjectAssemblyReference> projectReferences = ProjectUtils.GetReferencesFromProjectFile( fullProjectFilePath );
+                    //IEnumerable<IProjectAssemblyReference> projectReferences = ProjectUtils.GetReferencesFromProjectFile( fullProjectFilePath );
 
 //                    CollectionAssert.IsNotEmpty( projectReferences );
 //                    CollectionAssert.AllItemsAreNotNull( projectReferences );

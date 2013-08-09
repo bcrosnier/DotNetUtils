@@ -54,14 +54,14 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                     }
                     else
                     {
-                        _errorMessage = "Has one or more AssemblyInfo.cs without version.";
+                        _errorMessage = "More than one AssemblyInfo.cs without version.";
                     }
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyFileVersion:
                     _errorMessage = "More than one AssemblyFileVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyInformationVersion:
-                    _errorMessage = "More than one AssemblyInformationVersion was found in the solution.";
+                    _errorMessage = "More than one AssemblyInformationalVersion was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleAssemblyVersion:
                     _errorMessage = "More than one AssemblyVersion was found in the solution.";
@@ -73,13 +73,13 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                     _errorMessage = "More than one SharedAssemblyInfo file was found in the solution.";
                     break;
                 case AssemblyVersionErrorType.HasMultipleVersionInOneAssemblyInfo:
-                    _errorMessage = "Different versions were found in a project's Properties/AssemblyInfo.cs.";
+                    _errorMessage = "Different versions were found in one Properties/AssemblyInfo.cs.";
                     break;
                 case AssemblyVersionErrorType.HasOneVersionNotSemanticVersionCompliant:
                     _errorMessage = "At least one version is not semantic version compliant.";
                     break;
                 case AssemblyVersionErrorType.HasRelativeLinkInCSProjNotFound:
-                    _errorMessage = "A file without relative links was found.";
+                    _errorMessage = "A csproj file without relative links was found.";
                     break;
                 case AssemblyVersionErrorType.HasNotSharedAssemblyInfo:
                     _errorMessage = "No SharedAssemblyInfo file was found in solution directory.";
@@ -135,7 +135,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                 .Where( x => string.IsNullOrEmpty( x.SharedAssemblyInfoRelativePath ) && string.IsNullOrEmpty( x.AssociateLink ) );
             foreach( var CSProj in CSProjwithoutRelativeLink )
             {
-                lb.Items.Add( CSProj.Project );
+                lb.Items.Add( CSProj.NameProject );
             }
 
             return lb;
@@ -228,15 +228,15 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             {
                 filesWithNonSemanticVersion = _result.SharedAssemblyInfoVersions
                     .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
-                        || (!string.IsNullOrEmpty( x.AssemblyInformationVersion )
-                        && x.AssemblyVersion.ToString() != x.AssemblyInformationVersion) );
+                        || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion )
+                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
             }
             else
             {
                 filesWithNonSemanticVersion = _result.AssemblyVersions
                     .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
-                        || (!string.IsNullOrEmpty( x.AssemblyInformationVersion )
-                        && x.AssemblyVersion.ToString() != x.AssemblyInformationVersion) );
+                        || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion )
+                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
             }
 
             dg.ItemsSource = filesWithNonSemanticVersion;
@@ -418,12 +418,12 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             if( !_result.HasNotSharedAssemblyInfo )
             {
                 filesWithoutVersion = _result.SharedAssemblyInfoVersions
-                    .Where( x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && string.IsNullOrEmpty( x.AssemblyInformationVersion ) );
+                    .Where( x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && string.IsNullOrEmpty( x.AssemblyInformationalVersion ) );
             }
             else
             {
                 filesWithoutVersion = _result.AssemblyVersions
-                    .Where( x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && string.IsNullOrEmpty( x.AssemblyInformationVersion ) );
+                    .Where( x => x.AssemblyVersion == null && x.AssemblyFileVersion == null && string.IsNullOrEmpty( x.AssemblyInformationalVersion ) );
             }
 
             foreach( var fileWithoutVersion in filesWithoutVersion )

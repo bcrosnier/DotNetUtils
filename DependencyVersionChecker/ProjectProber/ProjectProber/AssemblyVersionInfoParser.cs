@@ -5,6 +5,9 @@ using CK.Package;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Helper to parse an AssemblyInfo.cs.
+    /// </summary>
     public static class AssemblyVersionInfoParser
     {
         /// <summary>

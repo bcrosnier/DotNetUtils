@@ -8,6 +8,9 @@ using CK.Package;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Generate a version analysis result.
+    /// </summary>
     public class AssemblyVersionInfoCheckResult
     {
         /// <summary>
@@ -185,7 +188,9 @@ namespace ProjectProber
                 }
             }
         }
-
+        /// <summary>
+        /// Is True, if an AssemblyInfo.cs has a version despite the solution having a SharedAssemblyInfo.cs.
+        /// </summary>
         public bool HasAssemblyInfoWithVersion 
         { 
             get { return _hasAssemblyInfoWithVersion; }
@@ -300,7 +305,7 @@ namespace ProjectProber
         private bool CheckForAssemblyWithVersion()
         {
             return _assemblyVersions.Any( x => x.AssemblyVersion != null
-                                            || !string.IsNullOrEmpty( x.AssemblyInformationVersion )
+                                            || !string.IsNullOrEmpty( x.AssemblyInformationalVersion )
                                             || x.AssemblyFileVersion != null );
         }
 
@@ -311,22 +316,22 @@ namespace ProjectProber
                                         && IsSemanticVersionCompliant( x.AssemblyVersion.ToString() ) ) 
                                         || ( x.AssemblyFileVersion != null 
                                         && IsSemanticVersionCompliant( x.AssemblyFileVersion.ToString() ) )
-                                        || ( !string.IsNullOrEmpty( x.AssemblyInformationVersion ) 
-                                        &&IsSemanticVersionCompliant( x.AssemblyInformationVersion ) ) );
+                                        || ( !string.IsNullOrEmpty( x.AssemblyInformationalVersion ) 
+                                        &&IsSemanticVersionCompliant( x.AssemblyInformationalVersion ) ) );
         }
 
         private bool CheckForFileWithoutVersion( List<AssemblyVersionInfo> listVersions )
         {
             return listVersions.Any( x => x.AssemblyVersion == null 
                                         && x.AssemblyFileVersion == null 
-                                        && (!string.IsNullOrEmpty( x.AssemblyInformationVersion ) ) );
+                                        && (!string.IsNullOrEmpty( x.AssemblyInformationalVersion ) ) );
         }
 
         private bool CheckForMultipleVersionInOneAssemblyInfo( List<AssemblyVersionInfo> listVersions )
         {
             return listVersions.Any( x => x.AssemblyVersion != x.AssemblyFileVersion
-                                        || (!string.IsNullOrEmpty( x.AssemblyInformationVersion ) 
-                                        && x.AssemblyVersion.ToString() != x.AssemblyInformationVersion) );
+                                        || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion ) 
+                                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
         }
 
         private void CheckForMultipleVersion( List<AssemblyVersionInfo> listVersions )
@@ -350,7 +355,7 @@ namespace ProjectProber
 
         private bool CheckForMultipleAssemblyInformationVersion( List<AssemblyVersionInfo> listVersions )
         {
-            _informationVersions = listVersions.Where( x => x.AssemblyInformationVersion != null ).Select( x => x.AssemblyInformationVersion ).Distinct().ToList();
+            _informationVersions = listVersions.Where( x => x.AssemblyInformationalVersion != null ).Select( x => x.AssemblyInformationalVersion ).Distinct().ToList();
             return _informationVersions.Count > 1;
         }
 

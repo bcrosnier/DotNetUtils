@@ -5,36 +5,50 @@ using ProjectProber.Interfaces;
 
 namespace ProjectProber.Impl
 {
+    /// <summary>
+    /// Represent an AssemblyInfo.cs or SharedAssemblyInfo.cs
+    /// </summary>
     public class AssemblyVersionInfo
     {
+        /// <summary>
+        /// Version of [assembly: AssemblyVersion("1.0.0")]. 
+        /// </summary>
         public Version AssemblyVersion { get { return _assemblyVersion; } }
-
+        /// <summary>
+        /// Version of [assembly: AssemblyFileVersion("1.0.0.0")]. 
+        /// </summary>
         public Version AssemblyFileVersion { get { return _assemblyFileVersion; } }
-
-        public string AssemblyInformationVersion { get { return _assemblyInformationVersion; } }
-
-        public bool IsSharedAssemblyInformation { get { return _isSharedAssemblyInformation; } }
-
+        /// <summary>
+        /// Version of [assembly: AssemblyInformationalVersion( "2.8.14" )]. 
+        /// </summary>
+        /// <remarks>
+        /// The representation's AssemblyInformationalVersion for VisualStudio is a string.
+        /// This version can be 1.0.0.0 (not semantic compliant) and 1.0.0-develop.
+        /// </remarks>
+        public string AssemblyInformationalVersion { get { return _assemblyInformationalVersion; } }
+        /// <summary>
+        /// True, if the file is a SharedAssemblyInfo.cs
+        /// </summary>
+        public bool IsSharedAssemblyInfo { get { return _isSharedAssemblyInfo; } }
+        /// <summary>
+        /// Path of AssemblyInfo.cs or SharedAssemblyInfo.cs.
+        /// </summary>
         public string AssemblyInfoFilePath { get { return _assemblyInfoFilePath; } }
-
-        public ISolutionProjectItem SolutionProjectItem { get { return _solutionProjectItem; } }
 
         private Version _assemblyVersion;
         private Version _assemblyFileVersion;
-        private string _assemblyInformationVersion;
-        private bool _isSharedAssemblyInformation;
+        private string _assemblyInformationalVersion;
+        private bool _isSharedAssemblyInfo;
         private string _assemblyInfoFilePath;
-        private ISolutionProjectItem _solutionProjectItem;
 
-        public AssemblyVersionInfo(string assemblyInfoFilePath, ISolutionProjectItem solutionProjectItem, Version assemblyVersion, Version assemblyFileVersion, string assemblyInformationVersion)
+        public AssemblyVersionInfo(string assemblyInfoFilePath, Version assemblyVersion, Version assemblyFileVersion, string assemblyInformationVersion)
         {
             _assemblyInfoFilePath = assemblyInfoFilePath;
-            _solutionProjectItem = solutionProjectItem;
             _assemblyVersion = assemblyVersion;
             _assemblyFileVersion = assemblyFileVersion;
-            _assemblyInformationVersion = assemblyInformationVersion;
+            _assemblyInformationalVersion = assemblyInformationVersion;
 
-            _isSharedAssemblyInformation = solutionProjectItem == null;
+            _isSharedAssemblyInfo = assemblyInfoFilePath.Contains("SharedAssemblyInfo.cs");
         }
 
         public override bool Equals( Object obj )
@@ -42,12 +56,12 @@ namespace ProjectProber.Impl
             AssemblyVersionInfo other = obj as AssemblyVersionInfo;
             return other != null && _assemblyVersion == other._assemblyVersion
                 && _assemblyFileVersion == other._assemblyFileVersion
-                && _assemblyInformationVersion == other._assemblyInformationVersion;
+                && _assemblyInformationalVersion == other._assemblyInformationalVersion;
         }
 
         public override int GetHashCode()
         {
-            return Util.Hash.Combine( Util.Hash.Combine( Util.Hash.Combine( Util.Hash.StartValue, _assemblyVersion ), _assemblyFileVersion ), _assemblyInformationVersion ).GetHashCode();
+            return Util.Hash.Combine( Util.Hash.Combine( Util.Hash.Combine( Util.Hash.StartValue, _assemblyVersion ), _assemblyFileVersion ), _assemblyInformationalVersion ).GetHashCode();
         }
     }
 }

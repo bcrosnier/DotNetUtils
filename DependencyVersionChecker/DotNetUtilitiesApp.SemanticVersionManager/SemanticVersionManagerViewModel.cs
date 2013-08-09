@@ -18,8 +18,9 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         private bool _hasNewFeatures;
         private bool _hasBreakingChanges;
         private bool _isNotStable;
+        private bool _noChanges;
         private string _versionTag;
-        private string _newVersion;
+        private SemanticVersion _newVersion;
 
         #endregion Fields
 
@@ -53,7 +54,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             }
         }
 
-        public string NewVersion
+        public SemanticVersion NewVersion
         {
             get { return _newVersion; }
             set
@@ -129,6 +130,20 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             }
         }
 
+        public bool NoChanges
+        {
+            get { return _noChanges; }
+            set
+            {
+                if( value != _noChanges )
+                {
+                    _noChanges = value;
+                    UpdateNewVersion();
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         public ObservableCollection<string> Warnings
         {
             get;
@@ -142,6 +157,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         public SemanticVersionManagerViewModel()
         {
             Warnings = new ObservableCollection<string>();
+            NoChanges = true;
             CurrentVersion = "0.0.0";
         }
 
@@ -167,7 +183,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             HasBreakingChanges = false;
             HasNewFeatures = false;
             HasBugFixes = false;
-            NewVersion = "0.0.0";
+            NewVersion = new SemanticVersion("0.0.0");
             VersionTag = string.Empty;
             CurrentVersion = "0.0.0";
         }
@@ -228,7 +244,7 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
                     newVersion = SemanticVersionGenerator.GenerateSemanticVersion( version, HasBreakingChanges, HasNewFeatures, HasBugFixes, null );
                 }
 
-                NewVersion = newVersion.ToString();
+                NewVersion = newVersion;
             }
         }
 

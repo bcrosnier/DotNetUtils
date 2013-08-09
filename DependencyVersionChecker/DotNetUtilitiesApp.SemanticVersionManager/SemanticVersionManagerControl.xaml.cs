@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Navigation;
 
 namespace DotNetUtilitiesApp.SemanticVersionManager
 {
@@ -25,6 +27,12 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
         public void CleanUp()
         {
             _viewModel.CleanUp();
+        }
+
+        private void Hyperlink_RequestNavigate( object sender, RequestNavigateEventArgs e )
+        {
+            Process.Start( new ProcessStartInfo( e.Uri.AbsoluteUri ) );
+            e.Handled = true;
         }
     }
 }

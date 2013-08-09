@@ -9,6 +9,9 @@ using CK.Package;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Get informations in Properties/AssemblyInfo.cs or SharedAssemblyInfo.cs.
+    /// </summary>
     public static class AssemblyVersionInfoChecker
     {
         /// <summary>
@@ -44,7 +47,6 @@ namespace ProjectProber
             foreach( string path in Directory.GetFiles( solutionDirectoryPath, "SharedAssemblyInfo.cs", SearchOption.AllDirectories ) )
             {
                     AssemblyVersionInfo temp = new AssemblyVersionInfo(path,
-                        null,
                         AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(path, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN),
                         AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile(path, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN),
                         AssemblyVersionInfoParser.GetSemanticAssemblyVersionFromAssemblyInfoFile( path, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN ) );
@@ -65,7 +67,6 @@ namespace ProjectProber
             {
                 string assemblyInfoPath = Path.Combine( solution.DirectoryPath, Path.GetDirectoryName( project.ProjectPath ), @"Properties\AssemblyInfo.cs" );
                 AssemblyVersionInfo temp = new AssemblyVersionInfo( assemblyInfoPath,
-                    project,
                     AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.VERSION_ASSEMBLY_PATTERN ),
                     AssemblyVersionInfoParser.GetAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.FILE_VERSION_ASSEMBLY_PATTERN ),
                     AssemblyVersionInfoParser.GetSemanticAssemblyVersionFromAssemblyInfoFile( assemblyInfoPath, AssemblyVersionInfoParser.INFO_VERSION_ASSEMBLY_PATTERN ) );

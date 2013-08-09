@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:WpfUtils="clr-namespace:DotNetUtilitiesApp.WpfUtils;assembly=DotNetUtilitiesApp.WpfUtils"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="400" d:DesignWidth="350">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <WpfUtils:EmptyCollectionVisibilityConverter x:Key="EmptyCollectionVisibilityConverter" />
@@ -32,19 +32,34 @@
             <Separator />
 
             <TextBlock>This version contains...</TextBlock>
-            <CheckBox Grid.Column="0" Grid.Row="0" IsChecked="{Binding Path=HasBugFixes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Bug fixes</CheckBox>
-            <CheckBox Grid.Column="0" Grid.Row="1" IsChecked="{Binding Path=HasNewFeatures, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">New features</CheckBox>
-            <CheckBox Grid.Column="0" Grid.Row="2" IsChecked="{Binding Path=HasBreakingChanges, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Breaking changes on the public API</CheckBox>
-            <Separator Grid.Row="3" Grid.ColumnSpan="2" />
-            <CheckBox Grid.Column="0" Grid.Row="4" IsChecked="{Binding Path=IsNotStable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" x:Name="IsNotReleaseCheckBox">This verson isn't a stable release version</CheckBox>
+            <RadioButton IsChecked="{Binding Path=HasBreakingChanges, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }" Content="Breaking changes on the public API" />
+            <RadioButton IsChecked="{Binding Path=HasNewFeatures, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }" Content="New features and/or deprecated functions" />
+            <RadioButton IsChecked="{Binding Path=HasBugFixes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }" Content="Bug fixes" />
+            <RadioButton IsChecked="{Binding Path=NoChanges, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }" Content="No Changes" />
+            <Separator/>
+            <CheckBox IsChecked="{Binding Path=IsNotStable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" x:Name="IsNotReleaseCheckBox">This verson isn't a stable release version</CheckBox>
 
             <StackPanel Visibility="{Binding IsChecked, ElementName=IsNotReleaseCheckBox, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock>Enter release tag (e.g. develop, alpha, beta, rc)</TextBlock>
                 <TextBox Text="{Binding Path=VersionTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
             <Separator />
-            <TextBlock Grid.Column="1" Grid.Row="0" TextWrapping="Wrap">Your new version is:</TextBlock>
+            <TextBlock TextWrapping="Wrap">Your new version is:</TextBlock>
             <TextBox IsEnabled="True" Foreground="Black" Text="{Binding Path=NewVersion, Mode=OneWay}" />
+            <TextBlock>
+                <LineBreak/>
+                MAJOR : <TextBlock Text="{Binding Path=NewVersion.Version.Major, Mode=OneWay}" />
+                <LineBreak/>
+                MINOR : <TextBlock Text="{Binding Path=NewVersion.Version.Minor, Mode=OneWay}" />
+                <LineBreak/>
+                PATCH : <TextBlock Text="{Binding Path=NewVersion.Version.Build, Mode=OneWay}" />
+                <LineBreak/>
+                PRE-RELEASE : <TextBlock Text="{Binding Path=NewVersion.SpecialVersion, Mode=OneWay}" />
+                <LineBreak/>
+                <LineBreak/>
+                More information about semantic versioning : 
+                <Hyperlink ToolTip="http://semver.org/" NavigateUri="http://semver.org/" RequestNavigate="Hyperlink_RequestNavigate">semver.org</Hyperlink>
+            </TextBlock>
         </StackPanel>
     </DockPanel>
 </UserControl>
