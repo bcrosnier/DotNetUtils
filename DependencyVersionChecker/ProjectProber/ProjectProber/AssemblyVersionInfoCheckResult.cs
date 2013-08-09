@@ -331,7 +331,7 @@ namespace ProjectProber
         {
             return listVersions.Any( x => x.AssemblyVersion != x.AssemblyFileVersion
                                         || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion ) 
-                                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
+                                        && x.AssemblyVersion != new SemanticVersion ( x.AssemblyInformationalVersion ).Version ) );
         }
 
         private void CheckForMultipleVersion( List<AssemblyVersionInfo> listVersions )

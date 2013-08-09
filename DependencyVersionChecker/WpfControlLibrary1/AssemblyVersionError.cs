@@ -165,7 +165,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding( "AssemblyInformationVersion" );
+            column4.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
@@ -216,7 +216,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding( "AssemblyInformationVersion" );
+            column4.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
@@ -229,14 +229,14 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                 filesWithNonSemanticVersion = _result.SharedAssemblyInfoVersions
                     .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
                         || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion )
-                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
+                        && x.AssemblyVersion != new SemanticVersion(x.AssemblyInformationalVersion).Version) );
             }
             else
             {
                 filesWithNonSemanticVersion = _result.AssemblyVersions
                     .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
                         || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion )
-                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
+                        && x.AssemblyVersion != new SemanticVersion( x.AssemblyInformationalVersion ).Version) );
             }
 
             dg.ItemsSource = filesWithNonSemanticVersion;
@@ -268,7 +268,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding( "AssemblyInformationVersion" );
+            column4.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
@@ -361,7 +361,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Information version";
-            column2.Binding = new Binding( "AssemblyInformationVersion" );
+            column2.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
