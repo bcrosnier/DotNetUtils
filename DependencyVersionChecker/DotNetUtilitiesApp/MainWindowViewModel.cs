@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DotNetUtilitiesApp.AssemblyProber;
@@ -7,6 +8,7 @@ using DotNetUtilitiesApp.SemanticVersionManager;
 using DotNetUtilitiesApp.SolutionAnalyzer;
 using DotNetUtilitiesApp.WpfUtils;
 using DotNetUtilitiesApp.VersionAnalyzer;
+using System.Diagnostics;
 
 namespace DotNetUtilitiesApp
 {
@@ -18,6 +20,8 @@ namespace DotNetUtilitiesApp
         private string _solutionPath;
         private int _tabIndex;
 
+        private GithubRepositorySolution _activeGithubSolution;
+
         private AssemblyProberUserControl _assemblyProberControl;
         private SemanticVersionManagerControl _semanticVersionManagerControl;
         private SolutionAnalyzerControl _solutionAnalyzerControl;
@@ -26,7 +30,7 @@ namespace DotNetUtilitiesApp
         public ICommand LoadSolutionFileCommand { get; private set; }
         public ICommand CheckAllCommand { get; private set; }
         public ICommand CheckCurrentCommand { get; private set; }
-        public ICommand ChangeSolutionCommand { get; private set; }
+        public ICommand ChangeGithubSolutionCommand { get; private set; }
 
         #endregion Fields
 
@@ -98,17 +102,29 @@ namespace DotNetUtilitiesApp
             LoadSolutionFileCommand = new RelayCommand( ExecuteLoadSolutionFileCommand );
             CheckAllCommand = new RelayCommand( ExecuteCheckAllCommand, CanExecuteCheck );
             CheckCurrentCommand = new RelayCommand( ExecuteCheckCurrentCommand, CanExecuteCheck );
-            ChangeSolutionCommand = new RelayCommand( ExecuteChangeSolutionCommand, CanExecuteChangeSolution );
+            ChangeGithubSolutionCommand = new RelayCommand( ExecuteChangeGithubSolution, CanExecuteChangeGithubSolution );
         }
 
-        private void ExecuteChangeSolutionCommand( object obj )
+        private bool CanExecuteChangeGithubSolution( object param )
         {
-            ChoiceWindow.ShowSelectWindow<string>( "Select solution", "More than one solution was found in this repository.\nPlease choose a solution file:", null );
+            return _activeGithubSolution != null && _activeGithubSolution.AvailableSolutions.Count() > 1;
         }
 
-        private bool CanExecuteChangeSolution( object obj )
+        private void ExecuteChangeGithubSolution( object param )
         {
-            return true;
+            if ( _activeGithubSolution == null )
+                return;
+
+            ChoiceWindowResult<string> newSolutionPathResult =
+                ChoiceWindow.ShowSelectWindow<string>( "Select solution", "More than one solution was found in this repository.\nPlease choose a solution file:", _activeGithubSolution.AvailableSolutions );
+            
+            if ( newSolutionPathResult.Result == System.Windows.MessageBoxResult.OK )
+            {
+                string solutionPath = newSolutionPathResult.Selected;
+
+                _activeGithubSolution.SolutionPath = solutionPath;
+                SetGithubSolutionFile( _activeGithubSolution );
+            }
         }
 
         private bool CanExecuteCheck( object obj )
@@ -181,13 +197,30 @@ namespace DotNetUtilitiesApp
 
         #region Internal methods
 
-        internal void LoadSolutionFile( string slnPath )
+        internal void SetSolutionFile( string slnPath )
+        {
+            _activeGithubSolution = null;
+
+            LoadSolutionFile( slnPath );
+        }
+
+        internal void SetGithubSolutionFile( GithubRepositorySolution githubSolution )
+        {
+            _activeGithubSolution = githubSolution;
+
+            string solutionPath = Path.GetFullPath( Path.Combine( githubSolution.RepositoryDirectoryPath, githubSolution.SolutionPath ) );
+
+            LoadSolutionFile( solutionPath );
+            CheckAllCommand.Execute( null );
+        }
+
+        private void LoadSolutionFile( string slnPath )
         {
             CleanUp();
 
             SolutionPath = null;
 
-            if( !string.IsNullOrEmpty( slnPath ) && File.Exists( slnPath ) )
+            if ( !string.IsNullOrEmpty( slnPath ) && File.Exists( slnPath ) )
             {
                 SolutionPath = slnPath;
                 string solutionName = Path.GetFileNameWithoutExtension( slnPath );

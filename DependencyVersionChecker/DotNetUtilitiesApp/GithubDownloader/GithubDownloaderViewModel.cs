@@ -21,7 +21,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         public event EventHandler<StringEventArgs> RaisedWarning;
 
-        public event EventHandler<StringEventArgs> SolutionPathAvailable;
+        public event EventHandler<GithubRepositorySolutionEventArgs> SolutionPathAvailable;
 
         private readonly DirectoryInfo _cacheDirectory;
         private string _loggedInUsername;
@@ -54,7 +54,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _loggedInUsername; }
             set
             {
-                if( value != _loggedInUsername )
+                if ( value != _loggedInUsername )
                 {
                     _loggedInUsername = value;
                     RaisePropertyChanged();
@@ -67,7 +67,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _remainingApiCalls; }
             set
             {
-                if( value != _remainingApiCalls )
+                if ( value != _remainingApiCalls )
                 {
                     _remainingApiCalls = value;
                     RaisePropertyChanged();
@@ -80,7 +80,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _statusText; }
             set
             {
-                if( value != _statusText )
+                if ( value != _statusText )
                 {
                     _statusText = value;
                     RaisePropertyChanged();
@@ -93,7 +93,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _repositoryUser; }
             set
             {
-                if( value != _repositoryUser )
+                if ( value != _repositoryUser )
                 {
                     _repositoryUser = value;
                     RaisePropertyChanged();
@@ -107,7 +107,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _repositoryName; }
             set
             {
-                if( value != _repositoryName )
+                if ( value != _repositoryName )
                 {
                     _repositoryName = value;
                     RaisePropertyChanged();
@@ -121,7 +121,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _repositoryRefName; }
             set
             {
-                if( value != _repositoryRefName )
+                if ( value != _repositoryRefName )
                 {
                     _repositoryRefName = value;
                     RaisePropertyChanged();
@@ -135,7 +135,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _personalApiAccessToken; }
             set
             {
-                if( value != _personalApiAccessToken )
+                if ( value != _personalApiAccessToken )
                 {
                     _personalApiAccessToken = value;
                     _github.SetApiToken( value );
@@ -149,7 +149,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _rememberApiTokenChecked; }
             set
             {
-                if( value != _rememberApiTokenChecked )
+                if ( value != _rememberApiTokenChecked )
                 {
                     _rememberApiTokenChecked = value;
                     RaisePropertyChanged();
@@ -163,7 +163,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _progressValue; }
             set
             {
-                if( value != _progressValue )
+                if ( value != _progressValue )
                 {
                     _progressValue = value;
                     RaisePropertyChanged();
@@ -177,7 +177,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             get { return _isProgressIndeterminate; }
             set
             {
-                if( value != _isProgressIndeterminate )
+                if ( value != _isProgressIndeterminate )
                 {
                     _isProgressIndeterminate = value;
                     RaisePropertyChanged();
@@ -194,7 +194,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             }
             set
             {
-                if( value != _githubRepositoryUrl )
+                if ( value != _githubRepositoryUrl )
                 {
                     _githubRepositoryUrl = value;
                     RaisePropertyChanged();
@@ -227,7 +227,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             OpenSolutionCommand = new RelayCommand( ExecuteOpenSolution, CanExecuteOpenSolution );
         }
 
-        #endregion Constructor
+        #endregion Constructor/Disposition
 
         private void LoadSettings()
         {
@@ -277,7 +277,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         async private void UpdateLoginName()
         {
-            if( string.IsNullOrEmpty( PersonalApiAccessToken ) )
+            if ( string.IsNullOrEmpty( PersonalApiAccessToken ) )
                 return;
 
             IsProgressIndeterminate = true;
@@ -293,9 +293,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
             {
                 GithubResponse<GithubUser> response = _github.GithubRequest<GithubUser>( "user" );
                 UpdateRateLimit( response );
-                if( response.StatusCode != System.Net.HttpStatusCode.OK )
+                if ( response.StatusCode != System.Net.HttpStatusCode.OK )
                 {
-                    RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ((int)response.StatusCode).ToString(), response.Error.Message ) );
+                    RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ( (int)response.StatusCode ).ToString(), response.Error.Message ) );
                     return response.StatusCode.ToString();
                 }
                 else
@@ -310,7 +310,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         private void RaiseWarning( string message )
         {
-            if( RaisedWarning != null )
+            if ( RaisedWarning != null )
             {
                 StringEventArgs args = new StringEventArgs( message );
                 Invoke.OnAppThread( () =>
@@ -320,11 +320,11 @@ namespace DotNetUtilitiesApp.GithubDownloader
             }
         }
 
-        private void RaiseSlnPathAvailable( string slnPath )
+        private void RaiseSlnPathAvailable( GithubRepositorySolution slnPath )
         {
-            if( SolutionPathAvailable != null )
+            if ( SolutionPathAvailable != null )
             {
-                StringEventArgs args = new StringEventArgs( slnPath );
+                GithubRepositorySolutionEventArgs args = new GithubRepositorySolutionEventArgs( slnPath );
                 Invoke.OnAppThread( () =>
                 {
                     SolutionPathAvailable( this, args );
@@ -334,7 +334,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         private static string GetGitBlobSha( byte[] data )
         {
-            using( SHA1Managed sha1 = new SHA1Managed() )
+            using ( SHA1Managed sha1 = new SHA1Managed() )
             {
                 string header = "blob " + data.LongLength.ToString() + "\0";
 
@@ -344,7 +344,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
                 byte[] hash = sha1.ComputeHash( finalHash );
                 StringBuilder output = new StringBuilder( 2 * hash.Length );
-                foreach( byte b in hash )
+                foreach ( byte b in hash )
                 {
                     output.AppendFormat( "{0:x2}", b );
                 }
@@ -365,12 +365,12 @@ namespace DotNetUtilitiesApp.GithubDownloader
             string pattern = @"^(?:https?://)?(?:www\.)?github\.com/([a-zA-Z0-9-_.]*)/([a-zA-Z0-9-_.]*)(?:/tree/([a-zA-Z0-9-_.]+))?";
 
             Match m = Regex.Match( url, pattern );
-            if( m.Success )
+            if ( m.Success )
             {
                 RepositoryUser = m.Groups[1].Value;
                 RepositoryName = m.Groups[2].Value;
 
-                if( m.Groups[3].Success )
+                if ( m.Groups[3].Success )
                 {
                     RepositoryRefName = m.Groups[3].Value;
                 }
@@ -383,9 +383,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         private void UpdateGithubUrl()
         {
-            if( _urlChangeLocked )
+            if ( _urlChangeLocked )
                 return;
-            if( string.IsNullOrEmpty( RepositoryUser ) || string.IsNullOrEmpty( RepositoryName ) )
+            if ( string.IsNullOrEmpty( RepositoryUser ) || string.IsNullOrEmpty( RepositoryName ) )
             {
                 _githubRepositoryUrl = String.Empty;
             }
@@ -395,7 +395,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
                 sb.Append( string.Format( "https://github.com/{0}/{1}", RepositoryUser, RepositoryName ) );
 
-                if( !string.IsNullOrEmpty( RepositoryRefName ) && RepositoryRefName != "master" )
+                if ( !string.IsNullOrEmpty( RepositoryRefName ) && RepositoryRefName != "master" )
                 {
                     sb.Append( string.Format( "/tree/{0}", RepositoryRefName ) );
                 }
@@ -412,7 +412,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         private bool CanExecuteOpenSolution( object obj )
         {
-            return !IsProgressIndeterminate && (ProgressValue == 0 || ProgressValue == 100) && !string.IsNullOrEmpty( RepositoryUser ) && !string.IsNullOrEmpty( RepositoryName );
+            return !IsProgressIndeterminate && ( ProgressValue == 0 || ProgressValue == 100 ) && !string.IsNullOrEmpty( RepositoryUser ) && !string.IsNullOrEmpty( RepositoryName );
         }
 
         async private void ExecuteOpenSolution( object obj )
@@ -420,47 +420,28 @@ namespace DotNetUtilitiesApp.GithubDownloader
             IsProgressIndeterminate = true;
             SaveSettings();
 
-            if( String.IsNullOrEmpty( RepositoryRefName ) )
+            if ( String.IsNullOrEmpty( RepositoryRefName ) )
             {
                 RepositoryRefName = "master";
             }
 
-            IEnumerable<string> slnPaths = await DoDownloadOpenSolution();
+            IEnumerable<GithubRepositorySolution> slnPaths = await DoDownloadOpenSolution();
 
             IsProgressIndeterminate = false;
             ProgressValue = 100;
 
-            if( slnPaths != null )
+            if ( slnPaths != null )
             {
-                if( slnPaths.Count() > 1 )
+                if ( slnPaths.Count() > 1 )
                 {
-                    Dictionary<string,string> selections = new Dictionary<string, string>();
+                    ChoiceWindowResult<GithubRepositorySolution> result = ChoiceWindow.ShowSelectWindow<GithubRepositorySolution>( "Select solution", "More than one solution was found in this repository.\nPlease choose a solution file:", slnPaths );
 
-                    var MatchingChars =
-                        from len in Enumerable.Range( 0, slnPaths.Min( s => s.Length ) ).Reverse()
-                        let possibleMatch = slnPaths.First().Substring( 0, len )
-                        where slnPaths.All( f => f.StartsWith( possibleMatch ) )
-                        select possibleMatch;
-
-                    string LongestDir = Path.GetDirectoryName( MatchingChars.First() );
-
-                    foreach( string longName in slnPaths )
+                    if ( result.Result == System.Windows.MessageBoxResult.OK && result.Selected != null )
                     {
-                        string longPath = Path.GetFullPath( longName );
-
-                        string shortName = longPath.Substring( LongestDir.Length );
-                        selections.Add( longPath, shortName );
-                    }
-
-                    ChoiceWindowResult<string> result = ChoiceWindow.ShowSelectWindow<string>( "Select solution", "More than one solution was found in this repository.\nPlease choose a solution file:", selections.Values );
-
-                    if( result.Result == System.Windows.MessageBoxResult.OK && result.Selected != null )
-                    {
-                        string selectedPath = selections.Where( x => x.Value == result.Selected ).Select( x => x.Key ).First();
-                        RaiseSlnPathAvailable( selectedPath );
+                        RaiseSlnPathAvailable( result.Selected );
                     }
                 }
-                else if( slnPaths.Count() == 1 )
+                else if ( slnPaths.Count() == 1 )
                 {
                     RaiseSlnPathAvailable( slnPaths.First() );
                 }
@@ -475,14 +456,14 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
         #region Github download task
 
-        private Task<IEnumerable<string>> DoDownloadOpenSolution()
+        private Task<IEnumerable<GithubRepositorySolution>> DoDownloadOpenSolution()
         {
-            Task<IEnumerable<string>> task = new Task<IEnumerable<string>>( DoDownloadOpenSolutionTask );
+            Task<IEnumerable<GithubRepositorySolution>> task = new Task<IEnumerable<GithubRepositorySolution>>( DoDownloadOpenSolutionTask );
             task.Start();
             return task;
         }
 
-        private IEnumerable<string> DoDownloadOpenSolutionTask()
+        private IEnumerable<GithubRepositorySolution> DoDownloadOpenSolutionTask()
         {
             string baseDirectory = _cacheDirectory.FullName;
             string directoryPath = Path.Combine( baseDirectory, RepositoryUser, RepositoryName, RepositoryRefName );
@@ -501,9 +482,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
             {
                 UpdateRateLimit( response );
             } );
-            if( response.StatusCode != System.Net.HttpStatusCode.OK )
+            if ( response.StatusCode != System.Net.HttpStatusCode.OK )
             {
-                RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ((int)response.StatusCode).ToString(), response.Error.Message ) );
+                RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ( (int)response.StatusCode ).ToString(), response.Error.Message ) );
                 return null;
             }
             GithubRef refObject = response.Content;
@@ -521,9 +502,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
             {
                 UpdateRateLimit( commitResponse );
             } );
-            if( response.StatusCode != System.Net.HttpStatusCode.OK )
+            if ( response.StatusCode != System.Net.HttpStatusCode.OK )
             {
-                RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ((int)response.StatusCode).ToString(), response.Error.Message ) );
+                RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ( (int)response.StatusCode ).ToString(), response.Error.Message ) );
                 return null;
             }
             GithubCommit headCommit = commitResponse.Content;
@@ -539,9 +520,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
             {
                 UpdateRateLimit( treeResponse );
             } );
-            if( response.StatusCode != System.Net.HttpStatusCode.OK )
+            if ( response.StatusCode != System.Net.HttpStatusCode.OK )
             {
-                RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ((int)response.StatusCode).ToString(), response.Error.Message ) );
+                RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ( (int)response.StatusCode ).ToString(), response.Error.Message ) );
                 return null;
             }
             GithubTreeInfo treeInfo = treeResponse.Content;
@@ -562,7 +543,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             // NuGet packageRef configuration files
             objectsToGet.AddRange( fileObjects.Where( x => x.Path.EndsWith( "packages.config", StringComparison.InvariantCultureIgnoreCase ) ) );
 
-            if( !objectsToGet.Any( x => x.Path.EndsWith( ".sln", StringComparison.InvariantCultureIgnoreCase ) ) )
+            if ( !objectsToGet.Any( x => x.Path.EndsWith( ".sln", StringComparison.InvariantCultureIgnoreCase ) ) )
             {
                 RaiseWarning( "No solution file found in this repository." );
                 return null;
@@ -577,7 +558,7 @@ namespace DotNetUtilitiesApp.GithubDownloader
             int objectCount = objectsToGet.Count;
             int i = 0;
 
-            if( !directory.Exists )
+            if ( !directory.Exists )
             {
                 directory.Create();
             }
@@ -585,12 +566,12 @@ namespace DotNetUtilitiesApp.GithubDownloader
             List<FileInfo> downloadedFiles = new List<FileInfo>();
             List<FileInfo> filesInCache = new DirectoryInfo( directoryPath ).GetFiles( "*", SearchOption.AllDirectories ).ToList();
 
-            foreach( var objectToGet in objectsToGet )
+            foreach ( var objectToGet in objectsToGet )
             {
                 i++;
                 Invoke.OnAppThread( () =>
                 {
-                    ProgressValue = (int)(((double)i) / objectCount * 100.0);
+                    ProgressValue = (int)( ( (double)i ) / objectCount * 100.0 );
                     StatusText = String.Format( "Downloading: {0}", objectToGet.Path );
                 } );
 
@@ -598,14 +579,14 @@ namespace DotNetUtilitiesApp.GithubDownloader
 
                 FileInfo destFile = new FileInfo( Path.GetFullPath( destPath ) );
 
-                if( filesInCache.Any( x => Path.GetFullPath( x.FullName ) == Path.GetFullPath( destFile.FullName ) ) )
+                if ( filesInCache.Any( x => Path.GetFullPath( x.FullName ) == Path.GetFullPath( destFile.FullName ) ) )
                 {
                     filesInCache.Remove( filesInCache.Where( x => Path.GetFullPath( x.FullName ) == Path.GetFullPath( destFile.FullName ) ).First() );
                 }
 
                 downloadedFiles.Add( destFile );
 
-                if( !destFile.Exists || objectToGet.Size != destFile.Length || objectToGet.Sha != GetBlobSha( destFile ) )
+                if ( !destFile.Exists || objectToGet.Size != destFile.Length || objectToGet.Sha != GetBlobSha( destFile ) )
                 {
                     GithubResponse<GitBlobInfo> blobInfoResponse = objectToGet.ResolveAs<GitBlobInfo>( _github );
                     GitBlobInfo blobInfo = blobInfoResponse.Content;
@@ -613,9 +594,9 @@ namespace DotNetUtilitiesApp.GithubDownloader
                     {
                         UpdateRateLimit( blobInfoResponse );
                     } );
-                    if( response.StatusCode != System.Net.HttpStatusCode.OK )
+                    if ( response.StatusCode != System.Net.HttpStatusCode.OK )
                     {
-                        RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ((int)response.StatusCode).ToString(), response.Error.Message ) );
+                        RaiseWarning( String.Format( "API error: [{1} {0}] {2}", response.StatusCode.ToString(), ( (int)response.StatusCode ).ToString(), response.Error.Message ) );
                         return null;
                     }
 
@@ -625,9 +606,21 @@ namespace DotNetUtilitiesApp.GithubDownloader
                 }
             }
 
-            return objectsToGet.Where( x => x.Path.EndsWith( ".sln", StringComparison.InvariantCultureIgnoreCase ) ).Select( x => Path.Combine( directoryPath, x.Path ) );
+            IEnumerable<string> availableSolutions = objectsToGet.Where( x => x.Path.EndsWith( ".sln", StringComparison.InvariantCultureIgnoreCase ) ).Select( x => Path.Combine( x.Path ) );
+
+            return availableSolutions.Select( x => new GithubRepositorySolution() { AvailableSolutions = availableSolutions, RepositoryDirectoryPath = directoryPath, SolutionPath = x } );
         }
 
         #endregion Github download task
+    }
+
+    public class GithubRepositorySolutionEventArgs : EventArgs
+    {
+        public GithubRepositorySolution Solution { get; private set; }
+
+        public GithubRepositorySolutionEventArgs( GithubRepositorySolution solution )
+        {
+            Solution = solution;
+        }
     }
 }
