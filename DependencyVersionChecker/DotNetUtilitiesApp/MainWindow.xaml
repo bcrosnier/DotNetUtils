@@ -21,6 +21,8 @@
             <MenuItem Header="_Solution">
                 <MenuItem Header="Load in _all tabs" Command="{Binding Path=CheckAllCommand}" />
                 <MenuItem Header="Load in active _tab" Command="{Binding Path=CheckCurrentCommand}" />
+                <Separator/>
+                <MenuItem Header="Change current solution" Command="{Binding Path=ChangeSolutionCommand}" />
             </MenuItem>
             <MenuItem Header="Setting">
                 <MenuItem Header="GitHub setting" Click="OpenGitHubSetting_Click" />

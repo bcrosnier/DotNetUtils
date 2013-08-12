@@ -26,6 +26,7 @@ namespace DotNetUtilitiesApp
         public ICommand LoadSolutionFileCommand { get; private set; }
         public ICommand CheckAllCommand { get; private set; }
         public ICommand CheckCurrentCommand { get; private set; }
+        public ICommand ChangeSolutionCommand { get; private set; }
 
         #endregion Fields
 
@@ -97,6 +98,17 @@ namespace DotNetUtilitiesApp
             LoadSolutionFileCommand = new RelayCommand( ExecuteLoadSolutionFileCommand );
             CheckAllCommand = new RelayCommand( ExecuteCheckAllCommand, CanExecuteCheck );
             CheckCurrentCommand = new RelayCommand( ExecuteCheckCurrentCommand, CanExecuteCheck );
+            ChangeSolutionCommand = new RelayCommand( ExecuteChangeSolutionCommand, CanExecuteChangeSolution );
+        }
+
+        private void ExecuteChangeSolutionCommand( object obj )
+        {
+            ChoiceWindow.ShowSelectWindow<string>( "Select solution", "More than one solution was found in this repository.\nPlease choose a solution file:", null );
+        }
+
+        private bool CanExecuteChangeSolution( object obj )
+        {
+            return true;
         }
 
         private bool CanExecuteCheck( object obj )
