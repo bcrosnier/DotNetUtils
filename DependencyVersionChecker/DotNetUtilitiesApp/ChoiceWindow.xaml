@@ -11,7 +11,7 @@
         </DockPanel>
         <DockPanel>
             <Label DockPanel.Dock="Top" Content="{Binding Path=Message, FallbackValue=Choose one:, TargetNullValue=Choose one:}" />
-            <ListBox Margin="3" SelectionMode="Single" ItemsSource="{Binding Path=Selection}" SelectedItem="{Binding Path=Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <ListBox Margin="3" SelectionMode="Single" ItemsSource="{Binding Path=Selection}" SelectedItem="{Binding Path=Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MouseDoubleClick="Double_Click" />
         </DockPanel>
     </DockPanel>
 </Window>

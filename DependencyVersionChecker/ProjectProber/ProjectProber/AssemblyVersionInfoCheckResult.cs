@@ -240,7 +240,6 @@ namespace ProjectProber
 
         private List<string> _informationVersions;
 
-
         internal AssemblyVersionInfoCheckResult( string solutionDirectoryPath,
             List<AssemblyVersionInfo> sharedAssemblyInfoVersions,
             List<CSProjCompileLinkInfo> csProjs,
@@ -278,7 +277,6 @@ namespace ProjectProber
             }
         }
 
-        //test bizarre car une double négation est utilisé.
         private bool CheckForSharedAssemblyInfo()
         {
             return _sharedAssemblyInfoVersions.Count == 0;
@@ -297,8 +295,9 @@ namespace ProjectProber
 
         private bool CheckForMultipleRelativeLink()
         {
-            if( _csProjs.Select( x => x.AssociateLink ).Distinct().Count() > 1 ) return true;
-            if( _csProjs.Select( x => x.SharedAssemblyInfoRelativePath ).Distinct().Count() > 1 ) return true;
+            // stupid code ?
+            if( _csProjs.Where( x => !string.IsNullOrEmpty( x.AssociateLink ) ).Select( x => x.AssociateLink ).Distinct().Count() > 1 ) return true;
+            if( _csProjs.Where( x => !string.IsNullOrEmpty( x.SharedAssemblyInfoRelativePath ) ).Select( x => x.SharedAssemblyInfoRelativePath ).Distinct().Count() > 1 ) return true;
             return false;
         }
 
@@ -309,7 +308,6 @@ namespace ProjectProber
                                             || x.AssemblyFileVersion != null );
         }
 
-        //virer le paramètre ?
         private bool CheckForSemanticVersionCompliant( List<AssemblyVersionInfo> listVersions )
         {
             return listVersions.Any( x => ( x.AssemblyVersion != null
@@ -343,19 +341,22 @@ namespace ProjectProber
 
         private bool CheckForMultipleAssemblyVersion( List<AssemblyVersionInfo> listVersions )
         {
-            _versions = listVersions.Where(x => x.AssemblyVersion != null ).Select( x => x.AssemblyVersion ).Distinct().ToList();
+            _versions.AddRange( listVersions.Where(x => x.AssemblyVersion != null ).Select( x => x.AssemblyVersion ).Distinct() );
+            _versions = _versions.Distinct().ToList();
             return _versions.Count > 1;
         }
 
         private bool CheckForMultipleAssemblyFileVersion( List<AssemblyVersionInfo> listVersions )
         {
-            _fileVersions = listVersions.Where( x => x.AssemblyFileVersion != null ).Select( x => x.AssemblyFileVersion ).Distinct().ToList();
+            _fileVersions.AddRange( listVersions.Where( x => x.AssemblyFileVersion != null ).Select( x => x.AssemblyFileVersion ).Distinct() );
+            _fileVersions = _fileVersions.Distinct().ToList();
             return _fileVersions.Count > 1;
         }
 
         private bool CheckForMultipleAssemblyInformationVersion( List<AssemblyVersionInfo> listVersions )
         {
-            _informationVersions = listVersions.Where( x => x.AssemblyInformationalVersion != null ).Select( x => x.AssemblyInformationalVersion ).Distinct().ToList();
+            _informationVersions.AddRange( listVersions.Where( x => x.AssemblyInformationalVersion != null ).Select( x => x.AssemblyInformationalVersion ).Distinct() );
+            _informationVersions = _informationVersions.Distinct().ToList();
             return _informationVersions.Count > 1;
         }
 

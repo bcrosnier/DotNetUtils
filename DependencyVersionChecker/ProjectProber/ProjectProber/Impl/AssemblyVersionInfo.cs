@@ -41,16 +41,28 @@ namespace ProjectProber.Impl
         private bool _isSharedAssemblyInfo;
         private string _assemblyInfoFilePath;
 
-        public AssemblyVersionInfo(string assemblyInfoFilePath, Version assemblyVersion, Version assemblyFileVersion, string assemblyInformationVersion)
+        /// <summary>
+        /// Construct a AssemblyVersionInfo object.
+        /// </summary>
+        /// <param name="assemblyInfoFilePath">Path of AssemblyInfo.cs or SharedAssemblyInfo.cs.</param>
+        /// <param name="assemblyVersion">Assembly version.</param>
+        /// <param name="assemblyFileVersion">Assemlbly file version.</param>
+        /// <param name="assemblyInformationalVersion">Assembly informational version.</param>
+        public AssemblyVersionInfo(string assemblyInfoFilePath, Version assemblyVersion, Version assemblyFileVersion, string assemblyInformationalVersion)
         {
             _assemblyInfoFilePath = assemblyInfoFilePath;
             _assemblyVersion = assemblyVersion;
             _assemblyFileVersion = assemblyFileVersion;
-            _assemblyInformationalVersion = assemblyInformationVersion;
+            _assemblyInformationalVersion = assemblyInformationalVersion;
 
             _isSharedAssemblyInfo = assemblyInfoFilePath.Contains("SharedAssemblyInfo.cs");
         }
 
+        /// <summary>
+        /// Determines whether the specified AssemblyVersionInfo is equal to the current AssemblyVersionInfo.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>true if AssemblyVersion, AssemblyFileVersion and AssemblyInformationalVersion are equal; otherwise, false.</returns>
         public override bool Equals( Object obj )
         {
             AssemblyVersionInfo other = obj as AssemblyVersionInfo;
@@ -59,6 +71,10 @@ namespace ProjectProber.Impl
                 && _assemblyInformationalVersion == other._assemblyInformationalVersion;
         }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>A hash code for the current AssemblyVersionInfo.</returns>
         public override int GetHashCode()
         {
             return Util.Hash.Combine( Util.Hash.Combine( Util.Hash.Combine( Util.Hash.StartValue, _assemblyVersion ), _assemblyFileVersion ), _assemblyInformationalVersion ).GetHashCode();

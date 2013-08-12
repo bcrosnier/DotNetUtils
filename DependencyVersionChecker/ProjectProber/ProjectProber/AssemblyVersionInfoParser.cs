@@ -38,6 +38,7 @@ namespace ProjectProber
         /// Read a version in SharedAssemblyInfo.cs or AssemblyInfo.cs file.
         /// </summary>
         /// <param name="filePath">Path of File. Must exist.</param>
+        /// <param name="regex"></param>
         /// <returns><see cref="System.Version"/> or null if not found</returns>
         public static Version GetAssemblyVersionFromAssemblyInfoFile( string filePath, Regex regex )
         {
@@ -64,6 +65,7 @@ namespace ProjectProber
         /// Read a version in SharedAssemblyInfo.cs or AssemblyInfo.cs file.
         /// </summary>
         /// <param name="filePath">Path of File. Must exist.</param>
+        /// <param name="regex"></param>
         /// <returns><see cref="CK.Package.SemanticVersion"/> or null if not found</returns>
         public static string GetSemanticAssemblyVersionFromAssemblyInfoFile( string filePath, Regex regex )
         {

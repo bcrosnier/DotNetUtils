@@ -21,6 +21,8 @@
             <MenuItem Header="_Solution">
                 <MenuItem Header="Load in _all tabs" Command="{Binding Path=CheckAllCommand}" />
                 <MenuItem Header="Load in active _tab" Command="{Binding Path=CheckCurrentCommand}" />
+                <Separator/>
+                <MenuItem Header="Load in active _tab" Command="{Binding Path=CheckCurrentCommand}" />
             </MenuItem>
         </Menu>
         <TabControl x:Name="TabControl" SelectedIndex="{Binding Path=TabIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">

@@ -7,7 +7,7 @@
              d:DesignHeight="600" d:DesignWidth="800">
         <Grid>
             <ScrollViewer>
-                <TextBlock Text="{Binding Path=MessageText}" TextWrapping="Wrap" />
+                <TextBox Text="{Binding Path=MessageText, Mode=OneWay}" Background="Transparent" BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap" />
             </ScrollViewer>
         </Grid>
 </UserControl>
