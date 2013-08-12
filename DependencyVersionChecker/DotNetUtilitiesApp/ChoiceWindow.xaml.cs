@@ -105,6 +105,17 @@ namespace DotNetUtilitiesApp
             }
         }
 
+        private void Double_Click( object sender, RoutedEventArgs e )
+        {
+            if( Selected != null && ChoiceResult != null )
+            {
+                _complete = true;
+                var args = new ChoiceWindowResultEventArgs( Selected, MessageBoxResult.OK );
+                ChoiceResult( this, args );
+                this.Close();
+            }
+        }
+
         private void Cancel_Click( object sender, RoutedEventArgs e )
         {
             if( ChoiceResult != null )

@@ -3,9 +3,21 @@ using CK.Package;
 
 namespace ProjectProber
 {
+    /// <summary>
+    /// Utilities to generate a semantic version
+    /// </summary>
     public static class SemanticVersionGenerator
     {
-        //don't support metadata in semantic versioning
+        /// <summary>
+        /// Utilities to generate a semantic version
+        /// </summary>
+        /// <param name="version">Current version</param>
+        /// <param name="publicBreakingChange">True, if the new project's version has a breaking change or a lot of new functionality.</param>
+        /// <param name="deprecatedOrNewFunction">True, if the new project's version has deprecated or new function(s).</param>
+        /// <param name="bugFixe">True, if the new project's version has a bug fix.</param>
+        /// <param name="preRelease">True, if the new project's version is a pre-release.</param>
+        /// <returns>New semantic version</returns>
+        /// <remarks>don't support metadata in semantic versioning</remarks>
         public static SemanticVersion GenerateSemanticVersion( SemanticVersion version,
             bool publicBreakingChange,
             bool deprecatedOrNewFunction,

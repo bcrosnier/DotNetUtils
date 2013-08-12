@@ -165,29 +165,24 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding( "AssemblyInformationVersion" );
+            column4.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
             dg.Columns.Add( column3 );
             dg.Columns.Add( column4 );
 
-            IEnumerable<AssemblyVersionInfo> filesWithNonSemanticVersion;
             SemanticVersion temp;
-            if( !_result.HasNotSharedAssemblyInfo )
-            {
-                filesWithNonSemanticVersion = _result.SharedAssemblyInfoVersions
-                    .Where( x => (x.AssemblyVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyVersion.ToString(), out temp ))
-                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyFileVersion.ToString(), out temp )) );
-            }
-            else
-            {
-                filesWithNonSemanticVersion = _result.AssemblyVersions
-                    .Where( x => (x.AssemblyVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyVersion.ToString(), out temp ))
-                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyFileVersion.ToString(), out temp )) );
-            }
 
-            dg.ItemsSource = filesWithNonSemanticVersion;
+            List<AssemblyVersionInfo> itemsSource = _result.SharedAssemblyInfoVersions
+                    .Where( x => (x.AssemblyVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyVersion.ToString(), out temp ))
+                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyFileVersion.ToString(), out temp )) ).ToList();
+
+            itemsSource.AddRange( _result.AssemblyVersions
+                    .Where( x => (x.AssemblyVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyVersion.ToString(), out temp ))
+                        || (x.AssemblyFileVersion != null && !SemanticVersion.TryParseStrict( x.AssemblyFileVersion.ToString(), out temp )) ).ToList() );
+
+            dg.ItemsSource = itemsSource;
 
             return dg;
         }
@@ -216,30 +211,23 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding( "AssemblyInformationVersion" );
+            column4.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
             dg.Columns.Add( column3 );
             dg.Columns.Add( column4 );
 
-            IEnumerable<AssemblyVersionInfo> filesWithNonSemanticVersion;
-            if( !_result.HasNotSharedAssemblyInfo )
-            {
-                filesWithNonSemanticVersion = _result.SharedAssemblyInfoVersions
+            List<AssemblyVersionInfo> itemsSource = _result.SharedAssemblyInfoVersions
                     .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
                         || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion )
-                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
-            }
-            else
-            {
-                filesWithNonSemanticVersion = _result.AssemblyVersions
+                        && x.AssemblyVersion != new SemanticVersion( x.AssemblyInformationalVersion ).Version) ).ToList();
+            itemsSource.AddRange( _result.AssemblyVersions
                     .Where( x => x.AssemblyVersion != x.AssemblyFileVersion
                         || (!string.IsNullOrEmpty( x.AssemblyInformationalVersion )
-                        && x.AssemblyVersion.ToString() != x.AssemblyInformationalVersion) );
-            }
+                        && x.AssemblyVersion != new SemanticVersion( x.AssemblyInformationalVersion ).Version) ).ToList() );
 
-            dg.ItemsSource = filesWithNonSemanticVersion;
+            dg.ItemsSource = itemsSource;
 
             return dg;
         }
@@ -268,7 +256,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column4 = new DataGridTextColumn();
             column4.Header = "Information version";
-            column4.Binding = new Binding( "AssemblyInformationVersion" );
+            column4.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
@@ -288,19 +276,16 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             dg.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             var column1 = new DataGridTextColumn();
-            column1.Header = "Project Path";
-            column1.Binding = new Binding( "Project" );
-            column1.Width = new DataGridLength( 340 );
-            column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
-
-            var column2 = new DataGridTextColumn();
-            column2.Header = "Relative path";
-            column2.Binding = new Binding( "SharedAssemblyInfoRelativePath" );
+            column1.Header = "Name project";
+            column1.Binding = new Binding( "NameProject" );
 
             var column3 = new DataGridTextColumn();
-            column3.Header = "Associate path";
-            column3.Binding = new Binding( "AssociateLink" );
+            column3.Header = "Relative path";
+            column3.Binding = new Binding( "SharedAssemblyInfoRelativePath" );
+
+            var column2 = new DataGridTextColumn();
+            column2.Header = "Associate path";
+            column2.Binding = new Binding( "AssociateLink" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
@@ -332,14 +317,11 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
-            if( !_result.HasNotSharedAssemblyInfo )
-            {
-                dg.ItemsSource = _result.SharedAssemblyInfoVersions;
-            }
-            else
-            {
-                dg.ItemsSource = _result.AssemblyVersions;
-            }
+
+            List<AssemblyVersionInfo> itemsSource = _result.SharedAssemblyInfoVersions.ToList();
+            itemsSource.AddRange( _result.AssemblyVersions.ToList() );
+
+            dg.ItemsSource = itemsSource;
 
             return dg;
         }
@@ -361,18 +343,15 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Information version";
-            column2.Binding = new Binding( "AssemblyInformationVersion" );
+            column2.Binding = new Binding( "AssemblyInformationalVersion" );
 
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
-            if( !_result.HasNotSharedAssemblyInfo )
-            {
-                dg.ItemsSource = _result.SharedAssemblyInfoVersions;
-            }
-            else
-            {
-                dg.ItemsSource = _result.AssemblyVersions;
-            }
+
+            List<AssemblyVersionInfo> itemsSource = _result.SharedAssemblyInfoVersions.ToList();
+            itemsSource.AddRange( _result.AssemblyVersions.ToList() );
+
+            dg.ItemsSource = itemsSource;
 
             return dg;
         }
@@ -399,14 +378,10 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             dg.Columns.Add( column1 );
             dg.Columns.Add( column2 );
 
-            if( !_result.HasNotSharedAssemblyInfo )
-            {
-                dg.ItemsSource = _result.SharedAssemblyInfoVersions;
-            }
-            else
-            {
-                dg.ItemsSource = _result.AssemblyVersions;
-            }
+            List<AssemblyVersionInfo> itemsSource = _result.SharedAssemblyInfoVersions.ToList();
+            itemsSource.AddRange( _result.AssemblyVersions.ToList() );
+
+            dg.ItemsSource = itemsSource;
 
             return dg;
         }

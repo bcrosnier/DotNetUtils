@@ -215,10 +215,10 @@ namespace ProjectProber
                 if( sharedAssemblyInfoRelativePath.Contains( "SharedAssemblyInfo.cs" ) )
                 {
                     link = packageNode.FirstChild.InnerText;
-                    return new CSProjCompileLinkInfo( sharedAssemblyInfoRelativePath, link, projectFile );
+                    return new CSProjCompileLinkInfo( sharedAssemblyInfoRelativePath, link, Path.GetFileName( projectFile ) );
                 }
             }
-            return new CSProjCompileLinkInfo(string.Empty, string.Empty, projectFile);
+            return new CSProjCompileLinkInfo(string.Empty, string.Empty, Path.GetFileName( projectFile ) );
         }
     }
 }

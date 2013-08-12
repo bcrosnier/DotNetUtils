@@ -203,13 +203,13 @@ namespace DotNetUtilitiesApp.SemanticVersionManager
             var informationVersions = result.InformationVersions.Where( x => !string.IsNullOrEmpty( x ) );
             if( versions.Count() == 1 )
             {
-                if( !string.IsNullOrEmpty( informationVersions.First() ) )
+                if( !string.IsNullOrEmpty( informationVersions.FirstOrDefault() ) )
                 {
-                    return informationVersions.First();
+                    return informationVersions.FirstOrDefault();
                 }
-                else if( versions.First() != null )
+                else if( versions.FirstOrDefault() != null )
                 {
-                    return versions.First().ToString();
+                    return versions.FirstOrDefault().ToString();
                 }
             }
             return "0.0.0";
