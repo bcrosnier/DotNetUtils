@@ -13,6 +13,7 @@ namespace DotNetUtilitiesApp
     {
         private MainWindowViewModel _viewModel;
         private GithubDownloader.GithubDownloader _githubDownloader;
+        private GitHubSetting _gitHubSetting;
         private string _runningSlnPath;
 
         private readonly DirectoryInfo _appDataDirectory;
@@ -131,6 +132,19 @@ namespace DotNetUtilitiesApp
 
             this.TabControl.SelectedIndex = 1;
             _viewModel.CheckAllCommand.Execute( null );
+        }
+
+        private void OpenGitHubSetting_Click( object sender, RoutedEventArgs e )
+        {
+            if( _gitHubSetting == null )
+            {
+                _gitHubSetting = new GitHubSetting();
+            }
+
+            _gitHubSetting.Closing += ( s, e1 ) => { _gitHubSetting = null; };
+            //_gitHubSetting.SolutionFileReady += _gitHubSetting_SolutionFileReady;
+
+            _gitHubSetting.Show();
         }
     }
 }

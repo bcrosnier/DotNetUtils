@@ -52,20 +52,6 @@
             <TextBox Grid.Row="2" Grid.ColumnSpan="3" TextAlignment="Center" Text="{Binding Path=GithubRepositoryWebUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=https://github.com/Invenietis/ck-core/tree/master}">
             </TextBox>
 
-            <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Width="200">
-                <Label>Personal API Access Token</Label>
-                <TextBox Text="{Binding Path=PersonalApiAccessToken, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=44cb944bb9fde224ac8b67d03c868ca3c7cbf6e3}" />
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding Path=RememberApiTokenChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <Label>Remember token</Label>
-                </StackPanel>
-                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" TextAlignment="Center" TextWrapping="Wrap">
-                Used to authenticate you.<LineBreak />
-                Get a token for your GitHub account from the <Hyperlink ToolTip="https://github.com/settings/applications" NavigateUri="https://github.com/settings/applications" RequestNavigate="Hyperlink_RequestNavigate">GitHub website</Hyperlink>.
-                </TextBlock>
-
-            </StackPanel>
-
             <Button IsDefault="True" Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,10" Padding="8,3,8,3" Command="{Binding Path=OpenSolutionCommand}">Open</Button>
 
             <ProgressBar Grid.Row="5" Grid.ColumnSpan="3" Height="17" IsIndeterminate="{Binding Path=IsProgressIndeterminate}" Value="{Binding Path=ProgressValue}"/>

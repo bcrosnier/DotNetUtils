@@ -138,12 +138,8 @@ namespace DotNetUtilitiesApp.GithubDownloader
                 if( value != _personalApiAccessToken )
                 {
                     _personalApiAccessToken = value;
-                    if( IsPersonalApiTokenValid( value ) )
-                    {
-                        _github.SetApiToken( value );
-                        UpdateLoginName();
-                    }
-                    RaisePropertyChanged();
+                    _github.SetApiToken( value );
+                    UpdateLoginName();
                 }
             }
         }
@@ -240,10 +236,6 @@ namespace DotNetUtilitiesApp.GithubDownloader
             RepositoryRefName = Settings.Default.RepositoryRef;
 
             PersonalApiAccessToken = Settings.Default.PersonalApiToken;
-            if( !string.IsNullOrEmpty( PersonalApiAccessToken ) )
-            {
-                RememberApiTokenChecked = true;
-            }
         }
 
         private void SaveSettings()
@@ -251,15 +243,6 @@ namespace DotNetUtilitiesApp.GithubDownloader
             Settings.Default.RepositoryUser = RepositoryUser;
             Settings.Default.RepositoryName = RepositoryName;
             Settings.Default.RepositoryRef = RepositoryRefName;
-
-            if( RememberApiTokenChecked )
-            {
-                Settings.Default.PersonalApiToken = PersonalApiAccessToken;
-            }
-            else
-            {
-                Settings.Default.PersonalApiToken = string.Empty;
-            }
 
             Settings.Default.Save();
         }
@@ -347,11 +330,6 @@ namespace DotNetUtilitiesApp.GithubDownloader
                     SolutionPathAvailable( this, args );
                 } );
             }
-        }
-
-        private static bool IsPersonalApiTokenValid( string apiToken )
-        {
-            return Regex.Match( apiToken, "^[a-fA-F0-9]{40}$" ).Success;
         }
 
         private static string GetGitBlobSha( byte[] data )
