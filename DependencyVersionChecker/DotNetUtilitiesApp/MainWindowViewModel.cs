@@ -9,6 +9,10 @@ using DotNetUtilitiesApp.SolutionAnalyzer;
 using DotNetUtilitiesApp.WpfUtils;
 using DotNetUtilitiesApp.VersionAnalyzer;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using CK.Core;
+using System.Collections.Specialized;
 
 namespace DotNetUtilitiesApp
 {
@@ -19,6 +23,7 @@ namespace DotNetUtilitiesApp
         private string _windowTitle;
         private string _solutionPath;
         private int _tabIndex;
+        private ObservableCollection<RecentSolutionItem> _recentSolutionItems;
 
         private GithubRepositorySolution _activeGithubSolution;
 
@@ -44,6 +49,7 @@ namespace DotNetUtilitiesApp
                 if( value != _solutionPath )
                 {
                     _solutionPath = value;
+                    UpdateRecentSolutionItems( value );
                     RaisePropertyChanged();
                 }
             }
@@ -75,12 +81,18 @@ namespace DotNetUtilitiesApp
             }
         }
 
+        public ObservableCollection<RecentSolutionItem> RecentSolutionItems
+        {
+            get { return _recentSolutionItems; }
+        }
+
         #endregion Observed properties
 
         #region Constructor
 
         internal MainWindowViewModel()
         {
+            _recentSolutionItems = new ObservableCollection<RecentSolutionItem>();
             PrepareCommands();
         }
 
@@ -238,6 +250,16 @@ namespace DotNetUtilitiesApp
             _semanticVersionManagerControl.CleanUp();
             _solutionAnalyzerControl.CleanUp();
             _versionAnalyzerControl.CleanUp();
+        }
+
+        private void UpdateRecentSolutionItems( string value )
+        {
+            if( !string.IsNullOrEmpty( value ) )
+            {
+                if( _recentSolutionItems.Count == 5 )
+                    _recentSolutionItems.RemoveAt( 0 );
+                _recentSolutionItems.Add( new RecentSolutionItem( value ) );
+            }
         }
 
         private void WarnUser( string title, string message )

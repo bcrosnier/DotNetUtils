@@ -23,6 +23,21 @@ namespace AssemblyProber
         }
 
         /// <summary>
+        /// Create an ellipsed path.
+        /// </summary>
+        /// <param name="absoluteTargetPath">Path to convert</param>
+        /// <returns>Ellipsed path</returns>
+        public static string MakeEllipsedPath( string pathToConvert)
+        {
+            string[] stringArray = new Uri( pathToConvert ).Segments;
+
+            return stringArray[1] + ".../"
+                + stringArray[stringArray.Length - 3]
+                + stringArray[stringArray.Length - 2]
+                + stringArray[stringArray.Length - 1];
+        }
+
+        /// <summary>
         /// Converts a relative path, relative to a given folder, to an absolute path.
         /// </summary>
         /// <param name="relativeTargetPath">Relative path to convert</param>

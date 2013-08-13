@@ -70,6 +70,7 @@
     <Compile Include="ChoiceWindow.xaml.cs">
       <DependentUpon>ChoiceWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\RecentSolutionItem.cs" />
     <Page Include="GithubDownloader\GithubDownloader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -140,6 +141,10 @@
     <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker.App.Wpf\DotNetUtilitiesApp.AssemblyProber.csproj">
       <Project>{d87c110a-c76f-4f8b-a0e4-b061c112498f}</Project>
       <Name>DotNetUtilitiesApp.AssemblyProber</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AssemblyProber\DependencyVersionChecker\AssemblyProber.csproj">
+      <Project>{e28beab0-0116-400d-9aa1-5d4fd2b1db89}</Project>
+      <Name>AssemblyProber %28AssemblyProber\AssemblyProber%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetUtilitiesApp.SemanticVersionManager\DotNetUtilitiesApp.SemanticVersionManager.csproj">
       <Project>{c33e55e5-26a9-4aef-8a9d-67c3ef362151}</Project>
