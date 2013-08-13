@@ -102,18 +102,18 @@ namespace ProjectProber.Tests
             Assert.That(result.HasAssemblyInfoWithVersion, Is.False);
         }
 
-        [Test]
-        public void TestToSerialize()
-        {
-            AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles( TEST_WITHSHAREDASSEMBLYINFONOTSEMANTICVERSIONCOMPLIANTE_SLN_FILE_PATH );
-            using( XmlTextWriter xw = new XmlTextWriter( Path.GetDirectoryName( TEST_SLN_FILE_PATH ) + "test.xml", null ) )
-            {
-                xw.WriteStartDocument( true );
-                xw.Formatting = Formatting.Indented;
-                xw.WriteProcessingInstruction( "xml-stylesheet", "type='text/xsl' href='SolutionCheckResult.xslt'" );
-                result.SerializeTo( xw );
-                xw.WriteEndDocument();
-            }
-        }
+        //[Test]
+        //public void TestToSerialize()
+        //{
+        //    AssemblyVersionInfoCheckResult result = AssemblyVersionInfoChecker.CheckAssemblyVersionFiles( TEST_WITHSHAREDASSEMBLYINFONOTSEMANTICVERSIONCOMPLIANTE_SLN_FILE_PATH );
+        //    using( XmlTextWriter xw = new XmlTextWriter( Path.GetDirectoryName( TEST_SLN_FILE_PATH ) + "test.xml", null ) )
+        //    {
+        //        xw.WriteStartDocument( true );
+        //        xw.Formatting = Formatting.Indented;
+        //        xw.WriteProcessingInstruction( "xml-stylesheet", "type='text/xsl' href='SolutionCheckResult.xslt'" );
+        //        result.SerializeTo( xw );
+        //        xw.WriteEndDocument();
+        //    }
+        //}
     }
 }
