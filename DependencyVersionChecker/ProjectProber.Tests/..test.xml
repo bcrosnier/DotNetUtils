@@ -1,0 +1,82 @@
+<?xml version="1.0" standalone="yes"?>
+<?xml-stylesheet type='text/xsl' href='SolutionCheckResult.xslt'?>
+<AssemblyVersionInfoCheckResult solution="CK-Core.sln" solutionpath="..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\CK-Core.sln">
+  <VersionErrors>
+    <HasAssemblyInfoWithVersion>false</HasAssemblyInfoWithVersion>
+    <HasFileWithoutVersion>false</HasFileWithoutVersion>
+    <HasMultipleAssemblyFileVersion>false</HasMultipleAssemblyFileVersion>
+    <HasMultipleAssemblyInformationVersion>false</HasMultipleAssemblyInformationVersion>
+    <HasMultipleAssemblyVersion>false</HasMultipleAssemblyVersion>
+    <HasMultipleRelativeLinkInCSProj>false</HasMultipleRelativeLinkInCSProj>
+    <HasMultipleSharedAssemblyInfo>false</HasMultipleSharedAssemblyInfo>
+    <HasMultipleVersionInOneAssemblyInfo>true</HasMultipleVersionInOneAssemblyInfo>
+    <HasNotSharedAssemblyInfo>false</HasNotSharedAssemblyInfo>
+    <HasOneVersionNotSemanticVersionCompliant>true</HasOneVersionNotSemanticVersionCompliant>
+    <HasRelativeLinkInCSProjNotFound>false</HasRelativeLinkInCSProjNotFound>
+  </VersionErrors>
+  <SharedAssemblyInfo>
+    <AssemblyVersions version="2.8.13" fileversion="2.9.14" informationalversion="1.0.0.0">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</Path>
+    </AssemblyVersions>
+  </SharedAssemblyInfo>
+  <AssemblyInfo>
+    <CSProjCompileLinkInfo projectname="CK.Core.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+    <CSProjCompileLinkInfo projectname="CK.Core.Tests.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+    <CSProjCompileLinkInfo projectname="CK.Interop.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+    <CSProjCompileLinkInfo projectname="CK.Reflection.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+    <CSProjCompileLinkInfo projectname="CK.Reflection.Tests.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+    <CSProjCompileLinkInfo projectname="CK.Storage.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+    <CSProjCompileLinkInfo projectname="CK.Storage.Tests.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+    <CSProjCompileLinkInfo projectname="CK.Storage.Tests.ExternalDll.csproj">
+      <RelativePath>C:\Users\franck.bontemps\Documents\invenietis\DotNetUtils\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\SharedAssemblyInfo.cs</RelativePath>
+      <PropertiesFilePath>Properties\SharedAssemblyInfo.cs</PropertiesFilePath>
+    </CSProjCompileLinkInfo>
+  </AssemblyInfo>
+  <AssemblyInfo>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\CK.Core\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\CK.Interop\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\CK.Reflection\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\CK.Storage\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\Tests\CK.Core.Tests\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\Tests\CK.Reflection.Tests\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\Tests\CK.Storage.Tests\ExternalDll\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+    <AssemblyVersions version="" fileversion="" informationalversion="">
+      <Path>..\..\..\..\TestSolutions\WithAssemblyInfoNotSemanticVersionCompliant\Tests\CK.Storage.Tests\Properties\AssemblyInfo.cs</Path>
+    </AssemblyVersions>
+  </AssemblyInfo>
+</AssemblyVersionInfoCheckResult>

@@ -22,7 +22,10 @@
                 <MenuItem Header="Load in _all tabs" Command="{Binding Path=CheckAllCommand}" />
                 <MenuItem Header="Load in active _tab" Command="{Binding Path=CheckCurrentCommand}" />
                 <Separator/>
-                <MenuItem Header="Load in active _tab" Command="{Binding Path=CheckCurrentCommand}" />
+                <MenuItem Header="Change current solution" Command="{Binding Path=ChangeGithubSolutionCommand}" />
+            </MenuItem>
+            <MenuItem Header="Setting">
+                <MenuItem Header="GitHub setting" Click="OpenGitHubSetting_Click" />
             </MenuItem>
         </Menu>
         <TabControl x:Name="TabControl" SelectedIndex="{Binding Path=TabIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">

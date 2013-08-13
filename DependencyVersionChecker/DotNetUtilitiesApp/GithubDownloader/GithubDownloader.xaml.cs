@@ -12,13 +12,14 @@ namespace DotNetUtilitiesApp.GithubDownloader
     /// </summary>
     public partial class GithubDownloader : Window
     {
-        public event EventHandler<StringEventArgs> SolutionFileReady;
-        GithubDownloaderViewModel _viewModel;
+        public event EventHandler<GithubRepositorySolutionEventArgs> SolutionFileReady;
 
-        public GithubDownloader(DirectoryInfo cacheDir)
+        private GithubDownloaderViewModel _viewModel;
+
+        public GithubDownloader( DirectoryInfo cacheDir )
         {
-            _viewModel = new GithubDownloaderViewModel(cacheDir);
-            _viewModel.RaisedWarning +=_viewModel_RaisedWarning;
+            _viewModel = new GithubDownloaderViewModel( cacheDir );
+            _viewModel.RaisedWarning += _viewModel_RaisedWarning;
 
             _viewModel.SolutionPathAvailable += _viewModel_SolutionPathAvailable;
 
@@ -26,13 +27,13 @@ namespace DotNetUtilitiesApp.GithubDownloader
             InitializeComponent();
         }
 
-        void _viewModel_SolutionPathAvailable( object sender, StringEventArgs e )
+        private void _viewModel_SolutionPathAvailable( object sender, GithubRepositorySolutionEventArgs e )
         {
-            if( SolutionFileReady != null )
+            if ( SolutionFileReady != null )
                 SolutionFileReady( this, e );
         }
 
-        void _viewModel_RaisedWarning( object sender, StringEventArgs e )
+        private void _viewModel_RaisedWarning( object sender, StringEventArgs e )
         {
             MessageBox.Show( e.Content );
         }

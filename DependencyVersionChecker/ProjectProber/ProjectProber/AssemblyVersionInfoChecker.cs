@@ -17,11 +17,11 @@ namespace ProjectProber
         /// <summary>
         /// Checks a SharedAssemblyInfo file and all AssemblyInfo files.
         /// </summary>
-        /// <param name="solutionPath">SharedAssemblyInfo file path</param>
+        /// <param name="solutionFilePath">SharedAssemblyInfo file path</param>
         /// <returns>AssemblyVersionCheckResult</returns>
-        public static AssemblyVersionInfoCheckResult CheckAssemblyVersionFiles( string solutionPath )
+        public static AssemblyVersionInfoCheckResult CheckAssemblyVersionFiles( string solutionFilePath )
         {
-            return CheckAssemblyVersionFiles( solutionPath, DefaultActivityLogger.Empty );
+            return CheckAssemblyVersionFiles( solutionFilePath, DefaultActivityLogger.Empty );
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace ProjectProber
                 projectVersion.Add( temp );
             }
 
-            return new AssemblyVersionInfoCheckResult( solutionDirectoryPath, sharedAssemblyInfoVersion, csProj, projectVersion );
+            return new AssemblyVersionInfoCheckResult( solutionFilePath, sharedAssemblyInfoVersion, csProj, projectVersion );
         }
     }
 }

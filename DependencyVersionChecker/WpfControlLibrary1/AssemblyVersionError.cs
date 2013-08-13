@@ -123,7 +123,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
         private UIElement GetDetailForHasNotSharedAssemblyInfo()
         {
             TextBlock tb = new TextBlock();
-            tb.Text = "No SharedAssemblyInfo.cs file was Found in \n" + _result.SolutionDirectoryPath;
+            tb.Text = "No SharedAssemblyInfo.cs file was Found in \n" + System.IO.Path.GetDirectoryName( _result.SolutionFilePath );
             return tb;
         }
 
@@ -135,7 +135,7 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
                 .Where( x => string.IsNullOrEmpty( x.SharedAssemblyInfoRelativePath ) && string.IsNullOrEmpty( x.AssociateLink ) );
             foreach( var CSProj in CSProjwithoutRelativeLink )
             {
-                lb.Items.Add( CSProj.NameProject );
+                lb.Items.Add( CSProj.ProjectName );
             }
 
             return lb;

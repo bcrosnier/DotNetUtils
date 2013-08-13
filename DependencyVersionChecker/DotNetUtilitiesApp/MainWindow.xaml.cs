@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using DotNetUtilitiesApp.GithubDownloader;
 
 namespace DotNetUtilitiesApp
 {
@@ -13,7 +14,7 @@ namespace DotNetUtilitiesApp
     {
         private MainWindowViewModel _viewModel;
         private GithubDownloader.GithubDownloader _githubDownloader;
-        private string _runningSlnPath;
+        private GitHubSetting _gitHubSetting;
 
         private readonly DirectoryInfo _appDataDirectory;
         private readonly DirectoryInfo _githubCacheDirectory;
@@ -55,9 +56,9 @@ namespace DotNetUtilitiesApp
 
             if( args.Length >= 2 )
             {
-                _runningSlnPath = args[1];
+                string runningSlnPath = args[1];
 
-                _viewModel.LoadSolutionFile( _runningSlnPath );
+                _viewModel.SetSolutionFile( runningSlnPath );
                 _viewModel.CheckAllCommand.Execute( null );
             }
 
@@ -121,16 +122,26 @@ namespace DotNetUtilitiesApp
             _githubDownloader.Show();
         }
 
-        void _githubDownloader_SolutionFileReady( object sender, WpfUtils.StringEventArgs e )
+        void _githubDownloader_SolutionFileReady( object sender, GithubRepositorySolutionEventArgs e )
         {
-            Debug.Assert( File.Exists( e.Content ) );
-            _runningSlnPath = e.Content;
-            _viewModel.LoadSolutionFile( e.Content );
+            _viewModel.SetGithubSolutionFile( e.Solution );
 
             _githubDownloader.Close();
 
             this.TabControl.SelectedIndex = 1;
-            _viewModel.CheckAllCommand.Execute( null );
+        }
+
+        private void OpenGitHubSetting_Click( object sender, RoutedEventArgs e )
+        {
+            if( _gitHubSetting == null )
+            {
+                _gitHubSetting = new GitHubSetting();
+            }
+
+            _gitHubSetting.Closing += ( s, e1 ) => { _gitHubSetting = null; };
+            //_gitHubSetting.SolutionFileReady += _gitHubSetting_SolutionFileReady;
+
+            _gitHubSetting.Show();
         }
     }
 }
