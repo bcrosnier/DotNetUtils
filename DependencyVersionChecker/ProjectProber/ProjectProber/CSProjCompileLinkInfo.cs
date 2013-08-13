@@ -17,7 +17,7 @@
         /// <summary>
         /// Name's project.
         /// </summary>
-        public string NameProject { get; private set; }
+        public string ProjectName { get; private set; }
 
         /// <summary>
         /// Construct a CSProjCompileLinkInfo object.
@@ -29,7 +29,7 @@
         {
             SharedAssemblyInfoRelativePath = sharedAssemblyInfoRelativePath;
             AssociateLink = link;
-            NameProject = project;
+            ProjectName = project;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@
         /// <returns>A hash code for the current CSProjCompileLinkInfo.</returns>
         public override int GetHashCode()
         {
-            return SharedAssemblyInfoRelativePath.GetHashCode() + AssociateLink.GetHashCode() + NameProject.GetHashCode();
+            return SharedAssemblyInfoRelativePath.GetHashCode() + AssociateLink.GetHashCode() + ProjectName.GetHashCode();
         }
 
 

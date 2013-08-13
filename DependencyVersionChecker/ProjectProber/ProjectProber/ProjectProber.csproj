@@ -79,6 +79,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SemanticVersionGenerator.cs" />
+    <Compile Include="SerializationExtensions\AssemblyVersionInfoCheckResultExtensions.cs" />
     <Compile Include="SerializationExtensions\SolutionCheckResultExtensions.cs" />
     <Compile Include="SolutionChecker.cs" />
     <Compile Include="SolutionCheckResult.cs" />

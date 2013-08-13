@@ -16,7 +16,7 @@ namespace ProjectProber
         /// <summary>
         /// It's a path's *.sln directory.
         /// </summary>
-        public string SolutionDirectoryPath { get { return _solutionDirectoryPath; } }
+        public string SolutionFilePath { get { return _solutionFilePath; } }
 
         /// <summary>
         /// Represent different SharedAssemblyInfo.cs files in solution.
@@ -217,7 +217,7 @@ namespace ProjectProber
         private List<CSProjCompileLinkInfo> _csProjs;
         private List<AssemblyVersionInfo> _assemblyVersions;
         private List<AssemblyVersionInfo> _sharedAssemblyInfoVersions;
-        private string _solutionDirectoryPath;
+        private string _solutionFilePath;
 
         /// <summary>
         /// It's different versions has been found.
@@ -245,7 +245,7 @@ namespace ProjectProber
             List<CSProjCompileLinkInfo> csProjs,
             List<AssemblyVersionInfo> assemblyVersions )
         {
-            _solutionDirectoryPath = solutionDirectoryPath;
+            _solutionFilePath = solutionDirectoryPath;
             _sharedAssemblyInfoVersions = sharedAssemblyInfoVersions;
             _csProjs = csProjs;
             _assemblyVersions = assemblyVersions;
