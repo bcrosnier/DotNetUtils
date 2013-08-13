@@ -90,6 +90,7 @@
       <DependentUpon>GithubDownloader.xaml</DependentUpon>
     </Compile>
     <Compile Include="GithubDownloader\GithubDownloaderViewModel.cs" />
+    <Compile Include="GithubRepositorySolution.cs" />
     <Compile Include="GitHubSetting\GitHubSetting.xaml.cs">
       <DependentUpon>GitHubSetting.xaml</DependentUpon>
     </Compile>
