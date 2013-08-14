@@ -17,7 +17,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="_Open solution" Command="{Binding Path=LoadSolutionFileCommand}" />
                 <MenuItem Header="Open from _GitHub repository" Click="OpenFromGithubRepo_Click" />
-                <Separator/>
+                <!--<Separator/>
                 <MenuItem Header="Recent solution" ItemsSource="{Binding Path=RecentSolutionItems}">
                     <MenuItem.ItemTemplate>
                         <DataTemplate>
@@ -28,7 +28,7 @@
                                 </TextBlock>
                         </DataTemplate>
                     </MenuItem.ItemTemplate>
-                </MenuItem>
+                </MenuItem>-->
             </MenuItem>
             <MenuItem Header="_Solution">
                 <MenuItem Header="Load in _all tabs" Command="{Binding Path=CheckAllCommand}" />
