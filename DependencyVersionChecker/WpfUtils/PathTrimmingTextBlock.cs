@@ -52,7 +52,7 @@ namespace DotNetUtilitiesApp.WpfUtils
             string startDirectory = string.Empty;
             string endDirectory = string.Empty;
             bool widthOK = false;
-            bool changedWidth = false;
+            double lastBestDifferenceWidth = double.MaxValue;
 
             formatted = new FormattedText(
                     "{0}...\\{1}".FormatWith( directory, filename ),
@@ -63,37 +63,30 @@ namespace DotNetUtilitiesApp.WpfUtils
                     Foreground
                     );
 
-            if( formatted.Width < width ) return Path;
-
             do
             {
-                if( !widthOK )
+                if( formatted.Width < width )
                 {
-                    changedWidth = true;
-
-                    if( formatted.Width < width )
-                    {
-                        dichotomieLength += dichotomieLength / 2;
-                        startDirectory = string.Empty;
-                        for( int i = 1; i < dichotomieLength; i++ ) startDirectory += directory[i];
-                        endDirectory = string.Empty;
-                        for( int i = directory.Length - dichotomieLength; i < directory.Length; i++ ) endDirectory += directory[i];
-                    }
+                    dichotomieLength += dichotomieLength / 2;
+                    startDirectory = string.Empty;
+                    for( int i = 1; i < dichotomieLength; i++ ) startDirectory += directory[i];
+                    endDirectory = string.Empty;
+                    for( int i = directory.Length - dichotomieLength; i < directory.Length; i++ ) endDirectory += directory[i];
+                }
                     
-                    if( formatted.Width >= width )
-                    {
-                        dichotomieLength = dichotomieLength / 2;
-                        startDirectory = string.Empty;
-                        for( int i = 1; i < dichotomieLength; i++ ) startDirectory += directory[i];
-                        endDirectory = string.Empty;
-                        for( int i = directory.Length - dichotomieLength; i < directory.Length; i++ ) endDirectory += directory[i];
+                if( formatted.Width >= width )
+                {
+                    dichotomieLength = dichotomieLength / 2;
+                    startDirectory = string.Empty;
+                    for( int i = 1; i < dichotomieLength; i++ ) startDirectory += directory[i];
+                    endDirectory = string.Empty;
+                    for( int i = directory.Length - dichotomieLength; i < directory.Length; i++ ) endDirectory += directory[i];
 
-                        if( startDirectory.Length + endDirectory.Length == 0 ) return "...\\" + filename;
-                    }
+                    if( startDirectory.Length + endDirectory.Length == 0 ) return "...\\" + filename;
                 }
 
-                double formattedWidth = width - formatted.Width;
-                FormattedText formatted2 = formatted;
+                double lastWidth = width - formatted.Width;
+                FormattedText lastFormatted = formatted;
 
                 formatted = new FormattedText(
                     "{0}...{1}\\{2}".FormatWith( startDirectory, endDirectory, filename ),
@@ -103,32 +96,27 @@ namespace DotNetUtilitiesApp.WpfUtils
                     FontSize,
                     Foreground
                     );
-                if( formattedWidth < 0 )
+
+                double newWidth = width - formatted.Width;
+                double newDifferenceWidth = lastWidth - newWidth;
+
+                newDifferenceWidth = ( newDifferenceWidth < 0 ) ? -newDifferenceWidth : newDifferenceWidth;
+                if( newDifferenceWidth < lastBestDifferenceWidth )
                 {
-                    if( formattedWidth > width - formatted.Width )
-                    {
-                        if( width - formatted.Width < 0 )
-                        {
-                            return formatted2.Text;
-                        }
-                        continue;
-                    }
-                    continue;
+                    widthOK = false;
+                    lastBestDifferenceWidth = newDifferenceWidth;
                 }
-                else if( formatted.Width <= width )
+                else
                 {
+                    if( widthOK && lastFormatted.Width < width )
+                        return lastFormatted.Text;
                     widthOK = true;
                 }
 
                 //widthOK = formatted.Width <= width;
 
-            } while( !widthOK );
-
-            if( !changedWidth )
-            {
-                return Path;
-            }
-            return "{0}...{1}\\{2}".FormatWith( startDirectory, endDirectory, filename );
+            } while( true );
+            return string.Empty;
         }
 
         //string GetTrimmedPath(double width)
