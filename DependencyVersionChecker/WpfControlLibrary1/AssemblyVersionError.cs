@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using ProjectProber.Impl;
 using CK.Package;
 using System.Windows.Data;
+using DotNetUtilitiesApp.WpfUtils;
 
 namespace DotNetUtilitiesApp.VersionAnalyzer
 {
@@ -148,12 +149,23 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             dg.IsReadOnly = true;
             dg.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            var column1 = new DataGridTextColumn();
+            var column1 = new DataGridTemplateColumn();
             column1.Header = "Path";
-            column1.Binding = new Binding( "AssemblyInfoFilePath" );
+
+            var pathTextBlock = new PathTrimmingTextBlock();
+            pathTextBlock.SetBinding( TextBlock.TextProperty, new Binding( "AssemblyInfoFilePath" ) );
+
+            column1.CellTemplate = new DataTemplate();
+
+
+            FrameworkElementFactory stackPanelFactory = new FrameworkElementFactory( typeof( StackPanel ) );
+
+            FrameworkElementFactory title = new FrameworkElementFactory( typeof( PathTrimmingTextBlock ) );
+            title.SetBinding(PathTrimmingTextBlock.PathProperty, new Binding("AssemblyInfoFilePath"));
+            stackPanelFactory.AppendChild(title);
+
+            column1.CellTemplate.VisualTree = stackPanelFactory;
             column1.Width = new DataGridLength( 340 );
-            column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Version";
@@ -199,7 +211,8 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             column1.Binding = new Binding( "AssemblyInfoFilePath" );
             column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextWrappingProperty, TextWrapping.NoWrap ) );
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Version";
@@ -244,7 +257,8 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             column1.Binding = new Binding( "AssemblyInfoFilePath" );
             column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextWrappingProperty, TextWrapping.NoWrap ) );
 
             var column2 = new DataGridTextColumn();
             column2.Header = "Version";
@@ -308,7 +322,8 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             column1.Binding = new Binding( "AssemblyInfoFilePath" );
             column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextWrappingProperty, TextWrapping.NoWrap ) );
 
 
             var column2 = new DataGridTextColumn();
@@ -338,7 +353,8 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             column1.Binding = new Binding( "AssemblyInfoFilePath" );
             column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextWrappingProperty, TextWrapping.NoWrap ) );
 
 
             var column2 = new DataGridTextColumn();
@@ -368,7 +384,8 @@ namespace DotNetUtilitiesApp.VersionAnalyzer
             column1.Binding = new Binding( "AssemblyInfoFilePath" );
             column1.Width = new DataGridLength( 340 );
             column1.ElementStyle = new Style();
-            column1.ElementStyle.Setters.Add( new Setter( TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Right ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis ) );
+            column1.ElementStyle.Setters.Add( new Setter( TextBlock.TextWrappingProperty, TextWrapping.NoWrap ) );
 
 
             var column2 = new DataGridTextColumn();
